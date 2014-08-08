@@ -1,0 +1,60 @@
+{
+  "levels": [
+    {
+	  "name": "Easy",
+	  "size": {
+	    "width": 3,
+		"height": 3
+	  },
+	  "timing": {
+	    "minimum": 5,
+		"range": 50,
+		"disappear": 5
+	  },
+	  "hitscore": 10,
+	  "misses": 3
+	},
+    {
+	  "name": "Medium",
+	  "size": {
+	    "width": 4,
+		"height": 4
+	  },
+	  "timing": {
+	    "minimum": 5,
+		"range": 40,
+		"disappear": 4
+	  },
+	  "hitscore": 10,
+	  "misses": 3
+	},
+    {
+	  "name": "Hard",
+	  "size": {
+	    "width": 5,
+		"height": 5
+	  },
+	  "timing": {
+	    "minimum": 5,
+		"range": 30,
+		"disappear": 3
+	  },
+	  "hitscore": 10,
+	  "misses": 3
+	},
+    {
+	  "name": "Nightmare",
+	  "size": {
+	    "width": 5,
+		"height": 5
+	  },
+	  "timing": {
+	    "minimum": 5,
+		"range": 20,
+		"disappear": 2		
+	  },
+	  "hitscore": 10,
+	  "misses": 3
+	}
+  ]
+}

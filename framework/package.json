@@ -1,0 +1,23 @@
+{
+  "name": "Framework",
+  "description": "Game Framework",
+  "version": "0.0.1",
+  "devDependencies": {
+    "grunt": "~0.4.5",
+    "grunt-contrib-jshint": "~0.10.0",
+    "grunt-contrib-nodeunit": "~0.3.3",
+    "grunt-contrib-copy": "0.4.x",
+    "grunt-contrib-clean": "0.5.x",
+    "grunt-contrib-uglify": "~0.4.0",
+	"grunt-processhtml": "~0.3.3",
+	"grunt-contrib-connect": "~0.7.1",
+	"bin-wrapper":"~0.3.4",
+	"imagemin-gifsicle":"~0.1.1",
+	"imagemin-optipng":"~0.1.0",
+	"imagemin-pngquant":"~0.1.2",
+    "grunt-contrib-imagemin": "~0.7.0",	
+	"grunt-svn": "~0.1.1",
+	"grunt-git": "~0.2.11",
+	"grunt-gitinfo": "~0.1.4"
+  }
+}

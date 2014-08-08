@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>src/console-js/modules/game.js</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="../assets/css/logo.png" title=""></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: </em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="../classes/GettingStarted.html">GettingStarted</a></li>
+            
+                <li><a href="../classes/iConsole.ads.html">iConsole.ads</a></li>
+            
+                <li><a href="../classes/iConsole.game.html">iConsole.game</a></li>
+            
+                <li><a href="../classes/iConsole.periodical.html">iConsole.periodical</a></li>
+            
+                <li><a href="../classes/PhaserNotes.html">PhaserNotes</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: src/console-js/modules/game.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+/**
+ * Getting Started
+ * ---------------
+ * Developing games for iWin Games Console 
+ *
+ * Quick Start
+ * ----------- 
+ * For a quick start, please serve this folder from an apache/nginx instance and launch the index.html from this folder,
+ * and the SDK sample &quot;game&quot; will launch.
+ *
+ * These are examples of live games that use the console
+ * [http://m.iwin.com/game/match3/puzzle-match3-jewelquest](http://m.iwin.com/game/match3/puzzle-match3-jewelquest)
+ * or
+ * [http://m.iwin.com/game/puzzle/smorewords](http://m.iwin.com/game/puzzle/smorewords)
+ *
+ * Configuration
+ * -------------
+ * Please configure your &#x27;browser/pc&#x27; via the hosts file so that your dev webserver has the name &#x27;local.games.iwin.com&#x27;
+ *
+ * Folder Structure
+ * ----------------
+ * All game code must go in the &#x27;game&#x27; subfolder and the parent folder must be included in any webserver instance that you run.
+ * The current structure is
+ * &lt;pre&gt;
+ * /
+ * /game/
+ * ......index.html
+ * ......game_details.json
+ * /site-console/
+ * ......js/
+ * ......img/
+ * /index.html
+ * /iconsole.js
+ * &lt;/pre&gt;
+ * 
+ * Within the game folder there must be at a minimum 2 files...
+ * + game_details.json 
+ * + index.html
+ * 
+ * Note: You must visit index.html in the root folder and not the game/index.html from your browser and also use &#x27;http&#x27; protocol URI&#x27;s and not local &#x27;file&#x27; URI&#x27;s
+ *
+ * Game_details.JSon
+ * -----------------
+ * This file must contain valid json game details.  For example.
+ * &lt;pre&gt;
+ * {
+ *   &quot;name&quot;: &quot;Test Bed&quot;,
+ *   &quot;code&quot;: &quot;testbed&quot;,
+ *   &quot;advertBehavior&quot;: {
+ *     &quot;type&quot;:&quot;specific_levels&quot;,
+ *     &quot;levels&quot;:[1,3,5,7]
+ *   }
+ * }
+ * &lt;/pre&gt;
+ * Details are..
+ * &lt;pre&gt;
+ * &quot;name&quot;: Game name that will be displayed in the title bar of the console
+ * &quot;code&quot;: Unique game code that will be used when deployed on the iWin portal.  We will likely change this after you send it to us
+ * &quot;advertBehavior&quot;: This allows us to define when and where to display ads as the user plays the game.  The example above is a sample but we do support other types.  See ads class for more information
+ * &lt;/pre&gt;
+ * 
+ * game/Index.html
+ * ---------------
+ *  
+ * + The game/index.html is served via an IFRAME that is dynamically created by the console, and all requests inside that IFRAME will be local to the game folder.
+ * + Internally, the system uses easyXDM to message between the game and the console (as they live in separate frames), but these calls are obfuscated through functions in ../iconsole.js (relative to the game folder). Therefore, any game implementing the console should load the iconsole.js from the parent folder as a script, before making any messages to the console.
+ * + As the game loads, it makes calls to the console to notify the console of it&#x27;s progress. Typically this is done when pre-loading assets required for the game. This ensures that the game window stays hidden from the player until the game has fully loaded, and that the advert panel is visible until the game is ready to play.
+ * + Once the game assets have been fully loaded, the game calls the console to tell it has loaded the game. The console will remove the panel that is hiding the game, and signals that the advert can be removed (after minimum advert duration has been reached).
+ * For more information see the included example &#x27;game&#x27;.
+ *
+ * Backend Server
+ * --------------
+ * + The SDK will speak to a test server hosted by iWin for certain API calls.
+ * + The test server URLs that we call are: 
+ *  - https://sl.iwin.com: Stage Logon Server
+ *  - https://sc.iwin.com: Stage Chat Server
+ * + In order for chatroom and database persistence of user progress functionality to work, you should use develop with a hostfile entry of local.games.iwin.com pointing to your local development environment. If you use a different hostname, login/chat will not work, however, your data will be stored as an anonymous user in the html5 local storage object. 
+ *
+ * Improving Game Performance
+ * --------------------------
+ * + Only load the required assets at startup and load level specific assets as they are needed.
+ * + Think about using JPEGs rather than PNGs (if you can)
+ * + Use compressed image file types
+ * + Reduce the bit rate for audio files.
+ * + When pre-compiling data structures, consider breaking the computation blocks into smaller chunks and use timed callbacks to step through these chunks. This will ensure that the console gains some of the CPU time to ensure it can update the UI accordingly, and ensure that the browser doesn&#x27;t consider the process to have died because it hasn&#x27;t completed the call in a timely manner
+ * @class GettingStarted
+ * @type {GettingStarted|*{}}
+ */
+ 
+/** 
+ * Phaser.IO Issues
+ * ----------------
+ * 
+ * We have discovered an issue with Phaser.io/iWin&#x27;s Console with respect to Mozilla Firefox, in that the Pre-loading state never gets called when a Phaser game is launched from the console. The reason for this, is that the game is initially in a hidden iframe, and only made visible once the iConsole has been notified the game has started to load. Phaser.io recommends using a pre-loading State [Phaser Example Basic](https://github.com/photonstorm/phaser/tree/master/resources/Project%20Templates/Basic), and therefore you should place the initial calls to iConsole in this state. However, the Phaser internal request to requestAnimationFrame never returns the callback, until the iFrame is visible. This is a Catch-22 situation. Phaser allows for you to force using setTimeOut instead, but this makes for less smooth animations. The solution is a small blend of both.
+ * Ensure that your configuration you pass to the Phaser.game sets forceSetTimeOut to true, and you should pass another variable postLoadForceSetTimeOut to false (or true if you only need setTimeOut), and add code into the preload function of your loading state, to reset the game&#x27;s requestAnimationFrame back to the best available.
+ * &lt;pre&gt;
+ * window.Game = new Phaser.Game({
+ *   width: Config.appWidth,
+ *   height: Config.appHeight,
+ *   renderer:Phaser.CANVAS,
+ *   transparent:true,
+ *   antialias: true,
+ *   canvasID:&quot;canvas&quot;
+ * });
+ * &lt;/pre&gt;
+ * Becomes...
+ * &lt;pre&gt;
+ * window.Game = new Phaser.Game({
+ *   width: Config.appWidth,
+ *   height: Config.appHeight,
+ *   renderer:Phaser.CANVAS,
+ *   transparent:true,
+ *   antialias: true,
+ *   canvasID:&quot;canvas&quot;,
+ *   forceSetTimeOut: true,
+ *   postLoadForceSetTimeOut: false
+ * });
+ * &lt;/pre&gt;
+ * And in the loading state.
+ * &lt;pre&gt;
+ * LoadingState: {
+ *   preload: function() {
+ *       Game.raf.stop();
+ *       if (Game.config &amp;&amp; Game.config[&#x27;postLoadForceSetTimeOut&#x27;])
+ *       {
+ *           Game.raf = new Phaser.RequestAnimationFrame(Game, Game.config[&#x27;postLoadForceSetTimeOut&#x27;]);
+ *       }
+ *       else
+ *       {
+ *           Game.raf = new Phaser.RequestAnimationFrame(Game, false);
+ *       }
+ *       Game.raf.start();
+ * &lt;/pre&gt;
+ * You can see here, we stop the existing phaser timer (Game.raf), and then use the new configuration to recreate the RequestAnimationFrame, which will either take the forced setTimeOut from the new configuration, or attempt to get the requestAnimationFrame (falling back to setTimeOut if it&#x27;s not available). This ensures that the initial LoadingState can be ticked in to for all browsers (because the initial timer callbacks are done with setTimeOut, which always fire, regardless of whether the iframe is visible or not), but the timers then revert to the more efficient timers that the browsers support once we are in the correct state, and can start calling the iConsole code from the correct state. 
+ * @class PhaserNotes
+ * @type {PhaserNotes|*{}}
+ */
+
+(function ($, Backbone, _, iConsole, Class, Module, easyXDM, URI) {
+    /**
+     * @class iConsole.game
+     * @type {iConsole.game|*|{}}
+     */
+	var Game = Class.create(Module, {
+        callbacks: [],
+
+		initModule: function ($super, data) {
+			$super(data);
+		},
+
+		init: function ($super, data) {
+			$super(data);
+		},
+
+        /**
+         * This is the first call you need to make in order for the game and the console to start communicating with
+         * each other. This call will return an object that you&#x27;ll need to register a callback handler with, that will
+         * be triggered after the pre-game advert has dismissed. You will need to prevent game play taking place until
+         * this callback has been triggered, otherwise the game will start playing with an advert sat on top.
+         * @return {Object} An object that contains a member function &lt;code&gt;result&lt;/code&gt; that you should call with a
+         * callback function that will be fired when the advert is dismissed. The format of result function is
+         * &lt;pre&gt;result( callbackFunction );&lt;/pre&gt;
+         * Where callbackFunction is a function that will be called with a single parameter, an object that contains a
+         * key &lt;code&gt;user&lt;/code&gt; that is an object of the user data.
+         * @example
+         * &lt;pre&gt;
+         * iConsole.game.ready().result( function( resultData ) {
+         *    myGame.showHomeScreenMenu(resultData.user);
+         * } );
+         * &lt;/pre&gt;
+         * @method ready
+         */
+        ready: function (data) {
+			return iConsole.XDM.sendReady(data);
+		},
+
+        /**
+         * While the game is loading all of it&#x27;s assets, you should call this frequently to notify the user (via the
+         * pre-game advert progress bar) of the game&#x27;s loading progress. Typically games will pre-load the image /
+         * audio assets needed for the menu and first level of the game. Games may also use this time to pre-compile any
+         * data blocks that may require a degree of time to complete
+         * @param data {Object} an object contains mappings to:
+         * &lt;br&gt;&lt;code&gt;progress&lt;/code&gt; a floating point number from 0 to 1 that indicates the progress the game is making
+         * in preparing the game for presentation ot the user. At 1 (i.e. 100%) the game should be in a state (once the
+         * pre-game advert has been dismissed) where the user can play or view a menu screen with no further loading
+         * screens.
+         * &lt;br&gt;&lt;code&gt;file&lt;/code&gt; a string containing the file asset you are loading, or it can be a debug message to
+         * indicate what you are processing. If debug is enabled in the javascript console, the console will log out the
+         * game loading percentage and this file name/message
+         * @return The return object is not needed.
+         * @example
+         * &lt;pre&gt;
+         * iConsole.game.loadProgress( {
+         *    progress: 0.37,
+         *    file: &#x27;music/background_music.mp3&#x27;
+         * } );
+         * &lt;/pre&gt;
+         * @method loadProgress
+         */
+		loadProgress: function (data) {
+			return iConsole.XDM.sendLoadProgress(data);
+		},
+
+        /**
+         * Once the game has finished loading all of it&#x27;s assets you should call this method to notify the console that
+         * you have completed loading of all game assets and pre-compilation. This is in addition to making an
+         * &lt;code&gt;iConsole.game.loadProgress( { progress: 1, file: &#x27;&#x27; } );&lt;/code&gt; call. This call to
+         * &lt;code&gt;iConsole.game.loaded&lt;/code&gt; indicates to the console that it should allow the user to dismiss the
+         * pre-game advert (once the minimum advert time has passed), or if the maximum advert time has passed to
+         * immediately dismiss the pre-game advert. This call will ultimately result in the callback function in
+         * &lt;code&gt;iConsole.game.ready&lt;/code&gt; to be called.
+         * @param data {Object} either:
+         * &lt;pre&gt;
+         * {
+         *    success: true
+         * }
+         * &lt;/pre&gt;
+         * indicating that the game has successfully loaded, or
+         * &lt;pre&gt;
+         * {
+         *    success: false,
+         *    item: &#x27;The item that caused the game to fail loading&#x27;,
+         *    text: &#x27;Any debug information that may help understand why the game failed to load&#x27;
+         * }
+         * &lt;/pre&gt;
+         * indicating that the game failed to load, where item and text are both strings that are used to identify to
+         * the console and developer why the game failed to load.
+         * @return {*} The return object is not needed.
+         * @example
+         * &lt;pre&gt;
+         * iConsole.game.loaded( {
+         *    success: true
+         * } );
+         * &lt;/pre&gt;
+         * @example
+         * &lt;pre&gt;
+         * iConsole.game.loaded( {
+         *    success: false,
+         *    item: &#x27;audio/background_music.mp3&#x27;,
+         *    text: &#x27;Error fetching file&#x27;
+         * } );
+         * &lt;/pre&gt;
+         * @method loaded
+         */
+		loaded: function (data) {
+			return iConsole.XDM.sendLoadComplete(data);
+		},
+
+        /**
+         * This call should be made prior to starting a level, to obtain any data that the game has previously stored
+         * for the level about to be played. This is useful to allow a user to continue game progress where they left
+         * off. Examples of this can include fetching the data of a previous level (to indicate what items a user has
+         * in their in-game inventory). This is an asynchronous call, as the data may need to be fetched from a back-end
+         * server, thus the data is passed into a callback function that you must supply to the result function in the
+         * returned object.
+         * You should also make a call to &lt;code&gt;iConsole.ads.show&lt;/code&gt; with the type set to &lt;code&gt;levelStarted&lt;/code&gt;
+         * as well, and wait for both callbacks to complete before continuing on with the game. Suggested order would
+         * be to call &lt;code&gt;iConsole.ads.show&lt;/code&gt; first, and then call &lt;code&gt;iConsole.game.getLevelData&lt;/code&gt; to
+         * ensure that the user is presented with something that is the game just waiting, and only proceed once both
+         * of these functions have triggered their callback functions.
+         * @param data {Object}
+         * &lt;pre&gt;
+         * {
+         *    level: &lt;integer&gt;
+         * }
+         * &lt;/pre&gt;
+         * where the level number is any integer from -2147483647 to 2147483647 (-2147483648 is specially reserved)
+         * @return {Object} An object that contains a member function &lt;code&gt;result&lt;/code&gt; that you should call with a
+         * callback function that will be fired when the user&#x27;s level data is returned. The format of result function is
+         * &lt;pre&gt;result( callbackFunction );&lt;/pre&gt;
+         * Where callbackFunction is a function that will be called with a single parameter, an object that contains a
+         * key &lt;code&gt;data&lt;/code&gt; that is an object of the users data. Any other data other than the &lt;code&gt;data&lt;/code&gt;
+         * that may be returned in this object block is deprecated and should not be relied upon.
+         * @method getLevelData
+         * @example
+         * &lt;pre&gt;
+         * iConsole.game.getLevelData( { level: 23 } ).result( function ( resultData ) {
+         *    myGame.decipherUsersLevelInformation( resultData.data );
+         * } );
+         * &lt;/pre&gt;
+         */
+        getLevelData: function (data) {
+            return iConsole.XDM.sendGetLevelData(data);
+        },
+
+        /**
+         * This call should be made to store progress of a level (typically at the end of a level) via a 2k data string.
+         * This is useful to allow a user to continue game progress where they left off or to restart previously failed
+         * levels. Whilst this may result in a back-end call, this call can be made and no callback function required to
+         * handle the result.
+         * @param data {Object}
+         * &lt;pre&gt;
+         * {
+         *    level: &lt;integer&gt;
+         *    data: &lt;string of up to 2048 characters&gt;
+         * }
+         * &lt;/pre&gt;
+         * where the level number is any integer from -2147483647 to 2147483647 (-2147483648 is specially reserved) and
+         * the data is a string of up to 2048 characters to store, where the contents of this are freely under the
+         * control of the game developer.
+         * @return {*} The return object is not required
+         * @method setLevelData
+         * @example
+         * &lt;pre&gt;
+         * iConsole.game.setLevelData( {
+         *    level: 24,
+         *    data: &quot;{rockets:2,specials:[&#x27;trinity&#x27;,&#x27;primus&#x27;]}&quot;
+         * } );
+         * &lt;/pre&gt;
+         */
+        setLevelData: function (data) {
+            return iConsole.XDM.sendSetLevelData(data);
+        },
+
+        /**
+         * This call can be made prior to starting a level or prior to starting a game, to obtain any data that the game
+         * has previously stored for the entire game session and any previous information (such as my best score if the
+         * game wishes to display that inside its UI). This is useful to allow a user to continue game progress where
+         * they left off, for example by storing the current user level. This is an asynchronous call, as the data may
+         * need to be fetched from a back-end server, thus the data is passed into a callback function that you must
+         * supply to the result function in the returned object.
+         * @param data {Object} not used but provided in case of future API changes
+         * @return {Object} An object that contains a member function &lt;code&gt;result&lt;/code&gt; that you should call with a
+         * callback function that will be fired when the user&#x27;s game data is returned. The format of result function is
+         * &lt;pre&gt;result( callbackFunction );&lt;/pre&gt;
+         * Where callbackFunction is a function that will be called with a single parameter, an object that contains a
+         * key &lt;code&gt;data&lt;/code&gt; that is an object of the users data. Any other data other than the &lt;code&gt;data&lt;/code&gt;
+         * that may be returned in this object block is deprecated and should not be relied upon.
+         * @method getGameData
+         * @example
+         * &lt;pre&gt;
+         * iConsole.game.getGameData().result( function ( resultData ) {
+         *    myGame.decipherUsersGameInformation( resultData.data );
+         * } );
+         * &lt;/pre&gt;
+         */
+        getGameData: function (data) {
+            return iConsole.XDM.sendGetGameData(data);
+        },
+
+        /**
+         * This call should be made to store progress in a game session (typically at the end of a level) via a 2k data
+         * string. This is useful to allow a user to continue game progress where they left off or to restart previously
+         * failed levels. Whilst this may result in a back-end call, this call can be made and no callback function
+         * required to handle the result.
+         * @param data {Object}
+         * &lt;pre&gt;
+         * {
+         *    data: &lt;string of up to 2048 characters&gt;
+         * }
+         * &lt;/pre&gt;
+         * where the level number is any integer from -2147483647 to 2147483647 (-2147483648 is specially reserved) and
+         * the data is a string of up to 2048 characters to store, where the contents of this are freely under the
+         * control of the game developer.
+         * @return {*} The return object is not required
+         * @method setGameData
+         * @example
+         * &lt;pre&gt;
+         * iConsole.game.setGameData( {
+         *    data: &quot;{currentLevel:24}&quot;
+         * } );
+         * &lt;/pre&gt;
+         */
+        setGameData: function (data) {
+            return iConsole.XDM.sendSetGameData(data);
+        },
+
+        /**
+         * This call should be made whenever the game wishes to post a high score for the global leaderboards for the
+         * user. In the future, the console may cause a dialog to appear to congratulate the user on their achievement
+         * and so the game should pause execution until the callback function that should be supplied to the
+         * &lt;code&gt;result&lt;/code&gt; member function of the returned object has been called. Currently, this will be called
+         * immediately.
+         * @param data {Object}
+         * &lt;pre&gt;
+         * {
+         *    score: &lt;integer&gt;
+         * }
+         * &lt;/pre&gt;
+         * where the score is an integer of the users high score they achieved.
+         * @return {Object} An object that contains a member function &lt;code&gt;result&lt;/code&gt; that you should call with a
+         * callback function that will be fired when the high score has been posted and any console interaction
+         * resulting from this has completed. The format of result function is &lt;pre&gt;result( callbackFunction );&lt;/pre&gt;
+         * Where callbackFunction is a function that will be called with a single parameter, an object that currently
+         * contains no data.
+         * @method postHighScore
+         * @example
+         * &lt;pre&gt;
+         * iConsole.game.postHighScore( {
+         *    score: 945672
+         * } ).result( {
+         *    myGame.changeState(myGame.RESTART_GAME);
+         * } );
+         * &lt;/pre&gt;
+         */
+        postHighScore: function (data) {
+            return iConsole.XDM.sendPostHighScore(data);
+        },
+
+        /**
+         * @method levelStarted
+         * @deprecated
+         * @param info
+         * @return {{result: result, trigger: trigger}}
+         */
+		levelStarted: function (info) {
+            var levelData = undefined;
+            var advertHidden = false;
+            var fnCall = undefined;
+            var context = undefined;
+            var triggered = false;
+            var deferred = {
+                result: function(fnToCall, contX) {
+                    fnCall = fnToCall;
+                    context = contX;
+                    this.trigger();
+                },
+                trigger: function() {
+                    if (levelData &amp;&amp; advertHidden &amp;&amp; fnCall &amp;&amp; !triggered) {
+                        triggered = true;
+                        fnCall.apply(context, [levelData]);
+                    }
+                }
+            };
+            iConsole.game.getLevelData(info).result(function(data) {
+                levelData = data;
+                deferred.trigger()
+            });
+            iConsole.ads.show({
+                type: &#x27;levelStart&#x27;,
+                level: info.level
+            }).result(function () {
+                advertHidden = true;
+                deferred.trigger();
+            });
+			return deferred;
+		},
+
+        /**
+         * @method levelFinished
+         * @deprecated
+         * @param info
+         * @return {*}
+         */
+		levelFinished: function (info) {
+            // This is bad... the game should be sending the game data, not the console. Only putting this in here to
+            // ensure backwards compatibility
+            iConsole.game.setGameData(info.data);
+			return iConsole.game.setLevelData(info);
+		},
+
+        /**
+         * The user may generate keydown events when they are typing either in the game or in the console. Where the
+         * user is typing into their chat window, keydown events are going to be triggered that games will erroneously
+         * catch and handle. Therefore, instead of registering keydown handlers inside the game, you should add a
+         * handler to the iConsole instead, which will bubble the keydown events except for when the user is typing into
+         * fields that shouldn&#x27;t trigger game interaction, such as the chat window.
+         * See iConsole.game.offEvent
+         * @method onEvent
+         * @param eventType {string} currently, the only supported event type is &lt;code&gt;keydown&lt;/code&gt;
+         * @param callbackFunction {function} a callback function that will be called every time the console determines
+         * a keydown event that should be passed to the game. It will be supplied with a cut down event object, that
+         * contains two member variables &lt;code&gt;which&lt;/code&gt; and &lt;code&gt;keyCode&lt;/code&gt; and a function
+         * &lt;code&gt;stopPropagation&lt;/code&gt; that can be used to prevent bubbling of the event within the game (if your game
+         * registers multiple handlers to the console).
+         * @example
+         * &lt;pre&gt;
+         * iConsole.game.onEvent( &#x27;keydown&#x27;, myGame.keydownHandler );
+         * &lt;/pre&gt;
+         */
+        onEvent: function (eventType, callbackFunction) {
+            if (iConsole.game.callbacks[eventType] === undefined) {
+                iConsole.game.callbacks[eventType] = [];
+            }
+            var callbacksForEventType = iConsole.game.callbacks[eventType];
+            if ($.inArray(callbackFunction, callbacksForEventType) === -1) {
+                callbacksForEventType.push(callbackFunction);
+            }
+        },
+
+        /**
+         * The user may generate keydown events when they are typing either in the game or in the console. Where the
+         * user is typing into their chat window, keydown events are going to be triggered that games will erroneously
+         * catch and handle. Therefore, instead of registering keydown handlers inside the game, you should add a
+         * handler to the iConsole instead, which will bubble the keydown events except for when the user is typing into
+         * fields that shouldn&#x27;t trigger game interaction, such as the chat window. This call will be used to
+         * de-register the keydown handler.
+         * See iConsole.game.onEvent
+         * @method offEvent
+         * @param eventType {string} currently, the only supported event type is &lt;code&gt;keydown&lt;/code&gt;
+         * @param callbackFunction {function} the callback function that was previously registered with
+         * &lt;code&gt;iConsole.game.onEvent&lt;/code&gt;
+         * @example
+         * &lt;pre&gt;
+         * iConsole.game.offEvent( &#x27;keydown&#x27;, myGame.keydownHandler );
+         * &lt;/pre&gt;
+         */
+        offEvent: function (eventType, callbackFunction) {
+            if (iConsole.game.callbacks[eventType] !== undefined) {
+                var callbacksForEventType = iConsole.game.callbacks[eventType];
+                var position = $.inArray(callbackFunction, callbacksForEventType);
+                if (position !== -1) {
+                    callbacksForEventType.splice(position,1);
+                }
+            }
+        },
+
+        /**
+         * This function returns the width of the game inside the console, as window.innerWidth will not work initially
+         * when the game is first loaded as the game&#x27;s window is hidden from display. This function is especially
+         * useful when trying to determine what resolution of graphics the game should load.
+         * @returns {*}
+         */
+        getWidth: function() {
+            var frame = window.parent.document.getElementById(&#x27;iconsole-plugin-session_iframe__&#x27;);
+            if (frame.parentNode) {
+                if (frame.parentNode.parentNode) {
+                    return frame.parentNode.parentNode.offsetWidth;
+                }
+            }
+            return 0;
+        },
+
+        /**
+         * This function returns the height of the game inside the console, as window.innerHeight will not work initially
+         * when the game is first loaded as the game&#x27;s window is hidden from display. This function is especially
+         * useful when trying to determine what resolution of graphics the game should load.
+         * @returns {*}
+         */
+        getHeight: function() {
+            var frame = window.parent.document.getElementById(&#x27;iconsole-plugin-session_iframe__&#x27;);
+            if (frame.parentNode) {
+                if (frame.parentNode.parentNode) {
+                    return frame.parentNode.parentNode.offsetHeight;
+                }
+            }
+            return 0;
+        },
+
+        /*
+         * Not for external documentation, but this is called whenever the console fires an event, and this method
+         * will look for all handlers that have been registered with the console, and fire an event to each of them,
+         * but also stop bubbling events down to further handlers if the game has called stopPropagation.
+         */
+        eventReceived: function (eventType, event) {
+            if (eventType !== undefined &amp;&amp; event !== undefined) {
+                event.stopPropagationSet = false;
+                event.stopPropagation = function() {this.stopPropagationSet = true;}
+                if (iConsole.game.callbacks[eventType] !== undefined) {
+                    var callbacksForEventType = iConsole.game.callbacks[eventType];
+                    var i = 0;
+                    while (i &lt; callbacksForEventType.length &amp;&amp; event.stopPropagationSet === false) {
+                        callbacksForEventType[i](event);
+                        i++;
+                    }
+                }
+            }
+        }
+	});
+
+	var m = new Game();
+
+	iConsole.install(&quot;game&quot;, new Game());
+
+	return m;
+
+})($, Backbone, _, iConsole, Class, Module, easyXDM, URI);
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>
