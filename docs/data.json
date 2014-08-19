@@ -351,7 +351,7 @@
         },
         {
             "file": "src/console-js/modules/game.js",
-            "line": 481,
+            "line": 492,
             "description": "The user may generate keydown events when they are typing either in the game or in the console. Where the\nuser is typing into their chat window, keydown events are going to be triggered that games will erroneously\ncatch and handle. Therefore, instead of registering keydown handlers inside the game, you should add a\nhandler to the iConsole instead, which will bubble the keydown events except for when the user is typing into\nfields that shouldn't trigger game interaction, such as the chat window. This call will be used to\nde-register the keydown handler.\nSee iConsole.game.onEvent",
             "itemtype": "method",
             "name": "offEvent",
@@ -374,7 +374,7 @@
         },
         {
             "file": "src/console-js/modules/game.js",
-            "line": 508,
+            "line": 529,
             "description": "This function returns the width of the game inside the console, as window.innerWidth will not work initially\nwhen the game is first loaded as the game's window is hidden from display. This function is especially\nuseful when trying to determine what resolution of graphics the game should load.",
             "return": {
                 "description": "",
@@ -384,7 +384,7 @@
         },
         {
             "file": "src/console-js/modules/game.js",
-            "line": 524,
+            "line": 545,
             "description": "This function returns the height of the game inside the console, as window.innerHeight will not work initially\nwhen the game is first loaded as the game's window is hidden from display. This function is especially\nuseful when trying to determine what resolution of graphics the game should load.",
             "return": {
                 "description": "",
@@ -396,19 +396,19 @@
     "warnings": [
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/console-js/modules/game.js:508"
+            "line": " src/console-js/modules/game.js:529"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/console-js/modules/game.js:524"
+            "line": " src/console-js/modules/game.js:545"
         },
         {
             "message": "Missing item type\nThis function returns the width of the game inside the console, as window.innerWidth will not work initially\nwhen the game is first loaded as the game's window is hidden from display. This function is especially\nuseful when trying to determine what resolution of graphics the game should load.",
-            "line": " src/console-js/modules/game.js:508"
+            "line": " src/console-js/modules/game.js:529"
         },
         {
             "message": "Missing item type\nThis function returns the height of the game inside the console, as window.innerHeight will not work initially\nwhen the game is first loaded as the game's window is hidden from display. This function is especially\nuseful when trying to determine what resolution of graphics the game should load.",
-            "line": " src/console-js/modules/game.js:524"
+            "line": " src/console-js/modules/game.js:545"
         }
     ]
 }

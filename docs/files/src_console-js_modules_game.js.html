@@ -565,12 +565,23 @@
          * &lt;/pre&gt;
          */
         onEvent: function (eventType, callbackFunction) {
-            if (iConsole.game.callbacks[eventType] === undefined) {
-                iConsole.game.callbacks[eventType] = [];
-            }
-            var callbacksForEventType = iConsole.game.callbacks[eventType];
-            if ($.inArray(callbackFunction, callbacksForEventType) === -1) {
-                callbacksForEventType.push(callbackFunction);
+            switch (eventType) {
+                case &#x27;signedIn&#x27;:
+                    iConsole.on(&#x27;signed.in&#x27;, callbackFunction);
+                break;
+                case &#x27;signedOut&#x27;:
+                    iConsole.on(&#x27;signed.out&#x27;, callbackFunction);
+                break
+                default:
+                    if (iConsole.game.callbacks[eventType] === undefined) {
+                        iConsole.game.callbacks[eventType] = [];
+                    }
+                    var callbacksForEventType = iConsole.game.callbacks[eventType];
+                    if ($.inArray(callbackFunction, callbacksForEventType) === -1) {
+                        callbacksForEventType.push(callbackFunction);
+                    }
+                break;
+
             }
         },
 
@@ -592,12 +603,22 @@
          * &lt;/pre&gt;
          */
         offEvent: function (eventType, callbackFunction) {
-            if (iConsole.game.callbacks[eventType] !== undefined) {
-                var callbacksForEventType = iConsole.game.callbacks[eventType];
-                var position = $.inArray(callbackFunction, callbacksForEventType);
-                if (position !== -1) {
-                    callbacksForEventType.splice(position,1);
-                }
+            switch (eventType) {
+                case &#x27;signedIn&#x27;:
+                    iConsole.off(&#x27;signed.in&#x27;, callbackFunction);
+                break;
+                case &#x27;signedOut&#x27;:
+                    iConsole.off(&#x27;signed.out&#x27;, callbackFunction);
+                break;
+                default:
+                    if (iConsole.game.callbacks[eventType] !== undefined) {
+                        var callbacksForEventType = iConsole.game.callbacks[eventType];
+                        var position = $.inArray(callbackFunction, callbacksForEventType);
+                        if (position !== -1) {
+                            callbacksForEventType.splice(position, 1);
+                        }
+                    }
+                break;
             }
         },
 
