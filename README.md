@@ -1,3 +1,5 @@
+# ![iWin Logo](https://raw.githubusercontent.com/iwininc/html5-games-console/master/docs/assets/css/logo.png) Games Console
+## Overview
 This repository contains the public API to write HTML5 games that are enabled for the iWin Games Console.
 
 You can see the iWin Games Console in action by visiting http://m.iwin.com/ and playing games such as:
@@ -6,15 +8,17 @@ You can see the iWin Games Console in action by visiting http://m.iwin.com/ and 
 - Yukon Solitaire
 
 The iWin Games Console will enable your game to:
+
 1. Save and restore game state on different devices.
 2. Post hiscores to the daily / weekly leaderboard.
 3. Trigger adverts and earn money.
 
+## Step-by-Step Guide
 Here is a step-by-step guide to get you started:
 
 1. Download this SDK and place it on a local folder on your machine.
 
-2. Point a local web server at this new folder. Access the SDK by visiting http://localhost/sdk. 
+2. Point a local web server at this new folder. Access the SDK by visiting http://localhost/sdk
    This will run a sample game written in Phaser.io that is integrated with the iWin Games Console.
 
 3. Place a copy of your game code in a new folder beneath the sdk folder.
