@@ -44,7 +44,7 @@ Here is a step-by-step guide to get you started:
    
 8. Implement [`iConsole.game.setGameData( gameState-json ).result( callback-function )`](http://htmlpreview.github.io/?https://github.com/iwininc/html5-games-console/blob/master/docs/classes/iConsole.game.html#method_setGameData)
    This will enable your game to save up to 2K of game state data for the current player
-   that can be reloaded with [`iConsole.game.getGameData().result( callback-function )`](http://htmlpreview.github.io/?https://github.com/iwininc/html5-games-console/blob/master/docs/classes/iConsole.game.html#method_getGameData)
+   that can be reloaded with [`iConsole.game.getGameData().result( callback-function )`](http://htmlpreview.github.io/?https://github.com/iwininc/html5-games-console/blob/master/docs/classes/iConsole.game.html#method_getGameData). These two calls allow users to start a game on one device and continue playing on another device.
    
 9. Implement [`iConsole.ads.show( level-json ).result( callback-function )`](http://htmlpreview.github.io/?https://github.com/iwininc/html5-games-console/blob/master/docs/classes/iConsole.ads.html#method_show)
    This will enable your game to trigger adverts to display and should be called during 
