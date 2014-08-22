@@ -1,0 +1,9 @@
+{
+    "name" : "Framework",
+    "code" : "framework",
+    "developer_id" : "framework",
+    "advertBehavior" : {
+        "type" : "max_time",
+        "maxSeconds": 300
+    }
+}
