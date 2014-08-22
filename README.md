@@ -22,9 +22,9 @@ Here is a step-by-step guide to get you started:
 4. Copy the game_details.json file from the sdk/game folder and place in your new game folder.
 
 5. Edit the game_details.json file as follows:
-- set the "name" property to be the user visible name for your game
-- set the "code" property to be a lowercase text string unique for your game
-- set the "developer_id" property to be a lowercase text string that is unique for your company
+  - Set the "name" property to be the user visible name for your game
+  - Set the "code" property to be a lowercase text string unique for your game
+  - Set the "developer_id" property to be a lowercase text string that is unique for your company
 
 6. Implement iConsole.game.ready().result( callback-function )
    This will enable your game to notify the console to display an advert plus the progress 
