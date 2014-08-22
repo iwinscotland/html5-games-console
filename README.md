@@ -26,27 +26,27 @@ Here is a step-by-step guide to get you started:
   - Set the "code" property to be a lowercase text string unique for your game
   - Set the "developer_id" property to be a lowercase text string that is unique for your company
 
-6. Implement iConsole.game.ready().result( callback-function )
+6. Implement `iConsole.game.ready().result( callback-function )`
    This will enable your game to notify the console to display an advert plus the progress 
    bar during the game loading sequence. The callback function will be called once the console 
    and the game are loaded and the advert has been dismissed.
    
-   Also implement iConsole.game.loadProgress( progress-json )
+   Also implement `iConsole.game.loadProgress( progress-json )`
    This will enable your game to notify the console to update the percentage complete bar.
    
-   Finally call iConsole.game.loaded( status-json ) once all resources are load.
+   Finally call `iConsole.game.loaded( status-json )` once all resources are load.
    
-7. Implement iConsole.game.postHighScore( score-json ).result( callback-function )
+7. Implement `iConsole.game.postHighScore( score-json ).result( callback-function )`
    This will enable your game to post a highscore to the console leaderboard. This should 
    be called during the end of game sequence.
    
    In the future we will also support posting scores for individual levels.
    
-8. Implement iConsole.game.setGameData( gameState-json ).result( callback-function )
+8. Implement `iConsole.game.setGameData( gameState-json ).result( callback-function )`
    This will enable your game to save up to 2K of game state data for the current player
-   that can be reloaded with iConsole.game.getGameData().result( callback-function )
+   that can be reloaded with `iConsole.game.getGameData().result( callback-function )`
    
-9. Implement iConsole.ads.show( level-json ).result( callback-function )
+9. Implement `iConsole.ads.show( level-json ).result( callback-function )`
    This will enable your game to trigger adverts to display and should be called during 
    the level start sequence. The frequency of the adverts is controlled via the 
    game-details.json file.
