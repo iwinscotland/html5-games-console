@@ -18,8 +18,10 @@ Here is a step-by-step guide to get you started:
 
 1. Download this SDK and place it on a local folder on your machine.
 
-2. Point a local web server at this new folder. Access the SDK by visiting [http://localhost/sdk/#/sdk/src/](http://localhost/sdk/#/sdk/src/)
+2. Point a local web server at this new folder. Access the SDK by visiting [http://local.games.iwin.com/sdk/#/sdk/src/](http://local.games.iwin.com/sdk/#/sdk/src/)
    This will run a sample game written in Phaser.io that is integrated with the iWin Games Console.
+   The local.games.iwin.com domain is needed so you can access some of our back-end services without getting 
+   console errors. You will need to setup local.games.iwin.com in your HOST files.
 
 3. Place a copy of your game code in a new folder beneath the sdk folder.
 
