@@ -49,8 +49,6 @@
             
                 <li><a href="../classes/iConsole.periodical.html">iConsole.periodical</a></li>
             
-                <li><a href="../classes/PhaserNotes.html">PhaserNotes</a></li>
-            
             </ul>
 
             <ul id="api-modules" class="apis modules">
@@ -181,55 +179,6 @@
  * + When pre-compiling data structures, consider breaking the computation blocks into smaller chunks and use timed callbacks to step through these chunks. This will ensure that the console gains some of the CPU time to ensure it can update the UI accordingly, and ensure that the browser doesn&#x27;t consider the process to have died because it hasn&#x27;t completed the call in a timely manner
  * @class GettingStarted
  * @type {GettingStarted|*{}}
- */
- 
-/** 
- * Phaser.IO Issues
- * ----------------
- * 
- * We have discovered an issue with Phaser.io/iWin&#x27;s Console with respect to Mozilla Firefox, in that the Pre-loading state never gets called when a Phaser game is launched from the console. The reason for this, is that the game is initially in a hidden iframe, and only made visible once the iConsole has been notified the game has started to load. Phaser.io recommends using a pre-loading State [Phaser Example Basic](https://github.com/photonstorm/phaser/tree/master/resources/Project%20Templates/Basic), and therefore you should place the initial calls to iConsole in this state. However, the Phaser internal request to requestAnimationFrame never returns the callback, until the iFrame is visible. This is a Catch-22 situation. Phaser allows for you to force using setTimeOut instead, but this makes for less smooth animations. The solution is a small blend of both.
- * Ensure that your configuration you pass to the Phaser.game sets forceSetTimeOut to true, and you should pass another variable postLoadForceSetTimeOut to false (or true if you only need setTimeOut), and add code into the preload function of your loading state, to reset the game&#x27;s requestAnimationFrame back to the best available.
- * &lt;pre&gt;
- * window.Game = new Phaser.Game({
- *   width: Config.appWidth,
- *   height: Config.appHeight,
- *   renderer:Phaser.CANVAS,
- *   transparent:true,
- *   antialias: true,
- *   canvasID:&quot;canvas&quot;
- * });
- * &lt;/pre&gt;
- * Becomes...
- * &lt;pre&gt;
- * window.Game = new Phaser.Game({
- *   width: Config.appWidth,
- *   height: Config.appHeight,
- *   renderer:Phaser.CANVAS,
- *   transparent:true,
- *   antialias: true,
- *   canvasID:&quot;canvas&quot;,
- *   forceSetTimeOut: true,
- *   postLoadForceSetTimeOut: false
- * });
- * &lt;/pre&gt;
- * And in the loading state.
- * &lt;pre&gt;
- * LoadingState: {
- *   preload: function() {
- *       Game.raf.stop();
- *       if (Game.config &amp;&amp; Game.config[&#x27;postLoadForceSetTimeOut&#x27;])
- *       {
- *           Game.raf = new Phaser.RequestAnimationFrame(Game, Game.config[&#x27;postLoadForceSetTimeOut&#x27;]);
- *       }
- *       else
- *       {
- *           Game.raf = new Phaser.RequestAnimationFrame(Game, false);
- *       }
- *       Game.raf.start();
- * &lt;/pre&gt;
- * You can see here, we stop the existing phaser timer (Game.raf), and then use the new configuration to recreate the RequestAnimationFrame, which will either take the forced setTimeOut from the new configuration, or attempt to get the requestAnimationFrame (falling back to setTimeOut if it&#x27;s not available). This ensures that the initial LoadingState can be ticked in to for all browsers (because the initial timer callbacks are done with setTimeOut, which always fire, regardless of whether the iframe is visible or not), but the timers then revert to the more efficient timers that the browsers support once we are in the correct state, and can start calling the iConsole code from the correct state. 
- * @class PhaserNotes
- * @type {PhaserNotes|*{}}
  */
 
 (function ($, Backbone, _, iConsole, Class, Module, easyXDM, URI) {

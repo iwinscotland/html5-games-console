@@ -49,8 +49,6 @@
             
                 <li><a href="../classes/iConsole.periodical.html">iConsole.periodical</a></li>
             
-                <li><a href="../classes/PhaserNotes.html">PhaserNotes</a></li>
-            
             </ul>
 
             <ul id="api-modules" class="apis modules">
@@ -166,7 +164,133 @@
          */
 		show:function(data){
             return iConsole.XDM.sendShowAdvert(data);
-		}
+		},
+
+        /**
+         * If your game has been configured to use mid game adverts (adverts that interrupt the users game play), then
+         * you should register callbacks to determine when the console is about to show an advert. This will enable you
+         * to prepare the game in a paused state, pausing timers, fading screens down, waiting for the user to release
+         * their finger or mouse if it is depressed etc... and then notify the console that your game is in a state to
+         * safely display adverts without impacting the user.
+         * You can register multiple callbacks which will be fired (the order of which is not guaranteed), but one and
+         * only one of these callbacks *MUST* fire the &lt;pre&gt;.result&lt;/pre&gt; function.
+         * @param callbackFunctionToRegister {function} The function that you want to register to be called when the
+         * console is going to display an advert mid game. This function will be called with one parameter, an object
+         * which has a &lt;pre&gt;.result&lt;/pre&gt; function that you should call when your game is ready to relinquish control to
+         * the console for the advert
+         * @param context {Object} the value of &lt;pre&gt;this&lt;/pre&gt; that will be applied to the function if necessary.
+         * @example
+         * &lt;pre&gt;
+         * var myMidGameAdvertStartedCallback = function( request ) {
+         *     this.pause();
+         *     this.fadeDown();
+         *     this.waitForMouseUp(function() {
+         *         request.result();
+         *     });
+         * };
+         * iConsole.ads.registerMidGameAdvertStartedListener( myMidGameAdvertStartedCallback, this );
+         * &lt;/pre&gt;
+         */
+        registerMidGameAdvertStartedListener: function(callbackFunctionToRegister, context) {
+            iConsole.ads.midGameAdvertStartedCallbacks.push([callbackFunctionToRegister, context]);
+        },
+
+        /**
+         * If your game has been configured to use mid game adverts, the you should also register callbacks to have the
+         * console notify you that the advert has finished displaying, and that the console has relinquished control
+         * back to the game. This will enable you to display a resume countdown timer, fade the screen back up etc...
+         * @param callbackFunctionToRegister {function} The function that you want to register to be called when the
+         * console has relinquished control back to the game after the advert has completed. This function will be
+         * called without any parameters, as there is no need to notify the console that the game is continuing, the
+         * console assumes that once this request has been sent, the game is back in control.
+         * @param context {Object} the value of &lt;pre&gt;this&lt;/pre&gt; that will be applied to the function if necessary.
+         * @example
+         * &lt;pre&gt;
+         * var myMidGameAdvertFinishedCallback = function( ) {
+         *     this.startResumeGameCountDownTimers();
+         *     this.fadeUp();
+         * };
+         * iConsole.ads.registerMidGameAdvertFinishedListener( myMidGameAdvertFinishedCallback, this );
+         * &lt;/pre&gt;
+         */
+        registerMidGameAdvertFinishedListener: function(callbackFunctionToRegister, context) {
+            iConsole.ads.midGameAdvertFinishedCallbacks.push([callbackFunctionToRegister,context]);
+        },
+
+        /**
+         * If your game supports mid game adverts, and you are applying these calls across multiple classes (i.e. each
+         * level is contained in a different class), then you should unregister any callbacks that you have made.
+         * Otherwise, the callbacks will be fired against all registered listeners and this may result in undesired
+         * behaviour or complete crashes.
+         * @param callbackFunctionToUnregister {function} the previously registered function for
+         * registerMidGameAdvertStartedListener to be unregistered
+         * @example
+         * &lt;pre&gt;
+         * iConsole.ads.registerMidGameAdvertStartedListener( this.midgameAdvertStarted, this );
+         * ...
+         * iConsole.ads.unregisterMidGameAdvertStartedListener ( this.midgameAdvertStarted );
+         * &lt;/pre&gt;
+         */
+        unregisterMidGameAdvertStartedListener: function(callbackFunctionToUnregister) {
+            for (var i = 0; i &lt; iConsole.ads.midGameAdvertStartedCallbacks.length; i++) {
+                if (iConsole.ads.midGameAdvertStartedCallbacks[i][0] === callbackFunctionToUnregister) {
+                    iConsole.ads.midGameAdvertStartedCallbacks = iConsole.ads.midGameAdvertStartedCallbacks.splice(i, 1);
+                    i--;
+                }
+            }
+        },
+
+        /**
+         * If your game supports mid game adverts, and you are applying these calls across multiple classes (i.e. each
+         * level is contained in a different class), then you should unregister any callbacks that you have made.
+         * Otherwise, the callbacks will be fired against all registered listeners and this may result in undesired
+         * behaviour or complete crashes.
+         * @param callbackFunctionToUnregister {function} the previously registered function for
+         * registerMidGameAdvertFinishedListener to be unregistered
+         * @example
+         * &lt;pre&gt;
+         * iConsole.ads.registerMidGameAdvertFinishedListener( this.midgameAdvertStarted, this );
+         * ...
+         * iConsole.ads.unregisterMidGameAdvertFinishedListener ( this.midgameAdvertStarted );
+         * &lt;/pre&gt;
+         */
+        unregisterMidGameAdvertFinishedListener: function(callbackFunctionToUnregister) {
+            for (var i = 0; i &lt; iConsole.ads.midGameAdvertFinishedCallbacks.length; i++) {
+                if (iConsole.ads.midGameAdvertFinishedCallbacks[i][0] === callbackFunctionToUnregister) {
+                    iConsole.ads.midGameAdvertFinishedCallbacks = iConsole.ads.midGameAdvertFinishedCallbacks.splice(i,1);
+                    i--;
+                }
+            }
+        },
+
+        /*
+         * Not for Public documentation, but these two objects will contain the callback functions and the contexts
+         * for the callback functions
+         */
+        midGameAdvertStartedCallbacks: [],
+        midGameAdvertFinishedCallbacks: [],
+
+        /*
+         * Not for Public documentation, but this call should be called by XDM when it receives a request to display an
+         * advert mid-game, which will then fire off all callbacks
+         */
+        consoleNotifyMidGameAdvertStarting: function(request) {
+            for (var i = 0; i &lt; iConsole.ads.midGameAdvertStartedCallbacks.length; i++) {
+                var key = iConsole.ads.midGameAdvertStartedCallbacks[i];
+                key[0].call(key[1], request);
+            }
+        },
+
+        /*
+         * Not for Public documentation, but this call should be called by XDM when it receives a request to resume game
+         * play after an advert has been displayed mid-game
+         */
+        consoleNotifyMidGameAdvertFinished: function(request) {
+            for (var i = 0; i &lt; iConsole.ads.midGameAdvertFinishedCallbacks.length; i++) {
+                var key = iConsole.ads.midGameAdvertFinishedCallbacks[i];
+                key[0].call(key[1], request);
+            }
+        }
 	});
 
 	var m = new Ads();

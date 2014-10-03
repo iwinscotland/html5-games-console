@@ -15,7 +15,6 @@
             "modules": {},
             "classes": {
                 "GettingStarted": 1,
-                "PhaserNotes": 1,
                 "iConsole.game": 1
             },
             "fors": {},
@@ -59,19 +58,6 @@
             "description": "Getting Started\n---------------\nDeveloping games for iWin Games Console \n\nQuick Start\n----------- \nFor a quick start, please serve this folder from an apache/nginx instance and launch the index.html from this folder,\nand the SDK sample \"game\" will launch.\n\nThese are examples of live games that use the console\n[http://m.iwin.com/game/match3/puzzle-match3-jewelquest](http://m.iwin.com/game/match3/puzzle-match3-jewelquest)\nor\n[http://m.iwin.com/game/puzzle/smorewords](http://m.iwin.com/game/puzzle/smorewords)\n\nConfiguration\n-------------\nPlease configure your 'browser/pc' via the hosts file so that your dev webserver has the name 'local.games.iwin.com'\n\nFolder Structure\n----------------\nAll game code must go in the 'game' subfolder and the parent folder must be included in any webserver instance that you run.\nThe current structure is\n<pre>\n/\n/game/\n......index.html\n......game_details.json\n/site-console/\n......js/\n......img/\n/index.html\n/iconsole.js\n</pre>\n\nWithin the game folder there must be at a minimum 2 files...\n+ game_details.json \n+ index.html\n\nNote: You must visit index.html in the root folder and not the game/index.html from your browser and also use 'http' protocol URI's and not local 'file' URI's\n\nGame_details.JSon\n-----------------\nThis file must contain valid json game details.  For example.\n<pre>\n{\n  \"name\": \"Test Bed\",\n  \"code\": \"testbed\",\n  \"advertBehavior\": {\n    \"type\":\"specific_levels\",\n    \"levels\":[1,3,5,7]\n  }\n}\n</pre>\nDetails are..\n<pre>\n\"name\": Game name that will be displayed in the title bar of the console\n\"code\": Unique game code that will be used when deployed on the iWin portal.  We will likely change this after you send it to us\n\"advertBehavior\": This allows us to define when and where to display ads as the user plays the game.  The example above is a sample but we do support other types.  See ads class for more information\n</pre>\n\ngame/Index.html\n---------------\n \n+ The game/index.html is served via an IFRAME that is dynamically created by the console, and all requests inside that IFRAME will be local to the game folder.\n+ Internally, the system uses easyXDM to message between the game and the console (as they live in separate frames), but these calls are obfuscated through functions in ../iconsole.js (relative to the game folder). Therefore, any game implementing the console should load the iconsole.js from the parent folder as a script, before making any messages to the console.\n+ As the game loads, it makes calls to the console to notify the console of it's progress. Typically this is done when pre-loading assets required for the game. This ensures that the game window stays hidden from the player until the game has fully loaded, and that the advert panel is visible until the game is ready to play.\n+ Once the game assets have been fully loaded, the game calls the console to tell it has loaded the game. The console will remove the panel that is hiding the game, and signals that the advert can be removed (after minimum advert duration has been reached).\nFor more information see the included example 'game'.\n\nBackend Server\n--------------\n+ The SDK will speak to a test server hosted by iWin for certain API calls.\n+ The test server URLs that we call are: \n - https://sl.iwin.com: Stage Logon Server\n - https://sc.iwin.com: Stage Chat Server\n+ In order for chatroom and database persistence of user progress functionality to work, you should use develop with a hostfile entry of local.games.iwin.com pointing to your local development environment. If you use a different hostname, login/chat will not work, however, your data will be stored as an anonymous user in the html5 local storage object. \n\nImproving Game Performance\n--------------------------\n+ Only load the required assets at startup and load level specific assets as they are needed.\n+ Think about using JPEGs rather than PNGs (if you can)\n+ Use compressed image file types\n+ Reduce the bit rate for audio files.\n+ When pre-compiling data structures, consider breaking the computation blocks into smaller chunks and use timed callbacks to step through these chunks. This will ensure that the console gains some of the CPU time to ensure it can update the UI accordingly, and ensure that the browser doesn't consider the process to have died because it hasn't completed the call in a timely manner",
             "type": "{GettingStarted|*{}}"
         },
-        "PhaserNotes": {
-            "name": "PhaserNotes",
-            "shortname": "PhaserNotes",
-            "classitems": [],
-            "plugins": [],
-            "extensions": [],
-            "plugin_for": [],
-            "extension_for": [],
-            "file": "src/console-js/modules/game.js",
-            "line": 90,
-            "description": "Phaser.IO Issues\n----------------\n\nWe have discovered an issue with Phaser.io/iWin's Console with respect to Mozilla Firefox, in that the Pre-loading state never gets called when a Phaser game is launched from the console. The reason for this, is that the game is initially in a hidden iframe, and only made visible once the iConsole has been notified the game has started to load. Phaser.io recommends using a pre-loading State [Phaser Example Basic](https://github.com/photonstorm/phaser/tree/master/resources/Project%20Templates/Basic), and therefore you should place the initial calls to iConsole in this state. However, the Phaser internal request to requestAnimationFrame never returns the callback, until the iFrame is visible. This is a Catch-22 situation. Phaser allows for you to force using setTimeOut instead, but this makes for less smooth animations. The solution is a small blend of both.\nEnsure that your configuration you pass to the Phaser.game sets forceSetTimeOut to true, and you should pass another variable postLoadForceSetTimeOut to false (or true if you only need setTimeOut), and add code into the preload function of your loading state, to reset the game's requestAnimationFrame back to the best available.\n<pre>\nwindow.Game = new Phaser.Game({\n  width: Config.appWidth,\n  height: Config.appHeight,\n  renderer:Phaser.CANVAS,\n  transparent:true,\n  antialias: true,\n  canvasID:\"canvas\"\n});\n</pre>\nBecomes...\n<pre>\nwindow.Game = new Phaser.Game({\n  width: Config.appWidth,\n  height: Config.appHeight,\n  renderer:Phaser.CANVAS,\n  transparent:true,\n  antialias: true,\n  canvasID:\"canvas\",\n  forceSetTimeOut: true,\n  postLoadForceSetTimeOut: false\n});\n</pre>\nAnd in the loading state.\n<pre>\nLoadingState: {\n  preload: function() {\n      Game.raf.stop();\n      if (Game.config && Game.config['postLoadForceSetTimeOut'])\n      {\n          Game.raf = new Phaser.RequestAnimationFrame(Game, Game.config['postLoadForceSetTimeOut']);\n      }\n      else\n      {\n          Game.raf = new Phaser.RequestAnimationFrame(Game, false);\n      }\n      Game.raf.start();\n</pre>\nYou can see here, we stop the existing phaser timer (Game.raf), and then use the new configuration to recreate the RequestAnimationFrame, which will either take the forced setTimeOut from the new configuration, or attempt to get the requestAnimationFrame (falling back to setTimeOut if it's not available). This ensures that the initial LoadingState can be ticked in to for all browsers (because the initial timer callbacks are done with setTimeOut, which always fire, regardless of whether the iframe is visible or not), but the timers then revert to the more efficient timers that the browsers support once we are in the correct state, and can start calling the iConsole code from the correct state.",
-            "type": "{PhaserNotes|*{}}"
-        },
         "iConsole.game": {
             "name": "iConsole.game",
             "shortname": "iConsole.game",
@@ -81,7 +67,7 @@
             "plugin_for": [],
             "extension_for": [],
             "file": "src/console-js/modules/game.js",
-            "line": 140,
+            "line": 91,
             "type": "{iConsole.game|*|{}}"
         },
         "iConsole.periodical": {
@@ -122,8 +108,82 @@
             "class": "iConsole.ads"
         },
         {
+            "file": "src/console-js/modules/ads.js",
+            "line": 75,
+            "description": "If your game has been configured to use mid game adverts (adverts that interrupt the users game play), then\nyou should register callbacks to determine when the console is about to show an advert. This will enable you\nto prepare the game in a paused state, pausing timers, fading screens down, waiting for the user to release\ntheir finger or mouse if it is depressed etc... and then notify the console that your game is in a state to\nsafely display adverts without impacting the user.\nYou can register multiple callbacks which will be fired (the order of which is not guaranteed), but one and\nonly one of these callbacks *MUST* fire the <pre>.result</pre> function.",
+            "params": [
+                {
+                    "name": "callbackFunctionToRegister",
+                    "description": "The function that you want to register to be called when the\nconsole is going to display an advert mid game. This function will be called with one parameter, an object\nwhich has a <pre>.result</pre> function that you should call when your game is ready to relinquish control to\nthe console for the advert",
+                    "type": "Function"
+                },
+                {
+                    "name": "context",
+                    "description": "the value of <pre>this</pre> that will be applied to the function if necessary.",
+                    "type": "Object"
+                }
+            ],
+            "example": [
+                "\n<pre>\nvar myMidGameAdvertStartedCallback = function( request ) {\n    this.pause();\n    this.fadeDown();\n    this.waitForMouseUp(function() {\n        request.result();\n    });\n};\niConsole.ads.registerMidGameAdvertStartedListener( myMidGameAdvertStartedCallback, this );\n</pre>"
+            ],
+            "class": "iConsole.ads"
+        },
+        {
+            "file": "src/console-js/modules/ads.js",
+            "line": 104,
+            "description": "If your game has been configured to use mid game adverts, the you should also register callbacks to have the\nconsole notify you that the advert has finished displaying, and that the console has relinquished control\nback to the game. This will enable you to display a resume countdown timer, fade the screen back up etc...",
+            "params": [
+                {
+                    "name": "callbackFunctionToRegister",
+                    "description": "The function that you want to register to be called when the\nconsole has relinquished control back to the game after the advert has completed. This function will be\ncalled without any parameters, as there is no need to notify the console that the game is continuing, the\nconsole assumes that once this request has been sent, the game is back in control.",
+                    "type": "Function"
+                },
+                {
+                    "name": "context",
+                    "description": "the value of <pre>this</pre> that will be applied to the function if necessary.",
+                    "type": "Object"
+                }
+            ],
+            "example": [
+                "\n<pre>\nvar myMidGameAdvertFinishedCallback = function( ) {\n    this.startResumeGameCountDownTimers();\n    this.fadeUp();\n};\niConsole.ads.registerMidGameAdvertFinishedListener( myMidGameAdvertFinishedCallback, this );\n</pre>"
+            ],
+            "class": "iConsole.ads"
+        },
+        {
+            "file": "src/console-js/modules/ads.js",
+            "line": 126,
+            "description": "If your game supports mid game adverts, and you are applying these calls across multiple classes (i.e. each\nlevel is contained in a different class), then you should unregister any callbacks that you have made.\nOtherwise, the callbacks will be fired against all registered listeners and this may result in undesired\nbehaviour or complete crashes.",
+            "params": [
+                {
+                    "name": "callbackFunctionToUnregister",
+                    "description": "the previously registered function for\nregisterMidGameAdvertStartedListener to be unregistered",
+                    "type": "Function"
+                }
+            ],
+            "example": [
+                "\n<pre>\niConsole.ads.registerMidGameAdvertStartedListener( this.midgameAdvertStarted, this );\n...\niConsole.ads.unregisterMidGameAdvertStartedListener ( this.midgameAdvertStarted );\n</pre>"
+            ],
+            "class": "iConsole.ads"
+        },
+        {
+            "file": "src/console-js/modules/ads.js",
+            "line": 149,
+            "description": "If your game supports mid game adverts, and you are applying these calls across multiple classes (i.e. each\nlevel is contained in a different class), then you should unregister any callbacks that you have made.\nOtherwise, the callbacks will be fired against all registered listeners and this may result in undesired\nbehaviour or complete crashes.",
+            "params": [
+                {
+                    "name": "callbackFunctionToUnregister",
+                    "description": "the previously registered function for\nregisterMidGameAdvertFinishedListener to be unregistered",
+                    "type": "Function"
+                }
+            ],
+            "example": [
+                "\n<pre>\niConsole.ads.registerMidGameAdvertFinishedListener( this.midgameAdvertStarted, this );\n...\niConsole.ads.unregisterMidGameAdvertFinishedListener ( this.midgameAdvertStarted );\n</pre>"
+            ],
+            "class": "iConsole.ads"
+        },
+        {
             "file": "src/console-js/modules/game.js",
-            "line": 155,
+            "line": 106,
             "description": "This is the first call you need to make in order for the game and the console to start communicating with\neach other. This call will return an object that you'll need to register a callback handler with, that will\nbe triggered after the pre-game advert has dismissed. You will need to prevent game play taking place until\nthis callback has been triggered, otherwise the game will start playing with an advert sat on top.",
             "return": {
                 "description": "An object that contains a member function <code>result</code> that you should call with a\ncallback function that will be fired when the advert is dismissed. The format of result function is\n<pre>result( callbackFunction );</pre>\nWhere callbackFunction is a function that will be called with a single parameter, an object that contains a\nkey <code>user</code> that is an object of the user data.",
@@ -138,7 +198,7 @@
         },
         {
             "file": "src/console-js/modules/game.js",
-            "line": 177,
+            "line": 128,
             "description": "While the game is loading all of it's assets, you should call this frequently to notify the user (via the\npre-game advert progress bar) of the game's loading progress. Typically games will pre-load the image /\naudio assets needed for the menu and first level of the game. Games may also use this time to pre-compile any\ndata blocks that may require a degree of time to complete",
             "params": [
                 {
@@ -159,7 +219,7 @@
         },
         {
             "file": "src/console-js/modules/game.js",
-            "line": 204,
+            "line": 155,
             "description": "Once the game has finished loading all of it's assets you should call this method to notify the console that\nyou have completed loading of all game assets and pre-compilation. This is in addition to making an\n<code>iConsole.game.loadProgress( { progress: 1, file: '' } );</code> call. This call to\n<code>iConsole.game.loaded</code> indicates to the console that it should allow the user to dismiss the\npre-game advert (once the minimum advert time has passed), or if the maximum advert time has passed to\nimmediately dismiss the pre-game advert. This call will ultimately result in the callback function in\n<code>iConsole.game.ready</code> to be called.",
             "params": [
                 {
@@ -182,7 +242,7 @@
         },
         {
             "file": "src/console-js/modules/game.js",
-            "line": 249,
+            "line": 200,
             "description": "This call should be made prior to starting a level, to obtain any data that the game has previously stored\nfor the level about to be played. This is useful to allow a user to continue game progress where they left\noff. Examples of this can include fetching the data of a previous level (to indicate what items a user has\nin their in-game inventory). This is an asynchronous call, as the data may need to be fetched from a back-end\nserver, thus the data is passed into a callback function that you must supply to the result function in the\nreturned object.\nYou should also make a call to <code>iConsole.ads.show</code> with the type set to <code>levelStarted</code>\nas well, and wait for both callbacks to complete before continuing on with the game. Suggested order would\nbe to call <code>iConsole.ads.show</code> first, and then call <code>iConsole.game.getLevelData</code> to\nensure that the user is presented with something that is the game just waiting, and only proceed once both\nof these functions have triggered their callback functions.",
             "params": [
                 {
@@ -204,7 +264,7 @@
         },
         {
             "file": "src/console-js/modules/game.js",
-            "line": 286,
+            "line": 237,
             "description": "This call should be made to store progress of a level (typically at the end of a level) via a 2k data string.\nThis is useful to allow a user to continue game progress where they left off or to restart previously failed\nlevels. Whilst this may result in a back-end call, this call can be made and no callback function required to\nhandle the result.",
             "params": [
                 {
@@ -226,7 +286,7 @@
         },
         {
             "file": "src/console-js/modules/game.js",
-            "line": 315,
+            "line": 266,
             "description": "This call can be made prior to starting a level or prior to starting a game, to obtain any data that the game\nhas previously stored for the entire game session and any previous information (such as my best score if the\ngame wishes to display that inside its UI). This is useful to allow a user to continue game progress where\nthey left off, for example by storing the current user level. This is an asynchronous call, as the data may\nneed to be fetched from a back-end server, thus the data is passed into a callback function that you must\nsupply to the result function in the returned object.",
             "params": [
                 {
@@ -248,7 +308,7 @@
         },
         {
             "file": "src/console-js/modules/game.js",
-            "line": 341,
+            "line": 292,
             "description": "This call should be made to store progress in a game session (typically at the end of a level) via a 2k data\nstring. This is useful to allow a user to continue game progress where they left off or to restart previously\nfailed levels. Whilst this may result in a back-end call, this call can be made and no callback function\nrequired to handle the result.",
             "params": [
                 {
@@ -270,7 +330,7 @@
         },
         {
             "file": "src/console-js/modules/game.js",
-            "line": 368,
+            "line": 319,
             "description": "This call should be made whenever the game wishes to post a high score for the global leaderboards for the\nuser. In the future, the console may cause a dialog to appear to congratulate the user on their achievement\nand so the game should pause execution until the callback function that should be supplied to the\n<code>result</code> member function of the returned object has been called. Currently, this will be called\nimmediately.",
             "params": [
                 {
@@ -292,7 +352,7 @@
         },
         {
             "file": "src/console-js/modules/game.js",
-            "line": 400,
+            "line": 351,
             "itemtype": "method",
             "name": "levelStarted",
             "deprecated": true,
@@ -310,7 +370,7 @@
         },
         {
             "file": "src/console-js/modules/game.js",
-            "line": 439,
+            "line": 390,
             "itemtype": "method",
             "name": "levelFinished",
             "deprecated": true,
@@ -328,7 +388,7 @@
         },
         {
             "file": "src/console-js/modules/game.js",
-            "line": 452,
+            "line": 403,
             "description": "The user may generate keydown events when they are typing either in the game or in the console. Where the\nuser is typing into their chat window, keydown events are going to be triggered that games will erroneously\ncatch and handle. Therefore, instead of registering keydown handlers inside the game, you should add a\nhandler to the iConsole instead, which will bubble the keydown events except for when the user is typing into\nfields that shouldn't trigger game interaction, such as the chat window.\nSee iConsole.game.offEvent",
             "itemtype": "method",
             "name": "onEvent",
@@ -351,7 +411,7 @@
         },
         {
             "file": "src/console-js/modules/game.js",
-            "line": 492,
+            "line": 443,
             "description": "The user may generate keydown events when they are typing either in the game or in the console. Where the\nuser is typing into their chat window, keydown events are going to be triggered that games will erroneously\ncatch and handle. Therefore, instead of registering keydown handlers inside the game, you should add a\nhandler to the iConsole instead, which will bubble the keydown events except for when the user is typing into\nfields that shouldn't trigger game interaction, such as the chat window. This call will be used to\nde-register the keydown handler.\nSee iConsole.game.onEvent",
             "itemtype": "method",
             "name": "offEvent",
@@ -374,7 +434,7 @@
         },
         {
             "file": "src/console-js/modules/game.js",
-            "line": 529,
+            "line": 480,
             "description": "This function returns the width of the game inside the console, as window.innerWidth will not work initially\nwhen the game is first loaded as the game's window is hidden from display. This function is especially\nuseful when trying to determine what resolution of graphics the game should load.",
             "return": {
                 "description": "",
@@ -384,7 +444,7 @@
         },
         {
             "file": "src/console-js/modules/game.js",
-            "line": 545,
+            "line": 496,
             "description": "This function returns the height of the game inside the console, as window.innerHeight will not work initially\nwhen the game is first loaded as the game's window is hidden from display. This function is especially\nuseful when trying to determine what resolution of graphics the game should load.",
             "return": {
                 "description": "",
@@ -396,19 +456,35 @@
     "warnings": [
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/console-js/modules/game.js:529"
+            "line": " src/console-js/modules/game.js:480"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/console-js/modules/game.js:545"
+            "line": " src/console-js/modules/game.js:496"
+        },
+        {
+            "message": "Missing item type\nIf your game has been configured to use mid game adverts (adverts that interrupt the users game play), then\nyou should register callbacks to determine when the console is about to show an advert. This will enable you\nto prepare the game in a paused state, pausing timers, fading screens down, waiting for the user to release\ntheir finger or mouse if it is depressed etc... and then notify the console that your game is in a state to\nsafely display adverts without impacting the user.\nYou can register multiple callbacks which will be fired (the order of which is not guaranteed), but one and\nonly one of these callbacks *MUST* fire the <pre>.result</pre> function.",
+            "line": " src/console-js/modules/ads.js:75"
+        },
+        {
+            "message": "Missing item type\nIf your game has been configured to use mid game adverts, the you should also register callbacks to have the\nconsole notify you that the advert has finished displaying, and that the console has relinquished control\nback to the game. This will enable you to display a resume countdown timer, fade the screen back up etc...",
+            "line": " src/console-js/modules/ads.js:104"
+        },
+        {
+            "message": "Missing item type\nIf your game supports mid game adverts, and you are applying these calls across multiple classes (i.e. each\nlevel is contained in a different class), then you should unregister any callbacks that you have made.\nOtherwise, the callbacks will be fired against all registered listeners and this may result in undesired\nbehaviour or complete crashes.",
+            "line": " src/console-js/modules/ads.js:126"
+        },
+        {
+            "message": "Missing item type\nIf your game supports mid game adverts, and you are applying these calls across multiple classes (i.e. each\nlevel is contained in a different class), then you should unregister any callbacks that you have made.\nOtherwise, the callbacks will be fired against all registered listeners and this may result in undesired\nbehaviour or complete crashes.",
+            "line": " src/console-js/modules/ads.js:149"
         },
         {
             "message": "Missing item type\nThis function returns the width of the game inside the console, as window.innerWidth will not work initially\nwhen the game is first loaded as the game's window is hidden from display. This function is especially\nuseful when trying to determine what resolution of graphics the game should load.",
-            "line": " src/console-js/modules/game.js:529"
+            "line": " src/console-js/modules/game.js:480"
         },
         {
             "message": "Missing item type\nThis function returns the height of the game inside the console, as window.innerHeight will not work initially\nwhen the game is first loaded as the game's window is hidden from display. This function is especially\nuseful when trying to determine what resolution of graphics the game should load.",
-            "line": " src/console-js/modules/game.js:545"
+            "line": " src/console-js/modules/game.js:496"
         }
     ]
 }
