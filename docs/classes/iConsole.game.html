@@ -47,7 +47,11 @@
             
                 <li><a href="../classes/iConsole.game.html">iConsole.game</a></li>
             
+                <li><a href="../classes/iConsole.iap.html">iConsole.iap</a></li>
+            
                 <li><a href="../classes/iConsole.periodical.html">iConsole.periodical</a></li>
+            
+                <li><a href="../classes/In-App-Purchases.html">In-App-Purchases</a></li>
             
             </ul>
 
@@ -143,7 +147,21 @@
                             </li>
                         
                             <li class="index-item method">
+                                <a href="#method_getHeight">getHeight</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
                                 <a href="#method_getLevelData">getLevelData</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_getWidth">getWidth</a>
 
                                 
                                 
@@ -211,6 +229,13 @@
                         
                             <li class="index-item method">
                                 <a href="#method_setGameData">setGameData</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_setHomeWidgetLabel">setHomeWidgetLabel</a>
 
                                 
                                 
@@ -368,6 +393,79 @@ iConsole.game.getGameData().result( function ( resultData ) {
 </div>
 
                 
+                    <div id="method_getHeight" class="method item">
+    <h3 class="name"><code>getHeight</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_console-js_modules_game.js.html#l502"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:502</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>This function returns the height of the game inside the console, as window.innerHeight will not work initially
+when the game is first loaded as the game&#39;s window is hidden from display. This function is especially
+useful when trying to determine what resolution of graphics the game should load.</p>
+
+    </div>
+
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"></span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
                     <div id="method_getLevelData" class="method item">
     <h3 class="name"><code>getLevelData</code></h3>
 
@@ -503,6 +601,79 @@ iConsole.game.getLevelData( { level: 23 } ).result( function ( resultData ) {
 </pre>
             </div>
         </div>
+    
+</div>
+
+                
+                    <div id="method_getWidth" class="method item">
+    <h3 class="name"><code>getWidth</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_console-js_modules_game.js.html#l485"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:485</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>This function returns the width of the game inside the console, as window.innerWidth will not work initially
+when the game is first loaded as the game&#39;s window is hidden from display. This function is especially
+useful when trying to determine what resolution of graphics the game should load.</p>
+
+    </div>
+
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"></span>:
+                    
+                
+            </div>
+        </div>
+    
+
     
 </div>
 
@@ -1041,7 +1212,7 @@ iConsole.game.loadProgress( {
             
         
         
-        <a href="../files/src_console-js_modules_game.js.html#l443"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:443</code></a>
+        <a href="../files/src_console-js_modules_game.js.html#l448"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:448</code></a>
         
         </p>
 
@@ -1185,7 +1356,14 @@ user is typing into their chat window, keydown events are going to be triggered 
 catch and handle. Therefore, instead of registering keydown handlers inside the game, you should add a
 handler to the iConsole instead, which will bubble the keydown events except for when the user is typing into
 fields that shouldn&#39;t trigger game interaction, such as the chat window.
-See iConsole.game.offEvent</p>
+The currently supported event types are:</p>
+<ul>
+<li>keydown - When a key is pressed down</li>
+<li>signedIn - When a user signs in to the console (used to reload the user data from the console and restart the game)</li>
+<li>signedOut - When a user signs out of the console (used to reload the user data and restart the game)</li>
+<li>tiltYaxis - When a user tilts their amazon fire phone around the Y axis (used to dismiss menus in game)
+See iConsole.game.offEvent</li>
+</ul>
 
     </div>
 
@@ -1602,6 +1780,114 @@ iConsole.game.setGameData( {
 </pre>
             </div>
         </div>
+    
+</div>
+
+                
+                    <div id="method_setHomeWidgetLabel" class="method item">
+    <h3 class="name"><code>setHomeWidgetLabel</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>label</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_console-js_modules_game.js.html#l519"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:519</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>This function is used to set the label underneath the game&#39;s image on Amazon Fire devices (currently), and
+is typically used to relay information such as what level the user is going to resume playback from.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">label</code>
+                        <span class="type">Object</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <ul>
+<li>The label to set</li>
+</ul>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"></span>:
+                    
+                
+            </div>
+        </div>
+    
+
     
 </div>
 

@@ -20,6 +20,16 @@
             "fors": {},
             "namespaces": {}
         },
+        "src/console-js/modules/iap.js": {
+            "name": "src/console-js/modules/iap.js",
+            "modules": {},
+            "classes": {
+                "In-App-Purchases": 1,
+                "iConsole.iap": 1
+            },
+            "fors": {},
+            "namespaces": {}
+        },
         "src/console-js/modules/periodical.js": {
             "name": "src/console-js/modules/periodical.js",
             "modules": {},
@@ -55,7 +65,7 @@
             "extension_for": [],
             "file": "src/console-js/modules/game.js",
             "line": 1,
-            "description": "Getting Started\n---------------\nDeveloping games for iWin Games Console \n\nQuick Start\n----------- \nFor a quick start, please serve this folder from an apache/nginx instance and launch the index.html from this folder,\nand the SDK sample \"game\" will launch.\n\nThese are examples of live games that use the console\n[http://m.iwin.com/game/match3/puzzle-match3-jewelquest](http://m.iwin.com/game/match3/puzzle-match3-jewelquest)\nor\n[http://m.iwin.com/game/puzzle/smorewords](http://m.iwin.com/game/puzzle/smorewords)\n\nConfiguration\n-------------\nPlease configure your 'browser/pc' via the hosts file so that your dev webserver has the name 'local.games.iwin.com'\n\nFolder Structure\n----------------\nAll game code must go in the 'game' subfolder and the parent folder must be included in any webserver instance that you run.\nThe current structure is\n<pre>\n/\n/game/\n......index.html\n......game_details.json\n/site-console/\n......js/\n......img/\n/index.html\n/iconsole.js\n</pre>\n\nWithin the game folder there must be at a minimum 2 files...\n+ game_details.json \n+ index.html\n\nNote: You must visit index.html in the root folder and not the game/index.html from your browser and also use 'http' protocol URI's and not local 'file' URI's\n\nGame_details.JSon\n-----------------\nThis file must contain valid json game details.  For example.\n<pre>\n{\n  \"name\": \"Test Bed\",\n  \"code\": \"testbed\",\n  \"advertBehavior\": {\n    \"type\":\"specific_levels\",\n    \"levels\":[1,3,5,7]\n  }\n}\n</pre>\nDetails are..\n<pre>\n\"name\": Game name that will be displayed in the title bar of the console\n\"code\": Unique game code that will be used when deployed on the iWin portal.  We will likely change this after you send it to us\n\"advertBehavior\": This allows us to define when and where to display ads as the user plays the game.  The example above is a sample but we do support other types.  See ads class for more information\n</pre>\n\ngame/Index.html\n---------------\n \n+ The game/index.html is served via an IFRAME that is dynamically created by the console, and all requests inside that IFRAME will be local to the game folder.\n+ Internally, the system uses easyXDM to message between the game and the console (as they live in separate frames), but these calls are obfuscated through functions in ../iconsole.js (relative to the game folder). Therefore, any game implementing the console should load the iconsole.js from the parent folder as a script, before making any messages to the console.\n+ As the game loads, it makes calls to the console to notify the console of it's progress. Typically this is done when pre-loading assets required for the game. This ensures that the game window stays hidden from the player until the game has fully loaded, and that the advert panel is visible until the game is ready to play.\n+ Once the game assets have been fully loaded, the game calls the console to tell it has loaded the game. The console will remove the panel that is hiding the game, and signals that the advert can be removed (after minimum advert duration has been reached).\nFor more information see the included example 'game'.\n\nBackend Server\n--------------\n+ The SDK will speak to a test server hosted by iWin for certain API calls.\n+ The test server URLs that we call are: \n - https://sl.iwin.com: Stage Logon Server\n - https://sc.iwin.com: Stage Chat Server\n+ In order for chatroom and database persistence of user progress functionality to work, you should use develop with a hostfile entry of local.games.iwin.com pointing to your local development environment. If you use a different hostname, login/chat will not work, however, your data will be stored as an anonymous user in the html5 local storage object. \n\nImproving Game Performance\n--------------------------\n+ Only load the required assets at startup and load level specific assets as they are needed.\n+ Think about using JPEGs rather than PNGs (if you can)\n+ Use compressed image file types\n+ Reduce the bit rate for audio files.\n+ When pre-compiling data structures, consider breaking the computation blocks into smaller chunks and use timed callbacks to step through these chunks. This will ensure that the console gains some of the CPU time to ensure it can update the UI accordingly, and ensure that the browser doesn't consider the process to have died because it hasn't completed the call in a timely manner",
+            "description": "Getting Started\n---------------\nDeveloping games for iWin Games Console \n\nQuick Start\n----------- \nFor a quick start, please serve this folder from an apache/nginx instance and launch the index.html from this folder,\nand the SDK sample \"game\" will launch.\n\nThese are examples of live games that use the console\n[http://m.iwin.com/game/match3/puzzle-match3-jewelquest](http://m.iwin.com/game/match3/puzzle-match3-jewelquest)\nor\n[http://m.iwin.com/game/puzzle/smorewords](http://m.iwin.com/game/puzzle/smorewords)\n\nConfiguration\n-------------\nPlease configure your 'browser/pc' via the hosts file so that your dev webserver has the name 'local.games.iwin.com'\n\nFolder Structure\n----------------\nAll game code must go in the 'game' subfolder and the parent folder must be included in any webserver instance that you run.\nThe current structure is\n<pre>\n/\n/game/\n......index.html\n......game_details.json\n/site-console/\n......js/\n......img/\n/index.html\n/iconsole.js\n</pre>\n\nWithin the game folder there must be at a minimum 2 files...\n+ game_details.json \n+ index.html\n\nNote: You must visit index.html in the root folder and not the game/index.html from your browser and also use 'http' protocol URI's and not local 'file' URI's\n\nGame_details.json\n-----------------\nThis file must contain valid json game details.  For example.\n<pre>\n{\n  \"name\": \"Test Bed\",\n  \"code\": \"testbed\",\n  \"advertBehavior\": {\n    \"type\":\"specific_levels\",\n    \"levels\":[1,3,5,7]\n  }\n}\n</pre>\nDetails are..\n<pre>\n\"name\": Game name that will be displayed in the title bar of the console\n\"code\": Unique game code that will be used when deployed on the iWin portal.  We will likely change this after you send it to us\n\"advertBehavior\": This allows us to define when and where to display ads as the user plays the game.  The example above is a sample but we do support other types.  See ads class for more information\n</pre>\n\ngame/Index.html\n---------------\n \n+ The game/index.html is served via an IFRAME that is dynamically created by the console, and all requests inside that IFRAME will be local to the game folder.\n+ Internally, the system uses easyXDM to message between the game and the console (as they live in separate frames), but these calls are obfuscated through functions in ../iconsole.js (relative to the game folder). Therefore, any game implementing the console should load the iconsole.js from the parent folder as a script, before making any messages to the console.\n+ As the game loads, it makes calls to the console to notify the console of it's progress. Typically this is done when pre-loading assets required for the game. This ensures that the game window stays hidden from the player until the game has fully loaded, and that the advert panel is visible until the game is ready to play.\n+ Once the game assets have been fully loaded, the game calls the console to tell it has loaded the game. The console will remove the panel that is hiding the game, and signals that the advert can be removed (after minimum advert duration has been reached).\nFor more information see the included example 'game'.\n\nBackend Server\n--------------\n+ The SDK will speak to a test server hosted by iWin for certain API calls.\n+ The test server URLs that we call are: \n - https://sl.iwin.com: Stage Logon Server\n - https://sc.iwin.com: Stage Chat Server\n+ In order for chatroom and database persistence of user progress functionality to work, you should use develop with a hostfile entry of local.games.iwin.com pointing to your local development environment. If you use a different hostname, login/chat will not work, however, your data will be stored as an anonymous user in the html5 local storage object. \n\nImproving Game Performance\n--------------------------\n+ Only load the required assets at startup and load level specific assets as they are needed.\n+ Think about using JPEGs rather than PNGs (if you can)\n+ Use compressed image file types\n+ Reduce the bit rate for audio files.\n+ When pre-compiling data structures, consider breaking the computation blocks into smaller chunks and use timed callbacks to step through these chunks. This will ensure that the console gains some of the CPU time to ensure it can update the UI accordingly, and ensure that the browser doesn't consider the process to have died because it hasn't completed the call in a timely manner",
             "type": "{GettingStarted|*{}}"
         },
         "iConsole.game": {
@@ -69,6 +79,32 @@
             "file": "src/console-js/modules/game.js",
             "line": 91,
             "type": "{iConsole.game|*|{}}"
+        },
+        "In-App-Purchases": {
+            "name": "In-App-Purchases",
+            "shortname": "In-App-Purchases",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/console-js/modules/iap.js",
+            "line": 1,
+            "description": "In App Purchases\n----------------\nThe iWin Games Console now supports external In App Purchase providers, all accessible through a single API call,\nwhich means that as a developer, you only need to write support for In App Purchases in one way, to gain support for\nmultiple providers (and any future integrations with other IAP providers will continue to be obfuscated behind this\nsingle call).\n\nCurrently Supported Platforms\n-----------------------------\n* Amazon HTML5 App Store\n* Games.com\n* Yahoo Games Network\n\nConfiguration\n-------------\nYou will need to update the game_details.json file, to have an \"iap\" object at the root, and this should contain a\nmapping of sku to an object which describes that sku:\n<pre>\n    \"iap\": {\n      \"com.iwin.more-time\" : {\n          \"name\": \"Get More Time\",\n          \"description\": \"Get More Time\",\n          \"icon\": \"https://s3-external-1.amazonaws.com/com-amazon-mas-catalog/M1I0LM77RX7FC2%2FM2VC2AJFZBAC93%2Fimages%2F_6b7d1378-12ae-48aa-92e2-618476ab5553_ceb500dbf0e42ce1435155dabebfb8b2\",\n          \"currency\": \"usd\",\n          \"amount\": \"0.99\",\n          \"foo\": \"bar\"\n      },\n      \"com.iwin.more-moves\" : {\n          \"name\": \"Get More Moves\",\n          \"description\": \"Get More Moves\",\n          \"icon\": \"https://s3-external-1.amazonaws.com/com-amazon-mas-catalog/M1I0LM77RX7FC2%2FM2VC2AJFZBAC93%2Fimages%2F_6b7d1378-12ae-48aa-92e2-618476ab5553_ceb500dbf0e42ce1435155dabebfb8b2\",\n          \"currency\": \"usd\",\n          \"amount\": \"0.99\",\n          \"foo\": \"bar\"\n      },\n      \"com.iwin.more-midas\" : {\n          \"name\": \"Get More Midas Touches\",\n          \"description\": \"Get More Midas Touches\",\n          \"icon\": \"https://s3-external-1.amazonaws.com/com-amazon-mas-catalog/M1I0LM77RX7FC2%2FM2VC2AJFZBAC93%2Fimages%2F_6b7d1378-12ae-48aa-92e2-618476ab5553_ceb500dbf0e42ce1435155dabebfb8b2\",\n          \"currency\": \"usd\",\n          \"amount\": \"1.99\",\n          \"foo\": \"bar\"\n      },\n      \"com.iwin.fill-lives\" : {\n          \"name\": \"Fill Lives\",\n          \"description\": \"Fill Lives\",\n          \"icon\": \"https://s3-external-1.amazonaws.com/com-amazon-mas-catalog/M1I0LM77RX7FC2%2FM2VC2AJFZBAC93%2Fimages%2F_6b7d1378-12ae-48aa-92e2-618476ab5553_ceb500dbf0e42ce1435155dabebfb8b2\",\n          \"currency\": \"usd\",\n          \"amount\": \"0.99\",\n          \"foo\": \"bar\"\n      }\n   }\n</pre>\nCurrently (owing to restrictions from third party providers) the only currency supported is USD, and the amount should be provided as dollar.cents\n\nYou will also need to create an amazon.sdktester.json file in the root of the released game folder, which reflects the same information (just in an amazon specific manner):\n<pre>\n{\n   \"com.iwin.game-levels\" : {\n       \"itemType\" : \"ENTITLED\",\n       \"price\" : \"0.99\",\n       \"title\": \"Unlock All Levels\",\n       \"description\": \"Unlock All Levels\",\n       \"smallIconUrl\": \"https://s3-external-1.amazonaws.com/com-amazon-mas-catalog/M1I0LM77RX7FC2%2FM2VC2AJFZBAC93%2Fimages%2F_6b7d1378-12ae-48aa-92e2-618476ab5553_ceb500dbf0e42ce1435155dabebfb8b2\"\n   },\n   \"com.iwin.more-time\" : {\n       \"itemType\" : \"CONSUMABLE\",\n       \"price\" : \"0.99\",\n       \"title\": \"Get More Time\",\n       \"description\": \"Get More Time\",\n       \"smallIconUrl\": \"https://s3-external-1.amazonaws.com/com-amazon-mas-catalog/M1I0LM77RX7FC2%2FM2VC2AJFZBAC93%2Fimages%2F_6b7d1378-12ae-48aa-92e2-618476ab5553_ceb500dbf0e42ce1435155dabebfb8b2\"\n   },\n   \"com.iwin.more-moves\" : {\n       \"itemType\" : \"CONSUMABLE\",\n       \"price\" : \"0.99\",\n       \"title\": \"Get More Moves\",\n       \"description\": \"Get More Moves\",\n       \"smallIconUrl\": \"https://s3-external-1.amazonaws.com/com-amazon-mas-catalog/M1I0LM77RX7FC2%2FM2VC2AJFZBAC93%2Fimages%2F_6b7d1378-12ae-48aa-92e2-618476ab5553_ceb500dbf0e42ce1435155dabebfb8b2\"\n   },\n   \"com.iwin.more-midas\" : {\n       \"itemType\" : \"CONSUMABLE\",\n       \"price\" : \"1.99\",\n       \"title\": \"Get More Midas Touches\",\n       \"description\": \"Get More Midas Touches\",\n       \"smallIconUrl\": \"https://s3-external-1.amazonaws.com/com-amazon-mas-catalog/M1I0LM77RX7FC2%2FM2VC2AJFZBAC93%2Fimages%2F_6b7d1378-12ae-48aa-92e2-618476ab5553_ceb500dbf0e42ce1435155dabebfb8b2\"\n   },\n   \"com.iwin.fill-lives\" : {\n       \"itemType\" : \"CONSUMABLE\",\n       \"price\" : \"0.99\",\n       \"title\": \"Fill Lives\",\n       \"description\": \"Fill Lives\",\n       \"smallIconUrl\": \"https://s3-external-1.amazonaws.com/com-amazon-mas-catalog/M1I0LM77RX7FC2%2FM2VC2AJFZBAC93%2Fimages%2F_6b7d1378-12ae-48aa-92e2-618476ab5553_ceb500dbf0e42ce1435155dabebfb8b2\"\n   }\n}\n</pre>\n\nIntegration\n-----------\nThe <code>[iConsole.iap](iConsole.iap.html)</code> class is the integration point that developers should use to determine if the IAP platform is supported\n(i.e. that the game is running on a platform that supports IAP or not), and then to make these purchases. Once the configuration is correct, using the IAP\nplatform is quite simple:\n\n<pre>\n// Decorate my game differently if IAP is supported\nif ( <a href=\"iConsole.iap.html#method_isSupported\">iConsole.iap.isSupported()</a> ) {\n   myGame.state.buyMoreLivesEnabled = true;\n   myGame.state.buyMoreMovesEnabled = true;\n}\n\n/**\n * Handler for Buy More Lives button\n *&#47;\nfunction buyMoreLivesClicked() {\n   // We don't need to test to see if IAP is supported. If it isn't supported, this call will call the failed block\n   // After a short delay (i.e. after a setTimeout of 1ms)\n   <a href=\"iConsole.iap.html#method_purchase\">iConsole.iap.purchase('buymorelivessku')</a>\n      .success(purchaseSuccess)\n      .failure(purchaseFailure);\n}\n\n/**\n * Handler for when a purchase succeeds\n *&#47;\nfunction purchaseSuccess(sku) {\n   switch (sku) {\n      case 'buymorelivessku':\n         myGame.state.lives += 5;\n         break;\n      case 'buymoremovessku':\n         myGame.state.moves += 10;\n         break;\n   }\n}\n/**\n * Handler for when a purchase succeeds\n *&#47;\nfunction purchaseFailure(sku) {\n   console.log('Purchase failed for sku=' + sku );\n}\n</pre>\n\nLaunching / Testing\n-------------------\nNormally, a console enabled game is launched (on a local development server, with host file entry of\n<code>127.0.0.1 local.games.iwin.com</code>) with\n[http://local.games.iwin.com/#/game/](http://local.games.iwin.com/#/game/) where the folder after the # symbol tells\nthe console where to laod the game from. You can append on to this URL, the following\n* &#35;!amazon to enable Amazon integration\n * [http://local.games.iwin.com/#/game/#!amazon](http://local.games.iwin.com/#/game/#!amazon)\n* &#35;!gamescom to enable Games.com integration\n * [http://local.games.iwin.com/#/game/#!gamescom](http://local.games.iwin.com/#/game/#!gamescom)\n* &#35;!yahoo to enable Yahoo integration\n * [http://local.games.iwin.com/#/game/#!yahoo](http://local.games.iwin.com/#/game/#!yahoo)\n\n### Amazon\nThis is the simplest integration to test, as it works out of the box, and does not require any special work-arounds\nor notes. In App Purchases complete when you attempt them without costing real money.\n### Games.com\nThe games.com integration requires you to configure a HTML5 game in [http://developer.games.com](http://developer.games.com)\nand to insert this link (for initial testing purposes) in the externally hosted URL. Also, their In App Purchasing\nopens up a pop-up window which may be automatically blocked (which means your purchases will fail), so be aware of\nthis issue. When making a purchase, you can use the magic credit card 4444444444444448 (with any other value for the\nrest of the fields).\n### Yahoo\nYou will need to set up an externally hosted Canvas game in the Yahoo development. The remainder of this integration\nremains un-documented.\n\nFurther Platform Integration\n----------------------------\nBeyond In-App-Purchasing, these platforms also offer other services, which are supported by the Console:\n### Amazon\n* amazonmotiongesturetilt - When on a Fire Phone, you can tilt the phone around it's Y axis, which Amazon request is used\nto hide any menus. This has been exposed in the iConsole as:\n<pre><a href=\"iConsole.game.html#method_onEvent\">iConsole.game.onEvent('tiltYaxis', function(...){...});</a></pre>\n* Home widget label - When the App is installed onto an Amazon device, it has space for a label below the icon on the\nhome screen. Typically, this can be used to provide contextual information about the user's progress in the game, such\nas which level they are on. This is available as:\n<pre><a href=\"iConsole.game.html#method_setHomeWidgetLabel\">iConsole.game.setHomeWidgetLabel('Continue playing from level 9');</a></pre>\n\n### Games.com\n* All user data is stored on the Games.com servers rather than the iWin Servers",
+            "type": "{In-App-Purchases|*|{}}"
+        },
+        "iConsole.iap": {
+            "name": "iConsole.iap",
+            "shortname": "iConsole.iap",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src/console-js/modules/iap.js",
+            "line": 188,
+            "description": "In-App Purchases\n----------------\nWe currently support IAP on Games.com, Yahoo and Amazon, all of which is obfuscated behind this class, and a\nsimple API call <pre>[iConsole.iap.purchase(...)](#method_purchase)</a></pre>\nThe types of In-App Purchaseable items are defined in the game_details.json,",
+            "type": "{iConsole.iap|*|{}}"
         },
         "iConsole.periodical": {
             "name": "iConsole.periodical",
@@ -389,7 +425,7 @@
         {
             "file": "src/console-js/modules/game.js",
             "line": 403,
-            "description": "The user may generate keydown events when they are typing either in the game or in the console. Where the\nuser is typing into their chat window, keydown events are going to be triggered that games will erroneously\ncatch and handle. Therefore, instead of registering keydown handlers inside the game, you should add a\nhandler to the iConsole instead, which will bubble the keydown events except for when the user is typing into\nfields that shouldn't trigger game interaction, such as the chat window.\nSee iConsole.game.offEvent",
+            "description": "The user may generate keydown events when they are typing either in the game or in the console. Where the\nuser is typing into their chat window, keydown events are going to be triggered that games will erroneously\ncatch and handle. Therefore, instead of registering keydown handlers inside the game, you should add a\nhandler to the iConsole instead, which will bubble the keydown events except for when the user is typing into\nfields that shouldn't trigger game interaction, such as the chat window.\nThe currently supported event types are:\n* keydown - When a key is pressed down\n* signedIn - When a user signs in to the console (used to reload the user data from the console and restart the game)\n* signedOut - When a user signs out of the console (used to reload the user data and restart the game)\n* tiltYaxis - When a user tilts their amazon fire phone around the Y axis (used to dismiss menus in game)\nSee iConsole.game.offEvent",
             "itemtype": "method",
             "name": "onEvent",
             "params": [
@@ -411,7 +447,7 @@
         },
         {
             "file": "src/console-js/modules/game.js",
-            "line": 443,
+            "line": 448,
             "description": "The user may generate keydown events when they are typing either in the game or in the console. Where the\nuser is typing into their chat window, keydown events are going to be triggered that games will erroneously\ncatch and handle. Therefore, instead of registering keydown handlers inside the game, you should add a\nhandler to the iConsole instead, which will bubble the keydown events except for when the user is typing into\nfields that shouldn't trigger game interaction, such as the chat window. This call will be used to\nde-register the keydown handler.\nSee iConsole.game.onEvent",
             "itemtype": "method",
             "name": "offEvent",
@@ -434,8 +470,10 @@
         },
         {
             "file": "src/console-js/modules/game.js",
-            "line": 480,
+            "line": 485,
             "description": "This function returns the width of the game inside the console, as window.innerWidth will not work initially\nwhen the game is first loaded as the game's window is hidden from display. This function is especially\nuseful when trying to determine what resolution of graphics the game should load.",
+            "itemtype": "method",
+            "name": "getWidth",
             "return": {
                 "description": "",
                 "type": "*"
@@ -444,23 +482,89 @@
         },
         {
             "file": "src/console-js/modules/game.js",
-            "line": 496,
+            "line": 502,
             "description": "This function returns the height of the game inside the console, as window.innerHeight will not work initially\nwhen the game is first loaded as the game's window is hidden from display. This function is especially\nuseful when trying to determine what resolution of graphics the game should load.",
+            "itemtype": "method",
+            "name": "getHeight",
             "return": {
                 "description": "",
                 "type": "*"
             },
             "class": "iConsole.game"
+        },
+        {
+            "file": "src/console-js/modules/game.js",
+            "line": 519,
+            "description": "This function is used to set the label underneath the game's image on Amazon Fire devices (currently), and\nis typically used to relay information such as what level the user is going to resume playback from.",
+            "itemtype": "method",
+            "name": "setHomeWidgetLabel",
+            "params": [
+                {
+                    "name": "label",
+                    "description": "- The label to set"
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "*"
+            },
+            "class": "iConsole.game"
+        },
+        {
+            "file": "src/console-js/modules/iap.js",
+            "line": 206,
+            "description": "This function should be used to feature detect whether In App Purchasing is available or not.",
+            "itemtype": "method",
+            "name": "isSupported",
+            "return": {
+                "description": "",
+                "type": "Boolean"
+            },
+            "class": "iConsole.iap"
+        },
+        {
+            "file": "src/console-js/modules/iap.js",
+            "line": 215,
+            "description": "This function should be used to initiate an In App Purchase from the containing platform. If the sku doesn't\nexist in the game_details.json, or in amazon's case, configured on their server this function will call the\nfailure callback.",
+            "itemtype": "method",
+            "name": "purchase",
+            "params": [
+                {
+                    "name": "sku",
+                    "description": "The sku item you wish to purchase",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "An object which contains two functions, success and failure, which should each be called\nwith the function you wish to call when the purchase succeeds or fails. These callbacks will be called a\nsingle parameter, the sku that was attempted to be purchased. These calls can be directly chained:",
+                "type": "Object"
+            },
+            "example": [
+                "\n<pre>\n    iConsole.iap.purchase('com.iwin.morelives').success(mySuccessFunction).failure(myFailureFunction);\n</pre>"
+            ],
+            "class": "iConsole.iap"
         }
     ],
     "warnings": [
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/console-js/modules/game.js:480"
+            "line": " src/console-js/modules/game.js:485"
         },
         {
             "message": "replacing incorrect tag: returns with return",
-            "line": " src/console-js/modules/game.js:496"
+            "line": " src/console-js/modules/game.js:502"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " src/console-js/modules/game.js:519"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " src/console-js/modules/iap.js:206"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " src/console-js/modules/iap.js:215"
         },
         {
             "message": "Missing item type\nIf your game has been configured to use mid game adverts (adverts that interrupt the users game play), then\nyou should register callbacks to determine when the console is about to show an advert. This will enable you\nto prepare the game in a paused state, pausing timers, fading screens down, waiting for the user to release\ntheir finger or mouse if it is depressed etc... and then notify the console that your game is in a state to\nsafely display adverts without impacting the user.\nYou can register multiple callbacks which will be fired (the order of which is not guaranteed), but one and\nonly one of these callbacks *MUST* fire the <pre>.result</pre> function.",
@@ -477,14 +581,6 @@
         {
             "message": "Missing item type\nIf your game supports mid game adverts, and you are applying these calls across multiple classes (i.e. each\nlevel is contained in a different class), then you should unregister any callbacks that you have made.\nOtherwise, the callbacks will be fired against all registered listeners and this may result in undesired\nbehaviour or complete crashes.",
             "line": " src/console-js/modules/ads.js:149"
-        },
-        {
-            "message": "Missing item type\nThis function returns the width of the game inside the console, as window.innerWidth will not work initially\nwhen the game is first loaded as the game's window is hidden from display. This function is especially\nuseful when trying to determine what resolution of graphics the game should load.",
-            "line": " src/console-js/modules/game.js:480"
-        },
-        {
-            "message": "Missing item type\nThis function returns the height of the game inside the console, as window.innerHeight will not work initially\nwhen the game is first loaded as the game's window is hidden from display. This function is especially\nuseful when trying to determine what resolution of graphics the game should load.",
-            "line": " src/console-js/modules/game.js:496"
         }
     ]
 }

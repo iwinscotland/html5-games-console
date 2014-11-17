@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>iConsole.ads</title>
+    <title>iConsole.iap</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -92,7 +92,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>iConsole.ads Class</h1>
+                        <h1>iConsole.iap Class</h1>
 <div class="box meta">
     
 
@@ -100,7 +100,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_console-js_modules_ads.js.html#l2"><code>src&#x2F;console-js&#x2F;modules&#x2F;ads.js:2</code></a>
+            Defined in: <a href="../files/src_console-js_modules_iap.js.html#l188"><code>src&#x2F;console-js&#x2F;modules&#x2F;iap.js:188</code></a>
         </div>
     
 
@@ -112,16 +112,10 @@
 
 
 <div class="box intro">
-    <h2 id="adverts">Adverts</h2>
-<p>Adverts are controlled by the game_details.json file located in the root of game.</p>
-<h2 id="types">Types</h2>
-<ul>
-<li>&#39;none&#39; No adverts</li>
-<li>&#39;interstitial&#39; Always show ads</li>
-<li>&#39;levelStarted&#39; dependant on &#39;level&#39; numbers defined in the section </li>
-<li>&#39;max_time&#39; displays when &#39;maxseconds&#39; has expired between calls.</li>
-<li>&#39;every_attempt&#39; displays at everyattempt from &#39;start&#39; count then ever &#39;between&#39; count</li>
-</ul>
+    <h2 id="in-app-purchases">In-App Purchases</h2>
+<p>We currently support IAP on Games.com, Yahoo and Amazon, all of which is obfuscated behind this class, and a
+simple API call <pre><a href="#method_purchase">iConsole.iap.purchase(...)</a></a></pre>
+The types of In-App Purchaseable items are defined in the game_details.json,</p>
 
 </div>
 
@@ -150,7 +144,14 @@
                     <ul class="index-list methods">
                         
                             <li class="index-item method">
-                                <a href="#method_show">show</a>
+                                <a href="#method_isSupported">isSupported</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_purchase">purchase</a>
 
                                 
                                 
@@ -172,8 +173,79 @@
                 <h2 class="off-left">Methods</h2>
 
                 
-                    <div id="method_show" class="method item">
-    <h3 class="name"><code>show</code></h3>
+                    <div id="method_isSupported" class="method item">
+    <h3 class="name"><code>isSupported</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Boolean</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_console-js_modules_iap.js.html#l206"><code>src&#x2F;console-js&#x2F;modules&#x2F;iap.js:206</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>This function should be used to feature detect whether In App Purchasing is available or not.</p>
+
+    </div>
+
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Boolean</span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_purchase" class="method item">
+    <h3 class="name"><code>purchase</code></h3>
 
     
         <div class="args">
@@ -181,7 +253,7 @@
             
                 <li class="arg">
                     
-                        <code>data</code>
+                        <code>sku</code>
                     
                 </li>
             
@@ -218,7 +290,7 @@
             
         
         
-        <a href="../files/src_console-js_modules_ads.js.html#l27"><code>src&#x2F;console-js&#x2F;modules&#x2F;ads.js:27</code></a>
+        <a href="../files/src_console-js_modules_iap.js.html#l215"><code>src&#x2F;console-js&#x2F;modules&#x2F;iap.js:215</code></a>
         
         </p>
 
@@ -229,18 +301,9 @@
     </div>
 
     <div class="description">
-        <p>In order to flag an advert to potentially be shown, you call this function with appropriate data blocks as
-defined below. You should pause your game play whilst the advert is displayed, and thus you should consider
-the advert to be displayed, until the console triggers the <code>result</code> member function of the return
-value.
-<br>
-If you declare your data type to be <code>interstitial</code>, then the advert (currently) will be triggered
-always. If you declare your data type to be <code>levelStarted</code>, then the advert may or may not fire
-based upon the behaviour defined in the <code>game_details.json</code> file. If the advert isn&#39;t fired, the
-<code>result</code> is fired immediately. In this case, any code appearing on lines after this call will be
-called after the <code>result</code> callback is fired, whereas if the advert is fired, any code appearing on
-lines after this call will be called before the <code>result</code> is fired. Therefore, you should consider
-pausing all game execution prior to this call, and leave this as the last call to make.</p>
+        <p>This function should be used to initiate an In App Purchase from the containing platform. If the sku doesn&#39;t
+exist in the game_details.json, or in amazon&#39;s case, configured on their server this function will call the
+failure callback.</p>
 
     </div>
 
@@ -252,28 +315,14 @@ pausing all game execution prior to this call, and leave this as the last call t
             
                 <li class="param">
                     
-                        <code class="param-name">data</code>
-                        <span class="type">Object</span>
+                        <code class="param-name">sku</code>
+                        <span class="type">String</span>
                     
 
                     
 
                     <div class="param-description">
-                        <p>An object which contains either</p>
-<p><pre>
-{
-   type: &#39;interstitial&#39;
-}
-</pre>
-to fire interstitial adverts all the time, or:</p>
-<p><pre>
-{
-   type: &#39;levelStarted&#39;,
-   level: num
-}
-</pre>
-where <code>num</code> is the level number as an integer that the user is about to start playing. In this
-instance the advert display behaviour is guided by the <code>game_details.json</code> file.</p>
+                        <p>The sku item you wish to purchase</p>
 
                     </div>
 
@@ -293,11 +342,9 @@ instance the advert display behaviour is guided by the <code>game_details.json</
                     
                         <span class="type">Object</span>:
                     
-                    <p>An object that contains a member function <code>result</code> that you should call with a
-callback function that will be fired when the advert is dismissed. The format of result function is</p>
-<p><pre>result( callbackFunction );</pre>
-Where callbackFunction is a function that will be called with a single parameter, an object that currently is
-empty, when the advert has dismissed.</p>
+                    <p>An object which contains two functions, success and failure, which should each be called
+with the function you wish to call when the purchase succeeds or fails. These callbacks will be called a
+single parameter, the sku that was attempted to be purchased. These calls can be directly chained:</p>
 
                 
             </div>
@@ -310,12 +357,7 @@ empty, when the advert has dismissed.</p>
 
             <div class="example-content">
                 <pre>
-iConsole.ads.show( {
-   type: 'levelStarted',
-   level: 3
-} ).result( function( resultData ) {
-   myGame.startGameTimer();
-} );
+    iConsole.iap.purchase('com.iwin.morelives').success(mySuccessFunction).failure(myFailureFunction);
 </pre>
             </div>
         </div>

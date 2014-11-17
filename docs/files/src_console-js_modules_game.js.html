@@ -47,7 +47,11 @@
             
                 <li><a href="../classes/iConsole.game.html">iConsole.game</a></li>
             
+                <li><a href="../classes/iConsole.iap.html">iConsole.iap</a></li>
+            
                 <li><a href="../classes/iConsole.periodical.html">iConsole.periodical</a></li>
+            
+                <li><a href="../classes/In-App-Purchases.html">In-App-Purchases</a></li>
             
             </ul>
 
@@ -133,7 +137,7 @@
  * 
  * Note: You must visit index.html in the root folder and not the game/index.html from your browser and also use &#x27;http&#x27; protocol URI&#x27;s and not local &#x27;file&#x27; URI&#x27;s
  *
- * Game_details.JSon
+ * Game_details.json
  * -----------------
  * This file must contain valid json game details.  For example.
  * &lt;pre&gt;
@@ -500,6 +504,11 @@
          * catch and handle. Therefore, instead of registering keydown handlers inside the game, you should add a
          * handler to the iConsole instead, which will bubble the keydown events except for when the user is typing into
          * fields that shouldn&#x27;t trigger game interaction, such as the chat window.
+         * The currently supported event types are:
+         * * keydown - When a key is pressed down
+         * * signedIn - When a user signs in to the console (used to reload the user data from the console and restart the game)
+         * * signedOut - When a user signs out of the console (used to reload the user data and restart the game)
+         * * tiltYaxis - When a user tilts their amazon fire phone around the Y axis (used to dismiss menus in game)
          * See iConsole.game.offEvent
          * @method onEvent
          * @param eventType {string} currently, the only supported event type is &lt;code&gt;keydown&lt;/code&gt;
@@ -520,7 +529,7 @@
                 break;
                 case &#x27;signedOut&#x27;:
                     iConsole.on(&#x27;signed.out&#x27;, callbackFunction);
-                break
+                break;
                 default:
                     if (iConsole.game.callbacks[eventType] === undefined) {
                         iConsole.game.callbacks[eventType] = [];
@@ -575,6 +584,7 @@
          * This function returns the width of the game inside the console, as window.innerWidth will not work initially
          * when the game is first loaded as the game&#x27;s window is hidden from display. This function is especially
          * useful when trying to determine what resolution of graphics the game should load.
+         * @method getWidth
          * @returns {*}
          */
         getWidth: function() {
@@ -591,6 +601,7 @@
          * This function returns the height of the game inside the console, as window.innerHeight will not work initially
          * when the game is first loaded as the game&#x27;s window is hidden from display. This function is especially
          * useful when trying to determine what resolution of graphics the game should load.
+         * @method getHeight
          * @returns {*}
          */
         getHeight: function() {
@@ -601,6 +612,17 @@
                 }
             }
             return 0;
+        },
+
+        /**
+         * This function is used to set the label underneath the game&#x27;s image on Amazon Fire devices (currently), and
+         * is typically used to relay information such as what level the user is going to resume playback from.
+         * @method setHomeWidgetLabel
+         * @param label - The label to set
+         * @returns {*}
+         */
+        setHomeWidgetLabel: function(label) {
+            return iConsole.XDM.sendUpdateHomeWidgetLabel( { label : label } );
         },
 
         /*
