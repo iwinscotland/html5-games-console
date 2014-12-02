@@ -100,8 +100,81 @@
     /**
      * Periodical
      * -------
-     * Periodical game data (i.e. daily games) payload handling via the console
+     * Periodical game data (i.e. daily games) payload handling via the console.
      *
+     * Periodical files should be stored in a folder call periodical inside the parent of the game directory... i.e.
+     * in the folder beside site-console:
+     *    + game
+     *    + periodical
+     *    + site-console
+     *    ...
+     *
+     * When the game is released onto production, this folder sits alongside the
+     * versions of the game
+     *    + periodical
+     *    + v_72
+     *    + v_73
+     *    ...
+     *
+     * Inside the periodical folder, should be a file periodical.json. It should contain in the root of the JSON, an
+     * array called &quot;periods&quot;, which is an array of objects. Each of these objects should have at least a &quot;name&quot;, a
+     * &quot;date&quot; in YYYYMMDD format, and a &quot;json&quot; which is a local reference to a given periods actual data file. You can
+     * provide further details such as a thumbnail image here, but the data in this file should be kept to a minimum for
+     * only information that is necessary to allow the user to choose the period The referenced JSON file should be used
+     * to store all the information about what the game needs to present a given perioids data.
+     * periodical.json:
+     * &lt;pre&gt;
+{
+    &quot;periods&quot;: [
+		{
+            &quot;json&quot;: &quot;daily-test-140905-1.json&quot;,
+			&quot;name&quot;: &quot;Test A&quot;,
+			&quot;date&quot;: &quot;20140701&quot;
+        },
+        {
+            &quot;json&quot;: &quot;daily-test-140905-2.json&quot;,
+			&quot;name&quot;: &quot;Test B&quot;,
+			&quot;date&quot;: &quot;20140630&quot;
+        },
+        {
+            &quot;json&quot;: &quot;daily-test-140905-3.json&quot;,
+			&quot;name&quot;: &quot;Test C&quot;,
+			&quot;date&quot;: &quot;20140629&quot;
+        }
+    ]
+}
+&lt;/pre&gt;
+     * The data format for each periods json file is entirely at the games discretion, however, you are strongly
+     * recommended to have a &quot;periodical&quot; object at the root of each periods data, and this should include everything
+     * you need to represent this game to allow the user to choose that period (for example, the name of the puzzle,
+     * a picture of that puzzle etc...). We have a process to take source data and convert this into data suited for
+     * long life caching and better user browser performance, and it can automatically generate the parent periodical.json
+     * file, and uses the &quot;periodical&quot; block in each periods data to generate the &quot;name&quot; and other data attributes
+     * needed.
+     *
+     * Once you have periodical data, you will need to alter the game_details.json file to have   &lt;br/&gt;
+     * &quot;periodical&quot;: true   &lt;/br&gt;
+     * set, in order for the console to consider your game a candidate for enabling periodical data (improper setting
+     * of this value either results in a volume of 404s, or periodical functions not working).
+     *
+     * Inside the game, you can call:&lt;pre&gt;
+iConsole.periodical.getPeriods().result( function( periodData ) {
+    // ...
+});
+&lt;/pre&gt;
+     * Which will return you the basic objects from the periodical.json file, including name and date (and any data you
+     * have injected there).
+     *
+     * You should use this data to allow the user to choose a period to play, and you should obtain an index from this
+     * array that the user has chosen. In order to download that data, you should then call:&lt;pre&gt;
+iConsole.periodical.getData( indexInArrayThatWasChosen ).result( function( data ) {
+    // ...
+});
+ &lt;/pre&gt;
+     * If any of your data contains URLs to assets relative to that periods data, such as images, you should call:&lt;pre&gt;
+var realURItoCall = iConsole.periodical.getFileURI(&#x27;myImage.jpg&#x27;);
+&lt;/pre&gt;
+     * prior to attempting to load these assets. This ensures that the correct location for these assets are used
      * @class iConsole.periodical
      * @type {iConsole.periodical|*|{}}
      */
@@ -115,6 +188,15 @@
             $super(data);
         },
 
+        /**
+         * This function should be used to fetch the data for a given number of periods back. This will return exactly
+         * the data as it has been stored in the JSON block (but this data may have been modified with filenames being
+         * changed to support better caching). The data once loaded is called back in the .result(callback) callback
+         * function.
+         * @method getData
+         * @param periodsBack
+         * @returns {{result: Function}}
+         */
         getData:function(periodsBack){
             if (!periodsBack || typeof periodsBack !== &#x27;number&#x27; || periodsBack !== Math.floor(periodsBack)) periodsBack = 0;
             var callback = null;
@@ -138,6 +220,13 @@
             return { result: resultFunction };
         },
 
+        /**
+         * This function should be used to fetch the total number of periods of data supported, and any data that is
+         * necessary to display these periodicals, such as thumbnails. The data once obtained, is called back in the
+         * .result(callback) callback function.
+         * @returns {{result: Function}}
+         * @method getPeriods
+         */
         getPeriods:function(){
             var callback = null;
             var dataReceived = null;
@@ -160,6 +249,15 @@
             return { result: resultFunction };
         },
 
+        /**
+         * If there are any assets which are referenced by the given periodical data, this will not be under the same
+         * directory as the game, and this function should be called to convert a given URI you wish to obtain into a
+         * URI that can be reached. This should be done for every URL referenced by the periodical data, that is meant
+         * to be local to the JSON file.
+         * @param uri
+         * @returns {string}
+         * @method getFileURI
+         */
         getFileURI: function(uri) {
             var path = window.location.pathname;
             var regex = /^(.+\/).+\/?$/;

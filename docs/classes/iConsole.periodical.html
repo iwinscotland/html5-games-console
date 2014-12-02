@@ -113,7 +113,79 @@
 
 <div class="box intro">
     <h2 id="periodical">Periodical</h2>
-<p>Periodical game data (i.e. daily games) payload handling via the console</p>
+<p>Periodical game data (i.e. daily games) payload handling via the console.</p>
+<p>Periodical files should be stored in a folder call periodical inside the parent of the game directory... i.e.
+in the folder beside site-console:</p>
+<ul>
+<li>game</li>
+<li>periodical</li>
+<li>site-console
+...</li>
+</ul>
+<p>When the game is released onto production, this folder sits alongside the
+versions of the game</p>
+<ul>
+<li>periodical</li>
+<li>v_72</li>
+<li>v_73
+...</li>
+</ul>
+<p>Inside the periodical folder, should be a file periodical.json. It should contain in the root of the JSON, an
+array called &quot;periods&quot;, which is an array of objects. Each of these objects should have at least a &quot;name&quot;, a
+&quot;date&quot; in YYYYMMDD format, and a &quot;json&quot; which is a local reference to a given periods actual data file. You can
+provide further details such as a thumbnail image here, but the data in this file should be kept to a minimum for
+only information that is necessary to allow the user to choose the period The referenced JSON file should be used
+to store all the information about what the game needs to present a given perioids data.
+periodical.json:</p>
+<p><pre>
+{
+   &quot;periods&quot;: [
+        {
+           &quot;json&quot;: &quot;daily-test-140905-1.json&quot;,
+            &quot;name&quot;: &quot;Test A&quot;,
+            &quot;date&quot;: &quot;20140701&quot;
+       },
+       {
+           &quot;json&quot;: &quot;daily-test-140905-2.json&quot;,
+            &quot;name&quot;: &quot;Test B&quot;,
+            &quot;date&quot;: &quot;20140630&quot;
+       },
+       {
+           &quot;json&quot;: &quot;daily-test-140905-3.json&quot;,
+            &quot;name&quot;: &quot;Test C&quot;,
+            &quot;date&quot;: &quot;20140629&quot;
+       }
+   ]
+}
+</pre>
+The data format for each periods json file is entirely at the games discretion, however, you are strongly
+recommended to have a &quot;periodical&quot; object at the root of each periods data, and this should include everything
+you need to represent this game to allow the user to choose that period (for example, the name of the puzzle,
+a picture of that puzzle etc...). We have a process to take source data and convert this into data suited for
+long life caching and better user browser performance, and it can automatically generate the parent periodical.json
+file, and uses the &quot;periodical&quot; block in each periods data to generate the &quot;name&quot; and other data attributes
+needed.</p>
+<p>Once you have periodical data, you will need to alter the game_details.json file to have   <br/>
+&quot;periodical&quot;: true   </br>
+set, in order for the console to consider your game a candidate for enabling periodical data (improper setting
+of this value either results in a volume of 404s, or periodical functions not working).</p>
+<p>Inside the game, you can call:<pre>
+iConsole.periodical.getPeriods().result( function( periodData ) {
+   // ...
+});
+</pre>
+Which will return you the basic objects from the periodical.json file, including name and date (and any data you
+have injected there).</p>
+<p>You should use this data to allow the user to choose a period to play, and you should obtain an index from this
+array that the user has chosen. In order to download that data, you should then call:<pre>
+iConsole.periodical.getData( indexInArrayThatWasChosen ).result( function( data ) {
+   // ...
+});
+</pre>
+If any of your data contains URLs to assets relative to that periods data, such as images, you should call:<pre>
+var realURItoCall = iConsole.periodical.getFileURI(&#39;myImage.jpg&#39;);
+</pre>
+prior to attempting to load these assets. This ensures that the correct location for these assets are used</p>
 
 </div>
 
@@ -123,6 +195,8 @@
     <ul class="api-class-tabs">
         <li class="api-class-tab index"><a href="#index">Index</a></li>
 
+        
+            <li class="api-class-tab methods"><a href="#methods">Methods</a></li>
         
         
         
@@ -134,6 +208,35 @@
             <h2 class="off-left">Item Index</h2>
 
             
+                <div class="index-section methods">
+                    <h3>Methods</h3>
+
+                    <ul class="index-list methods">
+                        
+                            <li class="index-item method">
+                                <a href="#method_getData">getData</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_getFileURI">getFileURI</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_getPeriods">getPeriods</a>
+
+                                
+                                
+                            </li>
+                        
+                    </ul>
+                </div>
+            
 
             
 
@@ -142,6 +245,303 @@
             
         </div>
 
+        
+            <div id="methods" class="api-class-tabpanel">
+                <h2 class="off-left">Methods</h2>
+
+                
+                    <div id="method_getData" class="method item">
+    <h3 class="name"><code>getData</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>periodsBack</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Result: Function</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_console-js_modules_periodical.js.html#l93"><code>src&#x2F;console-js&#x2F;modules&#x2F;periodical.js:93</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>This function should be used to fetch the data for a given number of periods back. This will return exactly
+the data as it has been stored in the JSON block (but this data may have been modified with filenames being
+changed to support better caching). The data once loaded is called back in the .result(callback) callback
+function.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">periodsBack</code>
+                        <span class="type">Object</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Result: Function</span>:
+                    
+                    <p>}</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_getFileURI" class="method item">
+    <h3 class="name"><code>getFileURI</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>uri</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">String</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_console-js_modules_periodical.js.html#l154"><code>src&#x2F;console-js&#x2F;modules&#x2F;periodical.js:154</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>If there are any assets which are referenced by the given periodical data, this will not be under the same
+directory as the game, and this function should be called to convert a given URI you wish to obtain into a
+URI that can be reached. This should be done for every URL referenced by the periodical data, that is meant
+to be local to the JSON file.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">uri</code>
+                        <span class="type">Object</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">String</span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_getPeriods" class="method item">
+    <h3 class="name"><code>getPeriods</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Result: Function</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_console-js_modules_periodical.js.html#l125"><code>src&#x2F;console-js&#x2F;modules&#x2F;periodical.js:125</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>This function should be used to fetch the total number of periods of data supported, and any data that is
+necessary to display these periodicals, such as thumbnails. The data once obtained, is called back in the
+.result(callback) callback function.</p>
+
+    </div>
+
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Result: Function</span>:
+                    
+                    <p>}</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+            </div>
         
 
         

@@ -116,7 +116,7 @@
             "extension_for": [],
             "file": "src/console-js/modules/periodical.js",
             "line": 2,
-            "description": "Periodical\n-------\nPeriodical game data (i.e. daily games) payload handling via the console",
+            "description": "Periodical\n-------\nPeriodical game data (i.e. daily games) payload handling via the console.\n\nPeriodical files should be stored in a folder call periodical inside the parent of the game directory... i.e.\nin the folder beside site-console:\n   + game\n   + periodical\n   + site-console\n   ...\n\nWhen the game is released onto production, this folder sits alongside the\nversions of the game\n   + periodical\n   + v_72\n   + v_73\n   ...\n\nInside the periodical folder, should be a file periodical.json. It should contain in the root of the JSON, an\narray called \"periods\", which is an array of objects. Each of these objects should have at least a \"name\", a\n\"date\" in YYYYMMDD format, and a \"json\" which is a local reference to a given periods actual data file. You can\nprovide further details such as a thumbnail image here, but the data in this file should be kept to a minimum for\nonly information that is necessary to allow the user to choose the period The referenced JSON file should be used\nto store all the information about what the game needs to present a given perioids data.\nperiodical.json:\n<pre>\n{\n   \"periods\": [\n\t\t{\n           \"json\": \"daily-test-140905-1.json\",\n\t\t\t\"name\": \"Test A\",\n\t\t\t\"date\": \"20140701\"\n       },\n       {\n           \"json\": \"daily-test-140905-2.json\",\n\t\t\t\"name\": \"Test B\",\n\t\t\t\"date\": \"20140630\"\n       },\n       {\n           \"json\": \"daily-test-140905-3.json\",\n\t\t\t\"name\": \"Test C\",\n\t\t\t\"date\": \"20140629\"\n       }\n   ]\n}\n</pre>\nThe data format for each periods json file is entirely at the games discretion, however, you are strongly\nrecommended to have a \"periodical\" object at the root of each periods data, and this should include everything\nyou need to represent this game to allow the user to choose that period (for example, the name of the puzzle,\na picture of that puzzle etc...). We have a process to take source data and convert this into data suited for\nlong life caching and better user browser performance, and it can automatically generate the parent periodical.json\nfile, and uses the \"periodical\" block in each periods data to generate the \"name\" and other data attributes\nneeded.\n\nOnce you have periodical data, you will need to alter the game_details.json file to have   <br/>\n\"periodical\": true   </br>\nset, in order for the console to consider your game a candidate for enabling periodical data (improper setting\nof this value either results in a volume of 404s, or periodical functions not working).\n\nInside the game, you can call:<pre>\niConsole.periodical.getPeriods().result( function( periodData ) {\n   // ...\n});\n</pre>\nWhich will return you the basic objects from the periodical.json file, including name and date (and any data you\nhave injected there).\n\nYou should use this data to allow the user to choose a period to play, and you should obtain an index from this\narray that the user has chosen. In order to download that data, you should then call:<pre>\niConsole.periodical.getData( indexInArrayThatWasChosen ).result( function( data ) {\n   // ...\n});\n</pre>\nIf any of your data contains URLs to assets relative to that periods data, such as images, you should call:<pre>\nvar realURItoCall = iConsole.periodical.getFileURI('myImage.jpg');\n</pre>\nprior to attempting to load these assets. This ensures that the correct location for these assets are used",
             "type": "{iConsole.periodical|*|{}}"
         }
     },
@@ -543,6 +543,54 @@
                 "\n<pre>\n    iConsole.iap.purchase('com.iwin.morelives').success(mySuccessFunction).failure(myFailureFunction);\n</pre>"
             ],
             "class": "iConsole.iap"
+        },
+        {
+            "file": "src/console-js/modules/periodical.js",
+            "line": 93,
+            "description": "This function should be used to fetch the data for a given number of periods back. This will return exactly\nthe data as it has been stored in the JSON block (but this data may have been modified with filenames being\nchanged to support better caching). The data once loaded is called back in the .result(callback) callback\nfunction.",
+            "itemtype": "method",
+            "name": "getData",
+            "params": [
+                {
+                    "name": "periodsBack",
+                    "description": ""
+                }
+            ],
+            "return": {
+                "description": "}",
+                "type": "Result: Function"
+            },
+            "class": "iConsole.periodical"
+        },
+        {
+            "file": "src/console-js/modules/periodical.js",
+            "line": 125,
+            "description": "This function should be used to fetch the total number of periods of data supported, and any data that is\nnecessary to display these periodicals, such as thumbnails. The data once obtained, is called back in the\n.result(callback) callback function.",
+            "return": {
+                "description": "}",
+                "type": "Result: Function"
+            },
+            "itemtype": "method",
+            "name": "getPeriods",
+            "class": "iConsole.periodical"
+        },
+        {
+            "file": "src/console-js/modules/periodical.js",
+            "line": 154,
+            "description": "If there are any assets which are referenced by the given periodical data, this will not be under the same\ndirectory as the game, and this function should be called to convert a given URI you wish to obtain into a\nURI that can be reached. This should be done for every URL referenced by the periodical data, that is meant\nto be local to the JSON file.",
+            "params": [
+                {
+                    "name": "uri",
+                    "description": ""
+                }
+            ],
+            "return": {
+                "description": "",
+                "type": "String"
+            },
+            "itemtype": "method",
+            "name": "getFileURI",
+            "class": "iConsole.periodical"
         }
     ],
     "warnings": [
@@ -565,6 +613,18 @@
         {
             "message": "replacing incorrect tag: returns with return",
             "line": " src/console-js/modules/iap.js:215"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " src/console-js/modules/periodical.js:93"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " src/console-js/modules/periodical.js:125"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " src/console-js/modules/periodical.js:154"
         },
         {
             "message": "Missing item type\nIf your game has been configured to use mid game adverts (adverts that interrupt the users game play), then\nyou should register callbacks to determine when the console is about to show an advert. This will enable you\nto prepare the game in a paused state, pausing timers, fading screens down, waiting for the user to release\ntheir finger or mouse if it is depressed etc... and then notify the console that your game is in a state to\nsafely display adverts without impacting the user.\nYou can register multiple callbacks which will be fired (the order of which is not guaranteed), but one and\nonly one of these callbacks *MUST* fire the <pre>.result</pre> function.",
