@@ -140,6 +140,13 @@
                     <ul class="index-list methods">
                         
                             <li class="index-item method">
+                                <a href="#method_gameOver">gameOver</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
                                 <a href="#method_getGameData">getGameData</a>
 
                                 
@@ -264,6 +271,91 @@
                 <h2 class="off-left">Methods</h2>
 
                 
+                    <div id="method_gameOver" class="method item">
+    <h3 class="name"><code>gameOver</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_console-js_modules_game.js.html#l361"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:361</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>This function should be called when the user has reached the end of a natural gaming session (i.e. they&#39;ve
+run out of lives and can not continue). Game play should not be allowed to continue until the result callback
+function has been called.</p>
+
+    </div>
+
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"></span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre>
+iConsole.game.gameOver().result( {
+   myGame.showMenuScreen();
+} );
+</pre>
+            </div>
+        </div>
+    
+</div>
+
+                
                     <div id="method_getGameData" class="method item">
     <h3 class="name"><code>getGameData</code></h3>
 
@@ -310,7 +402,7 @@
             
         
         
-        <a href="../files/src_console-js_modules_game.js.html#l266"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:266</code></a>
+        <a href="../files/src_console-js_modules_game.js.html#l276"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:276</code></a>
         
         </p>
 
@@ -429,7 +521,7 @@ iConsole.game.getGameData().result( function ( resultData ) {
             
         
         
-        <a href="../files/src_console-js_modules_game.js.html#l502"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:502</code></a>
+        <a href="../files/src_console-js_modules_game.js.html#l534"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:534</code></a>
         
         </p>
 
@@ -512,7 +604,7 @@ useful when trying to determine what resolution of graphics the game should load
             
         
         
-        <a href="../files/src_console-js_modules_game.js.html#l200"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:200</code></a>
+        <a href="../files/src_console-js_modules_game.js.html#l210"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:210</code></a>
         
         </p>
 
@@ -641,7 +733,7 @@ iConsole.game.getLevelData( { level: 23 } ).result( function ( resultData ) {
             
         
         
-        <a href="../files/src_console-js_modules_game.js.html#l485"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:485</code></a>
+        <a href="../files/src_console-js_modules_game.js.html#l517"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:517</code></a>
         
         </p>
 
@@ -726,7 +818,7 @@ useful when trying to determine what resolution of graphics the game should load
             
         
         
-        <a href="../files/src_console-js_modules_game.js.html#l390"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:390</code></a>
+        <a href="../files/src_console-js_modules_game.js.html#l417"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:417</code></a>
         
         </p>
 
@@ -831,7 +923,7 @@ useful when trying to determine what resolution of graphics the game should load
             
         
         
-        <a href="../files/src_console-js_modules_game.js.html#l351"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:351</code></a>
+        <a href="../files/src_console-js_modules_game.js.html#l378"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:378</code></a>
         
         </p>
 
@@ -936,7 +1028,7 @@ useful when trying to determine what resolution of graphics the game should load
             
         
         
-        <a href="../files/src_console-js_modules_game.js.html#l155"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:155</code></a>
+        <a href="../files/src_console-js_modules_game.js.html#l165"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:165</code></a>
         
         </p>
 
@@ -1082,7 +1174,7 @@ iConsole.game.loaded( {
             
         
         
-        <a href="../files/src_console-js_modules_game.js.html#l128"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:128</code></a>
+        <a href="../files/src_console-js_modules_game.js.html#l138"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:138</code></a>
         
         </p>
 
@@ -1212,7 +1304,7 @@ iConsole.game.loadProgress( {
             
         
         
-        <a href="../files/src_console-js_modules_game.js.html#l448"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:448</code></a>
+        <a href="../files/src_console-js_modules_game.js.html#l480"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:480</code></a>
         
         </p>
 
@@ -1340,7 +1432,7 @@ iConsole.game.offEvent( 'keydown', myGame.keydownHandler );
             
         
         
-        <a href="../files/src_console-js_modules_game.js.html#l403"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:403</code></a>
+        <a href="../files/src_console-js_modules_game.js.html#l430"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:430</code></a>
         
         </p>
 
@@ -1361,7 +1453,12 @@ The currently supported event types are:</p>
 <li>keydown - When a key is pressed down</li>
 <li>signedIn - When a user signs in to the console (used to reload the user data from the console and restart the game)</li>
 <li>signedOut - When a user signs out of the console (used to reload the user data and restart the game)</li>
-<li>tiltYaxis - When a user tilts their amazon fire phone around the Y axis (used to dismiss menus in game)
+<li>tiltYaxis - When a user tilts their amazon fire phone around the Y axis (used to dismiss menus in game)</li>
+<li>soundOff - When the console requests to mute all sounds (the game should store the settings of the user overrides, so that if the sound is already muted, a call to soundOn should revert to the user settings)</li>
+<li>soundOn - When the console requests to unmute all sounds (and where a game supports muting of sound effects and music separately, this should return the sound to the previous settings)</li>
+<li>pause - When the console requests to pause the game, this should bring up the ingame pause menu (unless the game is not in a pause-able state)</li>
+<li>resume - When the console requests to resume paused game play, this should unpause any paused game play (unless the game is not in a paused state)</li>
+<li>restart - Only called if the console has received an iConsole.game.gameOver() call, and signifies that the console wants to do the same effect as the user clicking &quot;Replay&quot;. However, if the user has already manually done this, then this should do nothing.
 See iConsole.game.offEvent</li>
 </ul>
 
@@ -1475,7 +1572,7 @@ iConsole.game.onEvent( 'keydown', myGame.keydownHandler );
             
         
         
-        <a href="../files/src_console-js_modules_game.js.html#l319"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:319</code></a>
+        <a href="../files/src_console-js_modules_game.js.html#l329"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:329</code></a>
         
         </p>
 
@@ -1567,7 +1664,17 @@ iConsole.game.postHighScore( {
     <h3 class="name"><code>ready</code></h3>
 
     
-        <span class="paren">()</span>
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>data</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
     
 
     
@@ -1618,6 +1725,38 @@ this callback has been triggered, otherwise the game will start playing with an 
     </div>
 
     
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">data</code>
+                        <span class="type">Object</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>An object which declares what functions you support. If you support these functions
+you should declare them as function:true... i.e. <pre>{ soundOnOff: true }</pre>. If you do not support these
+functions, then you do not need to declare them, as they are assumed to be unsupported.
+Allowable values are:</p>
+<ul>
+<li>soundOnOff - Your game will register event handlers for soundOn and soundOff and handle appropriately</li>
+<li>pauseable - Your game will register event handlers for pause and resume and handle appropriately</li>
+<li>restartable - Your game will register event handlers for restart and handle appropriately</li>
+</ul>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
 
     
         <div class="returns">
@@ -1645,7 +1784,10 @@ key <code>user</code> that is an object of the user data.</p>
 
             <div class="example-content">
                 <pre>
-iConsole.game.ready().result( function( resultData ) {
+iConsole.game.ready({
+   soundOnOff: true,
+   pauseable: true
+}).result( function( resultData ) {
    myGame.showHomeScreenMenu(resultData.user);
 } );
 </pre>
@@ -1701,7 +1843,7 @@ iConsole.game.ready().result( function( resultData ) {
             
         
         
-        <a href="../files/src_console-js_modules_game.js.html#l292"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:292</code></a>
+        <a href="../files/src_console-js_modules_game.js.html#l302"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:302</code></a>
         
         </p>
 
@@ -1830,7 +1972,7 @@ iConsole.game.setGameData( {
             
         
         
-        <a href="../files/src_console-js_modules_game.js.html#l519"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:519</code></a>
+        <a href="../files/src_console-js_modules_game.js.html#l551"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:551</code></a>
         
         </p>
 
@@ -1938,7 +2080,7 @@ is typically used to relay information such as what level the user is going to r
             
         
         
-        <a href="../files/src_console-js_modules_game.js.html#l237"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:237</code></a>
+        <a href="../files/src_console-js_modules_game.js.html#l247"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:247</code></a>
         
         </p>
 

@@ -239,7 +239,7 @@ var realURItoCall = iConsole.periodical.getFileURI(&#x27;myImage.jpg&#x27;);
                     // clear this storage of the data to prevent against unnecessary memory usage
                     dataReceived = null;
                 }
-            }
+            };
             iConsole.XDM.sendGetPeriodicalPeriods().result(function(data){
                 dataReceived = data;
                 if (callback) {

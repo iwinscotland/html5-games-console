@@ -206,6 +206,13 @@
          * each other. This call will return an object that you&#x27;ll need to register a callback handler with, that will
          * be triggered after the pre-game advert has dismissed. You will need to prevent game play taking place until
          * this callback has been triggered, otherwise the game will start playing with an advert sat on top.
+         * @param data {Object} An object which declares what functions you support. If you support these functions
+         * you should declare them as function:true... i.e. &lt;pre&gt;{ soundOnOff: true }&lt;/pre&gt;. If you do not support these
+         * functions, then you do not need to declare them, as they are assumed to be unsupported.
+         * Allowable values are:
+         * * soundOnOff - Your game will register event handlers for soundOn and soundOff and handle appropriately
+         * * pauseable - Your game will register event handlers for pause and resume and handle appropriately
+         * * restartable - Your game will register event handlers for restart and handle appropriately
          * @return {Object} An object that contains a member function &lt;code&gt;result&lt;/code&gt; that you should call with a
          * callback function that will be fired when the advert is dismissed. The format of result function is
          * &lt;pre&gt;result( callbackFunction );&lt;/pre&gt;
@@ -213,7 +220,10 @@
          * key &lt;code&gt;user&lt;/code&gt; that is an object of the user data.
          * @example
          * &lt;pre&gt;
-         * iConsole.game.ready().result( function( resultData ) {
+         * iConsole.game.ready({
+         *    soundOnOff: true,
+         *    pauseable: true
+         * }).result( function( resultData ) {
          *    myGame.showHomeScreenMenu(resultData.user);
          * } );
          * &lt;/pre&gt;
@@ -447,6 +457,23 @@
         },
 
         /**
+         * This function should be called when the user has reached the end of a natural gaming session (i.e. they&#x27;ve
+         * run out of lives and can not continue). Game play should not be allowed to continue until the result callback
+         * function has been called.
+         * @method gameOver
+         * @example
+         * &lt;pre&gt;
+         * iConsole.game.gameOver().result( {
+         *    myGame.showMenuScreen();
+         * } );
+         * &lt;/pre&gt;
+         * @returns {*}
+         */
+        gameOver: function () {
+            return iConsole.XDM.sendGameOver();
+        },
+
+        /**
          * @method levelStarted
          * @deprecated
          * @param info
@@ -509,6 +536,11 @@
          * * signedIn - When a user signs in to the console (used to reload the user data from the console and restart the game)
          * * signedOut - When a user signs out of the console (used to reload the user data and restart the game)
          * * tiltYaxis - When a user tilts their amazon fire phone around the Y axis (used to dismiss menus in game)
+         * * soundOff - When the console requests to mute all sounds (the game should store the settings of the user overrides, so that if the sound is already muted, a call to soundOn should revert to the user settings)
+         * * soundOn - When the console requests to unmute all sounds (and where a game supports muting of sound effects and music separately, this should return the sound to the previous settings)
+         * * pause - When the console requests to pause the game, this should bring up the ingame pause menu (unless the game is not in a pause-able state)
+         * * resume - When the console requests to resume paused game play, this should unpause any paused game play (unless the game is not in a paused state)
+         * * restart - Only called if the console has received an iConsole.game.gameOver() call, and signifies that the console wants to do the same effect as the user clicking &quot;Replay&quot;. However, if the user has already manually done this, then this should do nothing.
          * See iConsole.game.offEvent
          * @method onEvent
          * @param eventType {string} currently, the only supported event type is &lt;code&gt;keydown&lt;/code&gt;
