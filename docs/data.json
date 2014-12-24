@@ -533,6 +533,18 @@
             "class": "iConsole.game"
         },
         {
+            "file": "src/console-js/modules/game.js",
+            "line": 562,
+            "description": "This function is used to explicitly to hide the console window (the chat and highscore window).",
+            "itemtype": "method",
+            "name": "hideConsoleWindow",
+            "return": {
+                "description": "",
+                "type": "*"
+            },
+            "class": "iConsole.game"
+        },
+        {
             "file": "src/console-js/modules/iap.js",
             "line": 206,
             "description": "This function should be used to feature detect whether In App Purchasing is available or not.",
@@ -631,6 +643,10 @@
         {
             "message": "replacing incorrect tag: returns with return",
             "line": " src/console-js/modules/game.js:551"
+        },
+        {
+            "message": "replacing incorrect tag: returns with return",
+            "line": " src/console-js/modules/game.js:562"
         },
         {
             "message": "replacing incorrect tag: returns with return",

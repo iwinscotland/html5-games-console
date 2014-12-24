@@ -657,6 +657,15 @@
             return iConsole.XDM.sendUpdateHomeWidgetLabel( { label : label } );
         },
 
+        /**
+         * This function is used to explicitly to hide the console window (the chat and highscore window).
+         * @method hideConsoleWindow
+         * @returns {*}
+         */
+        hideConsoleWindow: function() {
+            return iConsole.XDM.sendHideConsoleWindow();
+        },
+
         /*
          * Not for external documentation, but this is called whenever the console fires an event, and this method
          * will look for all handlers that have been registered with the console, and fire an event to each of them,
