@@ -13,7 +13,7 @@ Make your Development PC point local.games.iwin.com to your WebServer instance b
 Creating a build
 ----------------
 
-1) Open a terminal/Command Prompt in the root folder.
+1) Open a terminal/Command Prompt in the sdk/game folder.
 2) If you haven't already run "npm install" first.
 3) Run "grunt"
 4) Run "grunt run" to launch a webserver
