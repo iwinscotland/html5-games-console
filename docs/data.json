@@ -582,6 +582,8 @@
             "file": "src/console-js/modules/iap.js",
             "line": 254,
             "description": "This function should be used to feature detect whether external analytics (like Flurry) should be used for\nthe game. Note that if your game presents a different experience for an IAP game versus a non-IAP game, you\nshould store your analytic events accordingly.",
+            "itemtype": "method",
+            "name": "isAnalyticsSupported",
             "return": {
                 "description": "",
                 "type": "Boolean"
@@ -697,10 +699,6 @@
         {
             "message": "Missing item type\nIf your game supports mid game adverts, and you are applying these calls across multiple classes (i.e. each\nlevel is contained in a different class), then you should unregister any callbacks that you have made.\nOtherwise, the callbacks will be fired against all registered listeners and this may result in undesired\nbehaviour or complete crashes.",
             "line": " src/console-js/modules/ads.js:149"
-        },
-        {
-            "message": "Missing item type\nThis function should be used to feature detect whether external analytics (like Flurry) should be used for\nthe game. Note that if your game presents a different experience for an IAP game versus a non-IAP game, you\nshould store your analytic events accordingly.",
-            "line": " src/console-js/modules/iap.js:254"
         }
     ]
 }
