@@ -480,10 +480,10 @@
          * @return {{result: result, trigger: trigger}}
          */
 		levelStarted: function (info) {
-            var levelData = undefined;
+            var levelData;
             var advertHidden = false;
-            var fnCall = undefined;
-            var context = undefined;
+            var fnCall;
+            var context;
             var triggered = false;
             var deferred = {
                 result: function(fnToCall, contX) {
@@ -500,7 +500,7 @@
             };
             iConsole.game.getLevelData(info).result(function(data) {
                 levelData = data;
-                deferred.trigger()
+                deferred.trigger();
             });
             iConsole.ads.show({
                 type: &#x27;levelStart&#x27;,
@@ -674,7 +674,7 @@
         eventReceived: function (eventType, event) {
             if (eventType !== undefined &amp;&amp; event !== undefined) {
                 event.stopPropagationSet = false;
-                event.stopPropagation = function() {this.stopPropagationSet = true;}
+                event.stopPropagation = function() {this.stopPropagationSet = true;};
                 if (iConsole.game.callbacks[eventType] !== undefined) {
                     var callbacksForEventType = iConsole.game.callbacks[eventType];
                     var i = 0;

@@ -1,3 +1,5 @@
+//See http://ad­cdn.spele.nl/keyGamesAPI/developers/downloads/keyGamesAPI­BETA.zip
+
 keyGamesAPI_loadingComplete = function () { //informs when initial loading is complete.
      game_logger("loadingComplete");
      parent.framework_keyGamesAPI_loadingComplete();

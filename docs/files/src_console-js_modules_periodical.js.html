@@ -198,7 +198,7 @@ var realURItoCall = iConsole.periodical.getFileURI(&#x27;myImage.jpg&#x27;);
          * @returns {{result: Function}}
          */
         getData:function(periodsBack){
-            if (!periodsBack || typeof periodsBack !== &#x27;number&#x27; || periodsBack !== Math.floor(periodsBack)) periodsBack = 0;
+            if (!periodsBack || typeof periodsBack !== &#x27;number&#x27; || periodsBack !== Math.floor(periodsBack)) { periodsBack = 0; }
             var callback = null;
             var dataReceieved = null;
             // A function that will be returned to the caller
