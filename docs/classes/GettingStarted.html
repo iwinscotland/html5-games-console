@@ -51,8 +51,6 @@
             
                 <li><a href="../classes/iConsole.periodical.html">iConsole.periodical</a></li>
             
-                <li><a href="../classes/In-App-Purchases.html">In-App-Purchases</a></li>
-            
             </ul>
 
             <ul id="api-modules" class="apis modules">
@@ -113,75 +111,17 @@
 
 <div class="box intro">
     <h2 id="getting-started">Getting Started</h2>
-<p>Developing games for iWin Games Console </p>
+<p>Welcome to the documentation for developing games for the iWin Games Console.</p>
 <h2 id="quick-start">Quick Start</h2>
-<p>For a quick start, please serve this folder from an apache/nginx instance and launch the index.html from this folder,
-and the SDK sample &quot;game&quot; will launch.</p>
-<p>These are examples of live games that use the console
-<a href="http://m.iwin.com/game/match3/puzzle-match3-jewelquest"><a href="http://m.iwin.com/game/match3/puzzle-match3-jewelquest">http://m.iwin.com/game/match3/puzzle-match3-jewelquest</a></a>
-or
-<a href="http://m.iwin.com/game/puzzle/smorewords"><a href="http://m.iwin.com/game/puzzle/smorewords">http://m.iwin.com/game/puzzle/smorewords</a></a></p>
-<h2 id="configuration">Configuration</h2>
-<p>Please configure your &#39;browser/pc&#39; via the hosts file so that your dev webserver has the name &#39;local.games.iwin.com&#39;</p>
-<h2 id="folder-structure">Folder Structure</h2>
-<p>All game code must go in the &#39;game&#39; subfolder and the parent folder must be included in any webserver instance that you run.
-The current structure is</p>
-<pre>
-/
-/game/
-......index.html
-......game_details.json
-/site-console/
-......js/
-......img/
-/index.html
-/iconsole.js
-</pre>
-
-<p>Within the game folder there must be at a minimum 2 files...</p>
+<p>To get started quickly please read through the step by step guide here
+<a href="https://github.com/iwininc/html5-games-console"><a href="https://github.com/iwininc/html5-games-console">https://github.com/iwininc/html5-games-console</a></a></p>
+<p>To see some games already in production using the iWin Games Console please visit</p>
 <ul>
-<li>game_details.json </li>
-<li>index.html</li>
+<li>JewelQuest [<a href="http://m.iwin.com/game/match3/puzzle-match3-jewelquest">http://m.iwin.com/game/match3/puzzle-match3-jewelquest</a>]</li>
+<li>S&#39;more Words [<a href="http://m.iwin.com/game/puzzle/smorewords">http://m.iwin.com/game/puzzle/smorewords</a>]</li>
+<li>Yukon Solitaire [<a href="http://m.iwin.com/game/casual/solitairequestklondike">http://m.iwin.com/game/casual/solitairequestklondike</a>]</li>
 </ul>
-<p>Note: You must visit index.html in the root folder and not the game/index.html from your browser and also use &#39;http&#39; protocol URI&#39;s and not local &#39;file&#39; URI&#39;s</p>
-<h2 id="game_details-json">Game_details.json</h2>
-<p>This file must contain valid json game details.  For example.</p>
-<pre>
-{
-  "name": "Test Bed",
-  "code": "testbed",
-  "advertBehavior": {
-    "type":"specific_levels",
-    "levels":[1,3,5,7]
-  }
-}
-</pre>
-Details are..
-<pre>
-"name": Game name that will be displayed in the title bar of the console
-"code": Unique game code that will be used when deployed on the iWin portal.  We will likely change this after you send it to us
-"advertBehavior": This allows us to define when and where to display ads as the user plays the game.  The example above is a sample but we do support other types.  See ads class for more information
-</pre>
-
-<h2 id="game-index-html">game/Index.html</h2>
-<ul>
-<li>The game/index.html is served via an IFRAME that is dynamically created by the console, and all requests inside that IFRAME will be local to the game folder.</li>
-<li>Internally, the system uses easyXDM to message between the game and the console (as they live in separate frames), but these calls are obfuscated through functions in ../iconsole.js (relative to the game folder). Therefore, any game implementing the console should load the iconsole.js from the parent folder as a script, before making any messages to the console.</li>
-<li>As the game loads, it makes calls to the console to notify the console of it&#39;s progress. Typically this is done when pre-loading assets required for the game. This ensures that the game window stays hidden from the player until the game has fully loaded, and that the advert panel is visible until the game is ready to play.</li>
-<li>Once the game assets have been fully loaded, the game calls the console to tell it has loaded the game. The console will remove the panel that is hiding the game, and signals that the advert can be removed (after minimum advert duration has been reached).
-For more information see the included example &#39;game&#39;.</li>
-</ul>
-<h2 id="backend-server">Backend Server</h2>
-<ul>
-<li>The SDK will speak to a test server hosted by iWin for certain API calls.</li>
-<li>The test server URLs that we call are: <ul>
-<li><a href="https://sl.iwin.com">https://sl.iwin.com</a>: Stage Logon Server</li>
-<li><a href="https://sc.iwin.com">https://sc.iwin.com</a>: Stage Chat Server</li>
-</ul>
-</li>
-<li>In order for chatroom and database persistence of user progress functionality to work, you should use develop with a hostfile entry of local.games.iwin.com pointing to your local development environment. If you use a different hostname, login/chat will not work, however, your data will be stored as an anonymous user in the html5 local storage object. </li>
-</ul>
-<h2 id="improving-game-performance">Improving Game Performance</h2>
+<h2 id="notes-on-improving-game-performance">Notes on Improving Game Performance</h2>
 <ul>
 <li>Only load the required assets at startup and load level specific assets as they are needed.</li>
 <li>Think about using JPEGs rather than PNGs (if you can)</li>

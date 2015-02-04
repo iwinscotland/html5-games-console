@@ -51,8 +51,6 @@
             
                 <li><a href="../classes/iConsole.periodical.html">iConsole.periodical</a></li>
             
-                <li><a href="../classes/In-App-Purchases.html">In-App-Purchases</a></li>
-            
             </ul>
 
             <ul id="api-modules" class="apis modules">
@@ -114,6 +112,7 @@
 <div class="box intro">
     <h2 id="adverts">Adverts</h2>
 <p>Adverts are controlled by the game_details.json file located in the root of game.</p>
+<p>TODO documentation w.r.t. game_details.json configuration</p>
 <h2 id="types">Types</h2>
 <ul>
 <li>&#39;none&#39; No adverts</li>
@@ -218,7 +217,7 @@
             
         
         
-        <a href="../files/src_console-js_modules_ads.js.html#l27"><code>src&#x2F;console-js&#x2F;modules&#x2F;ads.js:27</code></a>
+        <a href="../files/src_console-js_modules_ads.js.html#l29"><code>src&#x2F;console-js&#x2F;modules&#x2F;ads.js:29</code></a>
         
         </p>
 
@@ -230,9 +229,9 @@
 
     <div class="description">
         <p>In order to flag an advert to potentially be shown, you call this function with appropriate data blocks as
-defined below. You should pause your game play whilst the advert is displayed, and thus you should consider
-the advert to be displayed, until the console triggers the <code>result</code> member function of the return
-value.
+defined below. You should pause your game play and mute any sound/music whilst the advert is displayed.
+You will be notified via the <code>result</code> callback once the console has completed its advert display process.
+At this point you should un mute and un pause your game.
 <br>
 If you declare your data type to be <code>interstitial</code>, then the advert (currently) will be triggered
 always. If you declare your data type to be <code>levelStarted</code>, then the advert may or may not fire

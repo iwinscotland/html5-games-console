@@ -51,8 +51,6 @@
             
                 <li><a href="../classes/iConsole.periodical.html">iConsole.periodical</a></li>
             
-                <li><a href="../classes/In-App-Purchases.html">In-App-Purchases</a></li>
-            
             </ul>
 
             <ul id="api-modules" class="apis modules">
@@ -101,7 +99,9 @@
 	 * Adverts
 	 * -------
 	 * Adverts are controlled by the game_details.json file located in the root of game.
-	 * 
+	 *
+     * TODO documentation w.r.t. game_details.json configuration
+     *
 	 * Types
 	 * -----
 	 * + &#x27;none&#x27; No adverts
@@ -124,9 +124,9 @@
 
         /**
          * In order to flag an advert to potentially be shown, you call this function with appropriate data blocks as
-         * defined below. You should pause your game play whilst the advert is displayed, and thus you should consider
-         * the advert to be displayed, until the console triggers the &lt;code&gt;result&lt;/code&gt; member function of the return
-         * value.
+         * defined below. You should pause your game play and mute any sound/music whilst the advert is displayed.
+         * You will be notified via the &lt;code&gt;result&lt;/code&gt; callback once the console has completed its advert display process.
+         * At this point you should un mute and un pause your game.
          * &lt;br&gt;
          * If you declare your data type to be &lt;code&gt;interstitial&lt;/code&gt;, then the advert (currently) will be triggered
          * always. If you declare your data type to be &lt;code&gt;levelStarted&lt;/code&gt;, then the advert may or may not fire
@@ -304,6 +304,7 @@
 	return m;
 
 })($, Backbone, _, iConsole, Class, Module, easyXDM, URI);
+
     </pre>
 </div>
 

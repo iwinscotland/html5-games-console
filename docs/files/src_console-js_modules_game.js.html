@@ -51,8 +51,6 @@
             
                 <li><a href="../classes/iConsole.periodical.html">iConsole.periodical</a></li>
             
-                <li><a href="../classes/In-App-Purchases.html">In-App-Purchases</a></li>
-            
             </ul>
 
             <ul id="api-modules" class="apis modules">
@@ -99,83 +97,20 @@
 /**
  * Getting Started
  * ---------------
- * Developing games for iWin Games Console 
+ * Welcome to the documentation for developing games for the iWin Games Console.
  *
  * Quick Start
  * ----------- 
- * For a quick start, please serve this folder from an apache/nginx instance and launch the index.html from this folder,
- * and the SDK sample &quot;game&quot; will launch.
+ * To get started quickly please read through the step by step guide here
+ * [https://github.com/iwininc/html5-games-console](https://github.com/iwininc/html5-games-console)
  *
- * These are examples of live games that use the console
- * [http://m.iwin.com/game/match3/puzzle-match3-jewelquest](http://m.iwin.com/game/match3/puzzle-match3-jewelquest)
- * or
- * [http://m.iwin.com/game/puzzle/smorewords](http://m.iwin.com/game/puzzle/smorewords)
+ * To see some games already in production using the iWin Games Console please visit
+ * - JewelQuest [http://m.iwin.com/game/match3/puzzle-match3-jewelquest]
+ * - S&#x27;more Words [http://m.iwin.com/game/puzzle/smorewords]
+ * - Yukon Solitaire [http://m.iwin.com/game/casual/solitairequestklondike]
  *
- * Configuration
- * -------------
- * Please configure your &#x27;browser/pc&#x27; via the hosts file so that your dev webserver has the name &#x27;local.games.iwin.com&#x27;
- *
- * Folder Structure
- * ----------------
- * All game code must go in the &#x27;game&#x27; subfolder and the parent folder must be included in any webserver instance that you run.
- * The current structure is
- * &lt;pre&gt;
- * /
- * /game/
- * ......index.html
- * ......game_details.json
- * /site-console/
- * ......js/
- * ......img/
- * /index.html
- * /iconsole.js
- * &lt;/pre&gt;
- * 
- * Within the game folder there must be at a minimum 2 files...
- * + game_details.json 
- * + index.html
- * 
- * Note: You must visit index.html in the root folder and not the game/index.html from your browser and also use &#x27;http&#x27; protocol URI&#x27;s and not local &#x27;file&#x27; URI&#x27;s
- *
- * Game_details.json
- * -----------------
- * This file must contain valid json game details.  For example.
- * &lt;pre&gt;
- * {
- *   &quot;name&quot;: &quot;Test Bed&quot;,
- *   &quot;code&quot;: &quot;testbed&quot;,
- *   &quot;advertBehavior&quot;: {
- *     &quot;type&quot;:&quot;specific_levels&quot;,
- *     &quot;levels&quot;:[1,3,5,7]
- *   }
- * }
- * &lt;/pre&gt;
- * Details are..
- * &lt;pre&gt;
- * &quot;name&quot;: Game name that will be displayed in the title bar of the console
- * &quot;code&quot;: Unique game code that will be used when deployed on the iWin portal.  We will likely change this after you send it to us
- * &quot;advertBehavior&quot;: This allows us to define when and where to display ads as the user plays the game.  The example above is a sample but we do support other types.  See ads class for more information
- * &lt;/pre&gt;
- * 
- * game/Index.html
- * ---------------
- *  
- * + The game/index.html is served via an IFRAME that is dynamically created by the console, and all requests inside that IFRAME will be local to the game folder.
- * + Internally, the system uses easyXDM to message between the game and the console (as they live in separate frames), but these calls are obfuscated through functions in ../iconsole.js (relative to the game folder). Therefore, any game implementing the console should load the iconsole.js from the parent folder as a script, before making any messages to the console.
- * + As the game loads, it makes calls to the console to notify the console of it&#x27;s progress. Typically this is done when pre-loading assets required for the game. This ensures that the game window stays hidden from the player until the game has fully loaded, and that the advert panel is visible until the game is ready to play.
- * + Once the game assets have been fully loaded, the game calls the console to tell it has loaded the game. The console will remove the panel that is hiding the game, and signals that the advert can be removed (after minimum advert duration has been reached).
- * For more information see the included example &#x27;game&#x27;.
- *
- * Backend Server
- * --------------
- * + The SDK will speak to a test server hosted by iWin for certain API calls.
- * + The test server URLs that we call are: 
- *  - https://sl.iwin.com: Stage Logon Server
- *  - https://sc.iwin.com: Stage Chat Server
- * + In order for chatroom and database persistence of user progress functionality to work, you should use develop with a hostfile entry of local.games.iwin.com pointing to your local development environment. If you use a different hostname, login/chat will not work, however, your data will be stored as an anonymous user in the html5 local storage object. 
- *
- * Improving Game Performance
- * --------------------------
+ * Notes on Improving Game Performance
+ * -----------------------------------
  * + Only load the required assets at startup and load level specific assets as they are needed.
  * + Think about using JPEGs rather than PNGs (if you can)
  * + Use compressed image file types
@@ -187,6 +122,17 @@
 
 (function ($, Backbone, _, iConsole, Class, Module, easyXDM, URI) {
     /**
+     * Game
+     * ---------------
+     *
+     * As your game loads, you will integrate notification calls to the console to notify it of progress.
+     * Typically this is done when pre-loading assets required for the game.
+     *
+     * Once the game assets have been fully loaded, the game will notify the console that the game has finished loading.
+     * The console will do any necessary work, such as dismissing pre-roll advert panels (if configured and after minimum advert duration has been reached).
+     *
+     * Additional API calls can then be used.
+     *
      * @class iConsole.game
      * @type {iConsole.game|*|{}}
      */
@@ -467,7 +413,7 @@
          *    myGame.showMenuScreen();
          * } );
          * &lt;/pre&gt;
-         * @returns {*}
+         * @return {*}
          */
         gameOver: function () {
             return iConsole.XDM.sendGameOver();
@@ -617,7 +563,7 @@
          * when the game is first loaded as the game&#x27;s window is hidden from display. This function is especially
          * useful when trying to determine what resolution of graphics the game should load.
          * @method getWidth
-         * @returns {*}
+         * @return {*}
          */
         getWidth: function() {
             var frame = window.parent.document.getElementById(&#x27;iconsole-plugin-session_iframe__&#x27;);
@@ -634,7 +580,7 @@
          * when the game is first loaded as the game&#x27;s window is hidden from display. This function is especially
          * useful when trying to determine what resolution of graphics the game should load.
          * @method getHeight
-         * @returns {*}
+         * @return {*}
          */
         getHeight: function() {
             var frame = window.parent.document.getElementById(&#x27;iconsole-plugin-session_iframe__&#x27;);
@@ -651,7 +597,7 @@
          * is typically used to relay information such as what level the user is going to resume playback from.
          * @method setHomeWidgetLabel
          * @param label - The label to set
-         * @returns {*}
+         * @return {*}
          */
         setHomeWidgetLabel: function(label) {
             return iConsole.XDM.sendUpdateHomeWidgetLabel( { label : label } );
@@ -660,7 +606,7 @@
         /**
          * This function is used to explicitly to hide the console window (the chat and highscore window).
          * @method hideConsoleWindow
-         * @returns {*}
+         * @return {*}
          */
         hideConsoleWindow: function() {
             return iConsole.XDM.sendHideConsoleWindow();

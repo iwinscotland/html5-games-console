@@ -51,8 +51,6 @@
             
                 <li><a href="../classes/iConsole.periodical.html">iConsole.periodical</a></li>
             
-                <li><a href="../classes/In-App-Purchases.html">In-App-Purchases</a></li>
-            
             </ul>
 
             <ul id="api-modules" class="apis modules">
@@ -195,7 +193,7 @@ var realURItoCall = iConsole.periodical.getFileURI(&#x27;myImage.jpg&#x27;);
          * function.
          * @method getData
          * @param periodsBack
-         * @returns {{result: Function}}
+         * @return {{result: Function}}
          */
         getData:function(periodsBack){
             if (!periodsBack || typeof periodsBack !== &#x27;number&#x27; || periodsBack !== Math.floor(periodsBack)) { periodsBack = 0; }
@@ -224,7 +222,7 @@ var realURItoCall = iConsole.periodical.getFileURI(&#x27;myImage.jpg&#x27;);
          * This function should be used to fetch the total number of periods of data supported, and any data that is
          * necessary to display these periodicals, such as thumbnails. The data once obtained, is called back in the
          * .result(callback) callback function.
-         * @returns {{result: Function}}
+         * @return {{result: Function}}
          * @method getPeriods
          */
         getPeriods:function(){
@@ -255,7 +253,7 @@ var realURItoCall = iConsole.periodical.getFileURI(&#x27;myImage.jpg&#x27;);
          * URI that can be reached. This should be done for every URL referenced by the periodical data, that is meant
          * to be local to the JSON file.
          * @param uri
-         * @returns {string}
+         * @return {string}
          * @method getFileURI
          */
         getFileURI: function(uri) {

@@ -51,8 +51,6 @@
             
                 <li><a href="../classes/iConsole.periodical.html">iConsole.periodical</a></li>
             
-                <li><a href="../classes/In-App-Purchases.html">In-App-Purchases</a></li>
-            
             </ul>
 
             <ul id="api-modules" class="apis modules">
@@ -100,7 +98,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_console-js_modules_game.js.html#l91"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:91</code></a>
+            Defined in: <a href="../files/src_console-js_modules_game.js.html#l28"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:28</code></a>
         </div>
     
 
@@ -112,7 +110,13 @@
 
 
 <div class="box intro">
-    
+    <h2 id="game">Game</h2>
+<p>As your game loads, you will integrate notification calls to the console to notify it of progress.
+Typically this is done when pre-loading assets required for the game.</p>
+<p>Once the game assets have been fully loaded, the game will notify the console that the game has finished loading.
+The console will do any necessary work, such as dismissing pre-roll advert panels (if configured and after minimum advert duration has been reached).</p>
+<p>Additional API calls can then be used.</p>
+
 </div>
 
 
@@ -314,7 +318,7 @@
             
         
         
-        <a href="../files/src_console-js_modules_game.js.html#l361"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:361</code></a>
+        <a href="../files/src_console-js_modules_game.js.html#l309"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:309</code></a>
         
         </p>
 
@@ -409,7 +413,7 @@ iConsole.game.gameOver().result( {
             
         
         
-        <a href="../files/src_console-js_modules_game.js.html#l276"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:276</code></a>
+        <a href="../files/src_console-js_modules_game.js.html#l224"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:224</code></a>
         
         </p>
 
@@ -528,7 +532,7 @@ iConsole.game.getGameData().result( function ( resultData ) {
             
         
         
-        <a href="../files/src_console-js_modules_game.js.html#l534"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:534</code></a>
+        <a href="../files/src_console-js_modules_game.js.html#l482"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:482</code></a>
         
         </p>
 
@@ -611,7 +615,7 @@ useful when trying to determine what resolution of graphics the game should load
             
         
         
-        <a href="../files/src_console-js_modules_game.js.html#l210"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:210</code></a>
+        <a href="../files/src_console-js_modules_game.js.html#l158"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:158</code></a>
         
         </p>
 
@@ -740,7 +744,7 @@ iConsole.game.getLevelData( { level: 23 } ).result( function ( resultData ) {
             
         
         
-        <a href="../files/src_console-js_modules_game.js.html#l517"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:517</code></a>
+        <a href="../files/src_console-js_modules_game.js.html#l465"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:465</code></a>
         
         </p>
 
@@ -813,7 +817,7 @@ useful when trying to determine what resolution of graphics the game should load
             
         
         
-        <a href="../files/src_console-js_modules_game.js.html#l562"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:562</code></a>
+        <a href="../files/src_console-js_modules_game.js.html#l510"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:510</code></a>
         
         </p>
 
@@ -896,7 +900,7 @@ useful when trying to determine what resolution of graphics the game should load
             
         
         
-        <a href="../files/src_console-js_modules_game.js.html#l417"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:417</code></a>
+        <a href="../files/src_console-js_modules_game.js.html#l365"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:365</code></a>
         
         </p>
 
@@ -1001,7 +1005,7 @@ useful when trying to determine what resolution of graphics the game should load
             
         
         
-        <a href="../files/src_console-js_modules_game.js.html#l378"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:378</code></a>
+        <a href="../files/src_console-js_modules_game.js.html#l326"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:326</code></a>
         
         </p>
 
@@ -1106,7 +1110,7 @@ useful when trying to determine what resolution of graphics the game should load
             
         
         
-        <a href="../files/src_console-js_modules_game.js.html#l165"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:165</code></a>
+        <a href="../files/src_console-js_modules_game.js.html#l113"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:113</code></a>
         
         </p>
 
@@ -1252,7 +1256,7 @@ iConsole.game.loaded( {
             
         
         
-        <a href="../files/src_console-js_modules_game.js.html#l138"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:138</code></a>
+        <a href="../files/src_console-js_modules_game.js.html#l86"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:86</code></a>
         
         </p>
 
@@ -1382,7 +1386,7 @@ iConsole.game.loadProgress( {
             
         
         
-        <a href="../files/src_console-js_modules_game.js.html#l480"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:480</code></a>
+        <a href="../files/src_console-js_modules_game.js.html#l428"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:428</code></a>
         
         </p>
 
@@ -1510,7 +1514,7 @@ iConsole.game.offEvent( 'keydown', myGame.keydownHandler );
             
         
         
-        <a href="../files/src_console-js_modules_game.js.html#l430"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:430</code></a>
+        <a href="../files/src_console-js_modules_game.js.html#l378"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:378</code></a>
         
         </p>
 
@@ -1650,7 +1654,7 @@ iConsole.game.onEvent( 'keydown', myGame.keydownHandler );
             
         
         
-        <a href="../files/src_console-js_modules_game.js.html#l329"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:329</code></a>
+        <a href="../files/src_console-js_modules_game.js.html#l277"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:277</code></a>
         
         </p>
 
@@ -1784,7 +1788,7 @@ iConsole.game.postHighScore( {
             
         
         
-        <a href="../files/src_console-js_modules_game.js.html#l106"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:106</code></a>
+        <a href="../files/src_console-js_modules_game.js.html#l54"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:54</code></a>
         
         </p>
 
@@ -1921,7 +1925,7 @@ iConsole.game.ready({
             
         
         
-        <a href="../files/src_console-js_modules_game.js.html#l302"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:302</code></a>
+        <a href="../files/src_console-js_modules_game.js.html#l250"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:250</code></a>
         
         </p>
 
@@ -2050,7 +2054,7 @@ iConsole.game.setGameData( {
             
         
         
-        <a href="../files/src_console-js_modules_game.js.html#l551"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:551</code></a>
+        <a href="../files/src_console-js_modules_game.js.html#l499"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:499</code></a>
         
         </p>
 
@@ -2158,7 +2162,7 @@ is typically used to relay information such as what level the user is going to r
             
         
         
-        <a href="../files/src_console-js_modules_game.js.html#l247"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:247</code></a>
+        <a href="../files/src_console-js_modules_game.js.html#l195"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:195</code></a>
         
         </p>
 
