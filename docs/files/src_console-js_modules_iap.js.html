@@ -94,8 +94,9 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
-(function($, Backbone, _, iConsole, Class, Module, easyXDM, URI){
+(function(iConsole, Class, Module){
 
+    //todo code review disjointed documentation w.r.t. the config in games_details.json and the examples given - unclear...
     /**
      * In App Purchases
      * ----------------
@@ -349,9 +350,20 @@
             return iConsole.iap.internal.analyticsSupported;
         },
 
+        /**
+         * This function will return the provider that the console is running under, which can be used to target
+         * different analytics accounts
+         * @method getConsoleProvider
+         * @returns {string}
+         */
+        getConsoleProvider: function() {
+            return iConsole.iap.internal.provider;
+        },
+
         internal: {
             supported: false,
             analyticsSupported: false,
+            provider: &#x27;&#x27;,
             initializeIAP: function(data) {
                 iConsole.iap.internal.supported = true;
                 if (data &amp;&amp; data.analytics) {
@@ -367,7 +379,7 @@
 
     return m;
 
-})($, Backbone, _, iConsole, Class, Module, easyXDM, URI);
+})(iConsole, Class, Module);
     </pre>
 </div>
 
