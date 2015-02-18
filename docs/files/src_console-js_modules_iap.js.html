@@ -94,9 +94,8 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
-(function(iConsole, Class, Module){
+(function($, Backbone, _, iConsole, Class, Module, easyXDM, URI){
 
-    //todo code review disjointed documentation w.r.t. the config in games_details.json and the examples given - unclear...
     /**
      * In App Purchases
      * ----------------
@@ -379,7 +378,7 @@
 
     return m;
 
-})(iConsole, Class, Module);
+})($, Backbone, _, iConsole, Class, Module, easyXDM, URI);
     </pre>
 </div>
 

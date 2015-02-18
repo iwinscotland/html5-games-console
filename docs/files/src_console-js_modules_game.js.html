@@ -120,7 +120,7 @@
  * @type {GettingStarted|*{}}
  */
 
-(function (iConsole, Class, Module) {
+(function ($, Backbone, _, iConsole, Class, Module, easyXDM, URI) {
     /**
      * Game
      * ---------------
@@ -288,7 +288,6 @@
             return iConsole.XDM.sendGetLevelData(data);
         },
 
-        //todo code review i would suggest making the json being passed inside data valid json
         /**
          * This call should be made to store progress of a level (typically at the end of a level) via a 2k data string.
          * This is useful to allow a user to continue game progress where they left off or to restart previously failed
@@ -344,7 +343,6 @@
             return iConsole.XDM.sendGetGameData(data);
         },
 
-        //todo code review i would suggest making the json being passed inside data valid json
         /**
          * This call should be made to store progress in a game session (typically at the end of a level) via a 2k data
          * string. This is useful to allow a user to continue game progress where they left off or to restart previously
@@ -473,8 +471,6 @@
 			return iConsole.game.setLevelData(info);
 		},
 
-        //todo code review the first chunk i think is irrelevant
-
         /**
          * The user may generate keydown events when they are typing either in the game or in the console. Where the
          * user is typing into their chat window, keydown events are going to be triggered that games will erroneously
@@ -525,7 +521,6 @@
             }
         },
 
-        //todo code review the documentation is out of date with the implementation w.r.t. supported types.
         /**
          * The user may generate keydown events when they are typing either in the game or in the console. Where the
          * user is typing into their chat window, keydown events are going to be triggered that games will erroneously
@@ -601,7 +596,7 @@
          * This function is used to set the label underneath the game&#x27;s image on Amazon Fire devices (currently), and
          * is typically used to relay information such as what level the user is going to resume playback from.
          * @method setHomeWidgetLabel
-         * @param label - The label to set, example &#x27;Continue playing from level 5&#x27;  or &#x27;Welcome Back Trooper&#x27;, ...
+         * @param label - The label to set
          * @return {*}
          */
         setHomeWidgetLabel: function(label) {
@@ -644,7 +639,7 @@
 
 	return m;
 
-})(iConsole, Class, Module);
+})($, Backbone, _, iConsole, Class, Module, easyXDM, URI);
     </pre>
 </div>
 
