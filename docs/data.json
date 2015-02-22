@@ -76,7 +76,7 @@
             "plugin_for": [],
             "extension_for": [],
             "file": "src/console-js/modules/game.js",
-            "line": 28,
+            "line": 32,
             "description": "Game\n---------------\n\nAs your game loads, you will integrate notification calls to the console to notify it of progress.\nTypically this is done when pre-loading assets required for the game.\n\nOnce the game assets have been fully loaded, the game will notify the console that the game has finished loading.\nThe console will do any necessary work, such as dismissing pre-roll advert panels (if configured and after minimum advert duration has been reached).\n\nAdditional API calls can then be used.",
             "type": "{iConsole.game|*|{}}"
         },
@@ -206,7 +206,7 @@
         },
         {
             "file": "src/console-js/modules/game.js",
-            "line": 54,
+            "line": 58,
             "description": "This is the first call you need to make in order for the game and the console to start communicating with\neach other. This call will return an object that you'll need to register a callback handler with, that will\nbe triggered after the pre-game advert has dismissed. You will need to prevent game play taking place until\nthis callback has been triggered, otherwise the game will start playing with an advert sat on top.",
             "params": [
                 {
@@ -228,7 +228,7 @@
         },
         {
             "file": "src/console-js/modules/game.js",
-            "line": 86,
+            "line": 90,
             "description": "While the game is loading all of it's assets, you should call this frequently to notify the user (via the\npre-game advert progress bar) of the game's loading progress. Typically games will pre-load the image /\naudio assets needed for the menu and first level of the game. Games may also use this time to pre-compile any\ndata blocks that may require a degree of time to complete",
             "params": [
                 {
@@ -249,7 +249,7 @@
         },
         {
             "file": "src/console-js/modules/game.js",
-            "line": 113,
+            "line": 117,
             "description": "Once the game has finished loading all of it's assets you should call this method to notify the console that\nyou have completed loading of all game assets and pre-compilation. This is in addition to making an\n<code>iConsole.game.loadProgress( { progress: 1, file: '' } );</code> call. This call to\n<code>iConsole.game.loaded</code> indicates to the console that it should allow the user to dismiss the\npre-game advert (once the minimum advert time has passed), or if the maximum advert time has passed to\nimmediately dismiss the pre-game advert. This call will ultimately result in the callback function in\n<code>iConsole.game.ready</code> to be called.",
             "params": [
                 {
@@ -272,7 +272,7 @@
         },
         {
             "file": "src/console-js/modules/game.js",
-            "line": 158,
+            "line": 162,
             "description": "This call should be made prior to starting a level, to obtain any data that the game has previously stored\nfor the level about to be played. This is useful to allow a user to continue game progress where they left\noff. Examples of this can include fetching the data of a previous level (to indicate what items a user has\nin their in-game inventory). This is an asynchronous call, as the data may need to be fetched from a back-end\nserver, thus the data is passed into a callback function that you must supply to the result function in the\nreturned object.\nYou should also make a call to <code>iConsole.ads.show</code> with the type set to <code>levelStarted</code>\nas well, and wait for both callbacks to complete before continuing on with the game. Suggested order would\nbe to call <code>iConsole.ads.show</code> first, and then call <code>iConsole.game.getLevelData</code> to\nensure that the user is presented with something that is the game just waiting, and only proceed once both\nof these functions have triggered their callback functions.",
             "params": [
                 {
@@ -294,7 +294,7 @@
         },
         {
             "file": "src/console-js/modules/game.js",
-            "line": 196,
+            "line": 200,
             "description": "This call should be made to store progress of a level (typically at the end of a level) via a 2k data string.\nThis is useful to allow a user to continue game progress where they left off or to restart previously failed\nlevels. Whilst this may result in a back-end call, this call can be made and no callback function required to\nhandle the result.",
             "params": [
                 {
@@ -316,7 +316,7 @@
         },
         {
             "file": "src/console-js/modules/game.js",
-            "line": 225,
+            "line": 229,
             "description": "This call can be made prior to starting a level or prior to starting a game, to obtain any data that the game\nhas previously stored for the entire game session and any previous information (such as my best score if the\ngame wishes to display that inside its UI). This is useful to allow a user to continue game progress where\nthey left off, for example by storing the current user level. This is an asynchronous call, as the data may\nneed to be fetched from a back-end server, thus the data is passed into a callback function that you must\nsupply to the result function in the returned object.",
             "params": [
                 {
@@ -338,7 +338,7 @@
         },
         {
             "file": "src/console-js/modules/game.js",
-            "line": 252,
+            "line": 256,
             "description": "This call should be made to store progress in a game session (typically at the end of a level) via a 2k data\nstring. This is useful to allow a user to continue game progress where they left off or to restart previously\nfailed levels. Whilst this may result in a back-end call, this call can be made and no callback function\nrequired to handle the result.",
             "params": [
                 {
@@ -360,7 +360,7 @@
         },
         {
             "file": "src/console-js/modules/game.js",
-            "line": 279,
+            "line": 283,
             "description": "This call should be made whenever the game wishes to post a high score for the global leaderboards for the\nuser. In the future, the console may cause a dialog to appear to congratulate the user on their achievement\nand so the game should pause execution until the callback function that should be supplied to the\n<code>result</code> member function of the returned object has been called. Currently, this will be called\nimmediately.",
             "params": [
                 {
@@ -382,7 +382,7 @@
         },
         {
             "file": "src/console-js/modules/game.js",
-            "line": 311,
+            "line": 315,
             "description": "This function should be called when the user has reached the end of a natural gaming session (i.e. they've\nrun out of lives and can not continue). Game play should not be allowed to continue until the result callback\nfunction has been called.",
             "itemtype": "method",
             "name": "gameOver",
@@ -397,7 +397,7 @@
         },
         {
             "file": "src/console-js/modules/game.js",
-            "line": 328,
+            "line": 332,
             "itemtype": "method",
             "name": "levelStarted",
             "deprecated": true,
@@ -415,7 +415,7 @@
         },
         {
             "file": "src/console-js/modules/game.js",
-            "line": 367,
+            "line": 371,
             "itemtype": "method",
             "name": "levelFinished",
             "deprecated": true,
@@ -433,7 +433,7 @@
         },
         {
             "file": "src/console-js/modules/game.js",
-            "line": 382,
+            "line": 386,
             "description": "The user may generate keydown events when they are typing either in the game or in the console. Where the\nuser is typing into their chat window, keydown events are going to be triggered that games will erroneously\ncatch and handle. Therefore, instead of registering keydown handlers inside the game, you should add a\nhandler to the iConsole instead, which will bubble the keydown events except for when the user is typing into\nfields that shouldn't trigger game interaction, such as the chat window.\nThe currently supported event types are:\n* keydown - When a key is pressed down\n* signedIn - When a user signs in to the console (used to reload the user data from the console and restart the game)\n* signedOut - When a user signs out of the console (used to reload the user data and restart the game)\n* tiltYaxis - When a user tilts their amazon fire phone around the Y axis (used to dismiss menus in game)\n* soundOff - When the console requests to mute all sounds (the game should store the settings of the user overrides, so that if the sound is already muted, a call to soundOn should revert to the user settings)\n* soundOn - When the console requests to unmute all sounds (and where a game supports muting of sound effects and music separately, this should return the sound to the previous settings)\n* pause - When the console requests to pause the game, this should bring up the ingame pause menu (unless the game is not in a pause-able state)\n* resume - When the console requests to resume paused game play, this should unpause any paused game play (unless the game is not in a paused state)\n* restart - Only called if the console has received an iConsole.game.gameOver() call, and signifies that the console wants to do the same effect as the user clicking \"Replay\". However, if the user has already manually done this, then this should do nothing.\nSee iConsole.game.offEvent",
             "itemtype": "method",
             "name": "onEvent",
@@ -456,7 +456,7 @@
         },
         {
             "file": "src/console-js/modules/game.js",
-            "line": 433,
+            "line": 437,
             "description": "The user may generate keydown events when they are typing either in the game or in the console. Where the\nuser is typing into their chat window, keydown events are going to be triggered that games will erroneously\ncatch and handle. Therefore, instead of registering keydown handlers inside the game, you should add a\nhandler to the iConsole instead, which will bubble the keydown events except for when the user is typing into\nfields that shouldn't trigger game interaction, such as the chat window. This call will be used to\nde-register the keydown handler.\nSee iConsole.game.onEvent",
             "itemtype": "method",
             "name": "offEvent",
@@ -479,7 +479,7 @@
         },
         {
             "file": "src/console-js/modules/game.js",
-            "line": 470,
+            "line": 474,
             "description": "This function returns the width of the game inside the console, as window.innerWidth will not work initially\nwhen the game is first loaded as the game's window is hidden from display. This function is especially\nuseful when trying to determine what resolution of graphics the game should load.",
             "itemtype": "method",
             "name": "getWidth",
@@ -491,7 +491,7 @@
         },
         {
             "file": "src/console-js/modules/game.js",
-            "line": 487,
+            "line": 491,
             "description": "This function returns the height of the game inside the console, as window.innerHeight will not work initially\nwhen the game is first loaded as the game's window is hidden from display. This function is especially\nuseful when trying to determine what resolution of graphics the game should load.",
             "itemtype": "method",
             "name": "getHeight",
@@ -503,7 +503,7 @@
         },
         {
             "file": "src/console-js/modules/game.js",
-            "line": 504,
+            "line": 508,
             "description": "This function is used to set the label underneath the game's image on Amazon Fire devices (currently), and\nis typically used to relay information such as what level the user is going to resume playback from.",
             "itemtype": "method",
             "name": "setHomeWidgetLabel",
@@ -521,7 +521,7 @@
         },
         {
             "file": "src/console-js/modules/game.js",
-            "line": 515,
+            "line": 519,
             "description": "This function is used to explicitly to hide the console window (the chat and highscore window).",
             "itemtype": "method",
             "name": "hideConsoleWindow",

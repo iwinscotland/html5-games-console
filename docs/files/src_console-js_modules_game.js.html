@@ -121,6 +121,10 @@
  */
 
 (function (iConsole, Class, Module) {
+    function inArray( elem, arr, i ) {
+        return arr == null ? -1 : [].indexOf.call( arr, elem, i );
+    }
+    
     /**
      * Game
      * ---------------
@@ -517,7 +521,7 @@
                         iConsole.game.callbacks[eventType] = [];
                     }
                     var callbacksForEventType = iConsole.game.callbacks[eventType];
-                    if ($.inArray(callbackFunction, callbacksForEventType) === -1) {
+                    if (inArray(callbackFunction, callbacksForEventType) === -1) {
                         callbacksForEventType.push(callbackFunction);
                     }
                 break;
@@ -554,7 +558,7 @@
                 default:
                     if (iConsole.game.callbacks[eventType] !== undefined) {
                         var callbacksForEventType = iConsole.game.callbacks[eventType];
-                        var position = $.inArray(callbackFunction, callbacksForEventType);
+                        var position = inArray(callbackFunction, callbacksForEventType);
                         if (position !== -1) {
                             callbacksForEventType.splice(position, 1);
                         }
