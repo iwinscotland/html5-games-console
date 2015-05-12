@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>src/console-js/modules/mp.js</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
+    <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
+    <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
+    <link rel="shortcut icon" type="image/png" href="../assets/favicon.png">
+    <script src="http://yui.yahooapis.com/combo?3.9.1/build/yui/yui-min.js"></script>
+</head>
+<body class="yui3-skin-sam">
+
+<div id="doc">
+    <div id="hd" class="yui3-g header">
+        <div class="yui3-u-3-4">
+            
+                <h1><img src="../assets/css/logo.png" title=""></h1>
+            
+        </div>
+        <div class="yui3-u-1-4 version">
+            <em>API Docs for: </em>
+        </div>
+    </div>
+    <div id="bd" class="yui3-g">
+
+        <div class="yui3-u-1-4">
+            <div id="docs-sidebar" class="sidebar apidocs">
+                <div id="api-list">
+    <h2 class="off-left">APIs</h2>
+    <div id="api-tabview" class="tabview">
+        <ul class="tabs">
+            <li><a href="#api-classes">Classes</a></li>
+            <li><a href="#api-modules">Modules</a></li>
+        </ul>
+
+        <div id="api-tabview-filter">
+            <input type="search" id="api-filter" placeholder="Type to filter APIs">
+        </div>
+
+        <div id="api-tabview-panel">
+            <ul id="api-classes" class="apis classes">
+            
+                <li><a href="../classes/GettingStarted.html">GettingStarted</a></li>
+            
+                <li><a href="../classes/iConsole.ads.html">iConsole.ads</a></li>
+            
+                <li><a href="../classes/iConsole.game.html">iConsole.game</a></li>
+            
+                <li><a href="../classes/iConsole.iap.html">iConsole.iap</a></li>
+            
+                <li><a href="../classes/iConsole.periodical.html">iConsole.periodical</a></li>
+            
+            </ul>
+
+            <ul id="api-modules" class="apis modules">
+            
+            </ul>
+        </div>
+    </div>
+</div>
+
+            </div>
+        </div>
+        <div class="yui3-u-3-4">
+                <div id="api-options">
+        Show:
+        <label for="api-show-inherited">
+            <input type="checkbox" id="api-show-inherited" checked>
+            Inherited
+        </label>
+
+        <label for="api-show-protected">
+            <input type="checkbox" id="api-show-protected">
+            Protected
+        </label>
+
+        <label for="api-show-private">
+            <input type="checkbox" id="api-show-private">
+            Private
+        </label>
+        <label for="api-show-deprecated">
+            <input type="checkbox" id="api-show-deprecated">
+            Deprecated
+        </label>
+
+    </div>
+
+
+            <div class="apidocs">
+                <div id="docs-main">
+                    <div class="content">
+                        <h1 class="file-heading">File: src/console-js/modules/mp.js</h1>
+
+<div class="file">
+    <pre class="code prettyprint linenums">
+(function(iConsole, Class, Module){
+
+    /**
+     * Multiplayer
+     * ----------------
+     * todo later - Docs need done as we get to the point of filling out this implementation
+     */
+    var MP = Class.create(Module, {
+
+        LOBBY_STATE_WAITING: &quot;waiting&quot;,
+        LOBBY_STATE_PLAYING: &quot;playing&quot;,
+        LOBBY_STATE_FINISHED: &quot;finished&quot;,
+        LOBBY_STATE_DECIDING: &quot;deciding&quot;,
+
+        USER_TYPE_VOYEUR: &quot;voyuer&quot;,
+        USER_TYPE_REAL: &quot;real&quot;,
+        USER_TYPE_GUEST: &quot;guest&quot;,
+
+
+        initModule:function($super, data){
+            $super(data);
+        },
+
+        init:function($super, data){
+            $super(data);
+        },
+
+        /**
+         * This function determines whether mutilplayer support has been enabled.
+         * If you were expecting it to have been enabled check your game_details.json config w.r.t. multiplayer additions.
+         * For most games this will return false.
+         * @method isSupported
+         * @return {boolean}
+         */
+        isSupported: function() {
+            return iConsole.mp.internal.supported;
+        },
+
+        /**
+         * This function allows you to register a callback handler for each tick of game state. Game state is polled every n seconds.
+         * @method registerGetState
+         * @param callback {Function} The callback function you want to be called back on. The callback will receive a populated object as follows
+         * @example
+         * &lt;pre&gt;
+         * {
+         *   game_room_id: &quot;...&quot;,                                                        //internal id of no use to you as a game developer
+         *   server_time: ...,                                                           //milliseconds
+         *   users: [                                                                    //users who are part of this room
+         *     { id: &quot;...&quot;, nickname: &quot;...&quot;,  avatar_url: &quot;...&quot; , state: { ... } }       //state is whatever you pass up
+         *     { ... }
+         *     { ... }
+         *   ]
+         * }
+         * &lt;/pre&gt;
+         */
+        registerGetState: function( callback ) {
+            iConsole.mp.internal.getStateCallback = callback;
+        },
+
+
+        /**
+         * This function should be used to flag that the user has started playing the game at the point where lobby activities have concluded and the game client feels it has enough users to begin.
+         * @method gameStarted
+         * @param options {Object} The method accepts an options object which may be expanded later with behaviours for how additional users join the game once it has started.
+         */
+        gameStarted: function( options ) {
+            //do nothing for the moment but later we will lock the lobby room to prevent more users playing in it.
+        },
+
+        /**
+         * This function should be used to flag that the game client has ended the game for all players.
+         * @method gameStarted
+         * @param options {Object} The method accepts an options object which may be expanded later with behaviours that affect what happens to the user at game end.
+         */
+        gameEnded: function( options ) {
+            //do nothing for the moment
+        },
+
+        /**
+         * This function should be used to update the current players state - other game clients will be responsible for updating their own player&#x27;s state.
+         * @method updateState
+         * @param state {Object} A small state object representing all the data about the user that other game clients need in order to display the status of that user,
+         * examples include board state in jewel quest, num questions answered correctly in a quiz game and so on.
+         */
+        updateState: function( state ) {
+            iConsole.mp.internal.mockDeleteMeLater_PushStateToServer( state );
+        },
+
+        /**
+         * This function should be used by the game to set the players lobby state accordingly.
+         * For example a user can be either &#x27;playing&#x27;   or   &#x27;deciding&#x27;.
+         * Most players are &#x27;waiting&#x27; when they join a room and remain in this state until the game determines it has enough users to start.
+         * At this point each client should update their user into &#x27;playing&#x27; state.
+         * The user stays in this state until the user finishes their game, at which point they should be moved to &#x27;finished&#x27; status.
+         * When you show the &quot;play again&quot;   or   &quot;leave room&quot; screen the user should be placed into a &#x27;deciding&#x27; status.
+         * This allows users to either play again or leave and prevents the game believing it has the correct number of users already available to start the game.
+         * Users in the &#x27;finished&#x27; or &#x27;deciding&#x27; status are still technically in the room and take up a players spot until they leave.
+         * Once a user agrees to play again (or is automatically agreed to play again) they should be set to &#x27;playing&#x27; status.
+         * @param lobbyState, must be either iConsole.mp.LOBBY_STATE_WAITING, iConsole.mp.LOBBY_STATE_PLAYING, iConsole.mp.LOBBY_STATE_FINISHED, iConsole.mp.LOBBY_STATE_DECIDING
+         */
+        updateUsersLobbyState: function( lobbyState ) {
+            var remoteUrl = &#x27;http://multiplayer.iwin.com/lobby/game/update/&#x27; + iConsole.mp.internal.mockDeleteMeLater_game_room_id + &#x27;/user/&#x27; + iConsole.mp.internal.mockDeleteMeLater_user_id + &#x27;?lobby_state=&#x27; + lobbyState;
+            $.getJSON( remoteUrl, function(json) {});
+        },
+
+        /**
+        * This function accepts the users passed to the  getState  callback handler and returns the current player&#x27;s object.
+        * You should check this response for null - which signifies that the current user could not be located.
+        */
+        getCurrentPlayer: function ( allUsers, voyeur_users ) {
+            for ( var x=0; x&lt; allUsers.length; x++ )
+            {
+                if ( allUsers[x].id === iConsole.mp.internal.mockDeleteMeLater_user_id )
+                {
+                    return allUsers[x];
+                }
+            }
+
+            for ( var y=0; y&lt; voyeur_users.length; y++ )
+            {
+                if ( voyeur_users[y].id === iConsole.mp.internal.mockDeleteMeLater_user_id )
+                {
+                    return voyeur_users[y];
+                }
+            }
+
+            return null;
+        },
+
+        /**
+        * This function accepts the users passed to the  getState  callback handler and returns the other player objects.
+        * You should check this response for being empty.
+        * Note the current user will never appear in this list...
+        * Also note that when users leave a room at any point, they will not appear in the list returned here.
+        * The game clients should keep track of which players were playing and their last recorded state and compare that with the list of players still playing.
+        */		
+        getOtherPlayers: function( allUsers ) {
+            var otherUsers = [];
+            for ( var x=0; x&lt; allUsers.length; x++ )
+            {
+                if ( allUsers[x].id !== iConsole.mp.internal.mockDeleteMeLater_user_id )
+                {
+                    otherUsers.push( allUsers[x] );
+                }
+            }
+            return otherUsers;
+        },
+
+
+        /**
+         * This function accepts the users passed to the  getState  callback handler and returns the users waiting.
+         */
+        getWaitingUsers: function( allUsers ) {
+            return iConsole.mp.internal.getUsersWithLobbyState( allUsers, iConsole.mp.LOBBY_STATE_WAITING );
+        },
+
+        /**
+         * This function accepts the users passed to the  getState  callback handler and returns the users playing.
+         */
+        getPlayingUsers: function( allUsers ) {
+            return iConsole.mp.internal.getUsersWithLobbyState( allUsers, iConsole.mp.LOBBY_STATE_PLAYING );
+        },
+
+        /**
+         * This function accepts the users passed to the  getState  callback handler and returns the users finished playing.
+         */
+        getFinishedUsers: function( allUsers ) {
+            return iConsole.mp.internal.getUsersWithLobbyState( allUsers, iConsole.mp.LOBBY_STATE_FINISHED );
+        },
+
+        /**
+         * This function accepts the users passed to the  getState  callback handler and returns the users deciding, i.e. still in the room but not yet agreed to play again.
+         */
+        getDecidingUsers: function( allUsers ) {
+            return iConsole.mp.internal.getUsersWithLobbyState( allUsers, iConsole.mp.LOBBY_STATE_DECIDING );
+        },
+
+        /**
+         * This function allows the game to show a button to allow the user to leave the game at any point in time.
+         * When called it will remove the user from the game.
+         */
+        userLeftRoom: function( ) {
+            var remoteUrl = &#x27;http://multiplayer.iwin.com/game/remove/&#x27; + iConsole.mp.internal.mockDeleteMeLater_game_room_id + &#x27;/user/&#x27; + iConsole.mp.internal.mockDeleteMeLater_user_id;
+            $.getJSON( remoteUrl, function(json) {});
+        },
+
+
+        internal: {
+            supported: false,
+            getStateCallback: null,
+            //todo later - rework all this later when you do the full integration
+            mockDeleteMeLater_game_room_id: null,
+            mockDeleteMeLater_user_id: null,
+            mockDeleteMeLater_pollForServerStateInterval: null,
+            mockDeleteMeLater_PollForServerStateDelay: 3000,
+
+            initializeMP: function(data) {
+                iConsole.mp.internal.supported = true;
+                if ( iConsole.mp.internal.supported )
+                {
+                    iConsole.mp.internal.mockDeleteMeLater_StartPollingServerForState();
+                    iConsole.mp.internal.mockDeleteMeLater_PollForServerStateDelay = data.statePollEveryNSeconds;
+                }
+            },
+
+            //Assumes your game client has JQuery for the moment.
+            mockDeleteMeLater_PushStateToServer: function(state) {
+                if ( iConsole.mp.internal.supported &amp;&amp; iConsole.mp.internal.mockDeleteMeLater_game_room_id !== null &amp;&amp; iConsole.mp.internal.mockDeleteMeLater_user_id !== null )
+                {
+                    if ( window.$ )
+                    {
+                        var state_as_json = JSON.stringify(state);
+                        var state_as_json_with_encoding = encodeURIComponent(state_as_json);
+                        var remoteUrl = &#x27;http://multiplayer.iwin.com/game/update/&#x27; + iConsole.mp.internal.mockDeleteMeLater_game_room_id + &#x27;/user/&#x27; + iConsole.mp.internal.mockDeleteMeLater_user_id + &#x27;?state=&#x27; + state_as_json_with_encoding;
+                        $.getJSON( remoteUrl, function(json) {
+                        });
+                    }
+                }
+            },
+
+            //Assumes your game client has JQuery for the moment.
+            mockDeleteMeLater_StartPollingServerForState: function() {
+                iConsole.mp.internal.mockDeleteMeLater_pollForServerStateInterval = setInterval( iConsole.mp.internal.mockDeleteMeLater_PollForServerState, iConsole.mp.internal.mockDeleteMeLater_PollForServerStateDelay);
+            },
+
+            mockDeleteMeLater_PollForServerState: function() {
+                if ( iConsole.mp.internal.supported &amp;&amp; iConsole.mp.internal.mockDeleteMeLater_game_room_id !== null &amp;&amp; iConsole.mp.internal.mockDeleteMeLater_user_id !== null )
+                {
+                    if ( window.$ )
+                    {
+                        var remoteUrl = &#x27;http://multiplayer.iwin.com/game/state/&#x27; + iConsole.mp.internal.mockDeleteMeLater_game_room_id;
+                        $.getJSON( remoteUrl, function(json) {
+                            iConsole.mp.internal.mockDeleteMeLater_PerformCallback( iConsole.mp.internal.getStateCallback ,json );
+                        });
+                    }
+                }
+            },
+
+            mockDeleteMeLater_PerformCallback: function( theFunction, callbackWith )
+            {
+                if ( theFunction !== undefined &amp;&amp; theFunction )
+                {
+                    if ( callbackWith !== null )
+                    {
+                        theFunction( callbackWith );
+                    }
+                    else
+                    {
+                        theFunction();
+                    }
+                }
+            },
+
+            getUsersWithLobbyState: function( allUsers, someType )
+            {
+                var users = [];
+                for ( var x=0; x&lt; allUsers.length; x++ )
+                {
+                    if ( allUsers[x].lobby_state === someType )
+                    {
+                        users.push( allUsers[x] );
+                    }
+                }
+                return users;
+            }
+
+        }
+    });
+
+    var m = new MP();
+
+    iConsole.install(&quot;mp&quot;, new MP());
+
+    return m;
+
+})(iConsole, Class, Module);
+    </pre>
+</div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/vendor/prettify/prettify-min.js"></script>
+<script>prettyPrint();</script>
+<script src="../assets/js/yui-prettify.js"></script>
+<script src="../assets/../api.js"></script>
+<script src="../assets/js/api-filter.js"></script>
+<script src="../assets/js/api-list.js"></script>
+<script src="../assets/js/api-search.js"></script>
+<script src="../assets/js/apidocs.js"></script>
+</body>
+</html>

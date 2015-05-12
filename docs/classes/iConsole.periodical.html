@@ -212,6 +212,20 @@ prior to attempting to load these assets. This ensures that the correct location
                     <ul class="index-list methods">
                         
                             <li class="index-item method">
+                                <a href="#method_gameStarted">gameStarted</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_gameStarted">gameStarted</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
                                 <a href="#method_getData">getData</a>
 
                                 
@@ -232,6 +246,27 @@ prior to attempting to load these assets. This ensures that the correct location
                                 
                             </li>
                         
+                            <li class="index-item method">
+                                <a href="#method_isSupported">isSupported</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_registerGetState">registerGetState</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_updateState">updateState</a>
+
+                                
+                                
+                            </li>
+                        
                     </ul>
                 </div>
             
@@ -246,6 +281,184 @@ prior to attempting to load these assets. This ensures that the correct location
         
             <div id="methods" class="api-class-tabpanel">
                 <h2 class="off-left">Methods</h2>
+
+                
+                    <div id="method_gameStarted" class="method item">
+    <h3 class="name"><code>gameStarted</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>options</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_console-js_modules_mp.js.html#l61"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:61</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>This function should be used to flag that the user has started playing the game at the point where lobby activities have concluded and the game client feels it has enough users to begin.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">options</code>
+                        <span class="type">Object</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The method accepts an options object which may be expanded later with behaviours for how additional users join the game once it has started.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
+
+                
+                    <div id="method_gameStarted" class="method item">
+    <h3 class="name"><code>gameStarted</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>options</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_console-js_modules_mp.js.html#l70"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:70</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>This function should be used to flag that the game client has ended the game for all players.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">options</code>
+                        <span class="type">Object</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The method accepts an options object which may be expanded later with behaviours that affect what happens to the user at game end.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
 
                 
                     <div id="method_getData" class="method item">
@@ -533,6 +746,276 @@ necessary to display these periodicals, such as thumbnails. The data once obtain
                 
             </div>
         </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_isSupported" class="method item">
+    <h3 class="name"><code>isSupported</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Boolean</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_console-js_modules_mp.js.html#l28"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:28</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>This function determines whether mutilplayer support has been enabled.
+If you were expecting it to have been enabled check your game_details.json config w.r.t. multiplayer additions.
+For most games this will return false.</p>
+
+    </div>
+
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Boolean</span>:
+                    
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_registerGetState" class="method item">
+    <h3 class="name"><code>registerGetState</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>callback</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_console-js_modules_mp.js.html#l39"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:39</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>This function allows you to register a callback handler for each tick of game state. Game state is polled every n seconds.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">callback</code>
+                        <span class="type">Function</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The callback function you want to be called back on. The callback will receive a populated object as follows</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre>
+{
+  game_room_id: "...",                                                        //internal id of no use to you as a game developer
+  server_time: ...,                                                           //milliseconds
+  users: [                                                                    //users who are part of this room
+    { id: "...", nickname: "...",  avatar_url: "..." , state: { ... } }       //state is whatever you pass up
+    { ... }
+    { ... }
+  ]
+}
+</pre>
+            </div>
+        </div>
+    
+</div>
+
+                
+                    <div id="method_updateState" class="method item">
+    <h3 class="name"><code>updateState</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>state</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_console-js_modules_mp.js.html#l79"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:79</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>This function should be used to update the current players state - other game clients will be responsible for updating their own player&#39;s state.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">state</code>
+                        <span class="type">Object</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>A small state object representing all the data about the user that other game clients need in order to display the status of that user,
+examples include board state in jewel quest, num questions answered correctly in a quiz game and so on.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
     
 
     
