@@ -165,7 +165,7 @@
 
         /**
          * This function should be used to flag that the game client has ended the game for all players.
-         * @method gameStarted
+         * @method gameEnded
          * @param options {Object} The method accepts an options object which may be expanded later with behaviours that affect what happens to the user at game end.
          */
         gameEnded: function( options ) {
@@ -176,7 +176,7 @@
          * This function should be used to update the current players state - other game clients will be responsible for updating their own player&#x27;s state.
          * @method updateState
          * @param state {Object} A small state object representing all the data about the user that other game clients need in order to display the status of that user,
-         * examples include board state in jewel quest, num questions answered correctly in a quiz game and so on.
+         * examples include board state in jewel quest, number of questions answered correctly in a quiz game and so on.
          */
         updateState: function( state ) {
             iConsole.mp.internal.mockDeleteMeLater_PushStateToServer( state );

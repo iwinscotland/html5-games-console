@@ -133,7 +133,7 @@ array called &quot;periods&quot;, which is an array of objects. Each of these ob
 &quot;date&quot; in YYYYMMDD format, and a &quot;json&quot; which is a local reference to a given periods actual data file. You can
 provide further details such as a thumbnail image here, but the data in this file should be kept to a minimum for
 only information that is necessary to allow the user to choose the period The referenced JSON file should be used
-to store all the information about what the game needs to present a given perioids data.
+to store all the information about what the game needs to present a given periods data.
 periodical.json:</p>
 <p><pre>
 {
@@ -212,7 +212,7 @@ prior to attempting to load these assets. This ensures that the correct location
                     <ul class="index-list methods">
                         
                             <li class="index-item method">
-                                <a href="#method_gameStarted">gameStarted</a>
+                                <a href="#method_gameEnded">gameEnded</a>
 
                                 
                                 
@@ -281,6 +281,95 @@ prior to attempting to load these assets. This ensures that the correct location
         
             <div id="methods" class="api-class-tabpanel">
                 <h2 class="off-left">Methods</h2>
+
+                
+                    <div id="method_gameEnded" class="method item">
+    <h3 class="name"><code>gameEnded</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>options</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_console-js_modules_mp.js.html#l70"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:70</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>This function should be used to flag that the game client has ended the game for all players.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">options</code>
+                        <span class="type">Object</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>The method accepts an options object which may be expanded later with behaviours that affect what happens to the user at game end.</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+
+    
+</div>
 
                 
                     <div id="method_gameStarted" class="method item">
@@ -356,95 +445,6 @@ prior to attempting to load these assets. This ensures that the correct location
 
                     <div class="param-description">
                         <p>The method accepts an options object which may be expanded later with behaviours for how additional users join the game once it has started.</p>
-
-                    </div>
-
-                    
-                </li>
-            
-            </ul>
-        </div>
-    
-
-    
-
-    
-</div>
-
-                
-                    <div id="method_gameStarted" class="method item">
-    <h3 class="name"><code>gameStarted</code></h3>
-
-    
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>options</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    <div class="meta">
-        
-            
-                
-                <p>
-                
-                Defined in
-                
-            
-        
-        
-        <a href="../files/src_console-js_modules_mp.js.html#l70"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:70</code></a>
-        
-        </p>
-
-
-        
-
-        
-    </div>
-
-    <div class="description">
-        <p>This function should be used to flag that the game client has ended the game for all players.</p>
-
-    </div>
-
-    
-        <div class="params">
-            <h4>Parameters:</h4>
-
-            <ul class="params-list">
-            
-                <li class="param">
-                    
-                        <code class="param-name">options</code>
-                        <span class="type">Object</span>
-                    
-
-                    
-
-                    <div class="param-description">
-                        <p>The method accepts an options object which may be expanded later with behaviours that affect what happens to the user at game end.</p>
 
                     </div>
 
@@ -1005,7 +1005,7 @@ For most games this will return false.</p>
 
                     <div class="param-description">
                         <p>A small state object representing all the data about the user that other game clients need in order to display the status of that user,
-examples include board state in jewel quest, num questions answered correctly in a quiz game and so on.</p>
+examples include board state in jewel quest, number of questions answered correctly in a quiz game and so on.</p>
 
                     </div>
 

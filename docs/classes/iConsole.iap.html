@@ -239,7 +239,7 @@ function purchaseSuccess(sku) {
    }
 }
 /**
- * Handler for when a purchase succeeds
+ * Handler for when a purchase fails
  *&#47;
 function purchaseFailure(sku) {
    console.log('Purchase failed for sku=' + sku );
@@ -250,7 +250,7 @@ function purchaseFailure(sku) {
 <p>Normally, a console enabled game is launched (on a local development server, with host file entry of
 <code>127.0.0.1 local.games.iwin.com</code>) with
 <a href="http://local.games.iwin.com/#/game/"><a href="http://local.games.iwin.com/#/game/">http://local.games.iwin.com/#/game/</a></a> where the folder after the # symbol tells
-the console where to laod the game from. You can append on to this URL, the following</p>
+the console where to load the game from. You can append on to this URL, the following</p>
 <ul>
 <li>&#35;!amazon to enable Amazon integration<ul>
 <li><a href="http://local.games.iwin.com/#/game/#!amazon"><a href="http://local.games.iwin.com/#/game/#!amazon">http://local.games.iwin.com/#/game/#!amazon</a></a></li>
@@ -266,7 +266,7 @@ the console where to laod the game from. You can append on to this URL, the foll
 </li>
 </ul>
 <h3 id="amazon">Amazon</h3>
-<p>This is the simplest integration to test, as it works out of the box, and does not require any special work-arounds
+<p>This is the simplest integration to test, as it works out of the box, and does not require any special workarounds
 or notes. In App Purchases complete when you attempt them without costing real money.</p>
 <h3 id="games-com">Games.com</h3>
 <p>The games.com integration requires you to configure a HTML5 game in <a href="http://developer.games.com"><a href="http://developer.games.com">http://developer.games.com</a></a>
@@ -276,7 +276,7 @@ this issue. When making a purchase, you can use the magic credit card 4444444444
 rest of the fields).</p>
 <h3 id="yahoo">Yahoo</h3>
 <p>You will need to set up an externally hosted Canvas game in the Yahoo development. The remainder of this integration
-remains un-documented.</p>
+remains undocumented.</p>
 <h2 id="further-platform-integration">Further Platform Integration</h2>
 <p>Beyond In-App-Purchasing, these platforms also offer other services, which are supported by the Console:</p>
 <h3 id="amazon">Amazon</h3>
@@ -679,7 +679,7 @@ failure callback.</p>
                         <span class="type">Object</span>:
                     
                     <p>An object which contains two functions, success and failure, which should each be called
-with the function you wish to call when the purchase succeeds or fails. These callbacks will be called a
+with the function you wish to call when the purchase succeeds or fails. These callbacks will be called with a
 single parameter, the sku that was attempted to be purchased. These calls can be directly chained:</p>
 
                 
