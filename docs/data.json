@@ -625,7 +625,7 @@
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 28,
+            "line": 31,
             "description": "This function determines whether mutilplayer support has been enabled.\nIf you were expecting it to have been enabled check your game_details.json config w.r.t. multiplayer additions.\nFor most games this will return false.",
             "itemtype": "method",
             "name": "isSupported",
@@ -637,7 +637,7 @@
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 39,
+            "line": 42,
             "description": "This function allows you to register a callback handler for each tick of game state. Game state is polled every n seconds.",
             "itemtype": "method",
             "name": "registerGetState",
@@ -649,13 +649,13 @@
                 }
             ],
             "example": [
-                "\n<pre>\n{\n  game_room_id: \"...\",                                                        //internal id of no use to you as a game developer\n  server_time: ...,                                                           //milliseconds\n  users: [                                                                    //users who are part of this room\n    { id: \"...\", nickname: \"...\",  avatar_url: \"...\" , state: { ... } }       //state is whatever you pass up\n    { ... }\n    { ... }\n  ]\n}\n</pre>"
+                "\n<pre>\n{\n  game_room_id: \"...\",                                                        //internal id of no use to you as a game developer\n  server_time: ...,                                                           //milliseconds since unix epoch\n  users: [                                                                    //users who are part of this room\n    { id: \"...\", nickname: \"...\",  avatar_url: \"...\" , state: { ... } }       //state is whatever you pass up\n    { ... }\n    { ... }\n  ]\n}\n</pre>"
             ],
             "class": "iConsole.periodical"
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 61,
+            "line": 69,
             "description": "This function should be used to flag that the user has started playing the game at the point where lobby activities have concluded and the game client feels it has enough users to begin.",
             "itemtype": "method",
             "name": "gameStarted",
@@ -670,7 +670,7 @@
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 70,
+            "line": 78,
             "description": "This function should be used to flag that the game client has ended the game for all players.",
             "itemtype": "method",
             "name": "gameEnded",
@@ -685,7 +685,7 @@
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 79,
+            "line": 87,
             "description": "This function should be used to update the current players state - other game clients will be responsible for updating their own player's state.",
             "itemtype": "method",
             "name": "updateState",
@@ -700,7 +700,7 @@
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 89,
+            "line": 97,
             "description": "This function should be used by the game to set the players lobby state accordingly.\nFor example a user can be either 'playing'   or   'deciding'.\nMost players are 'waiting' when they join a room and remain in this state until the game determines it has enough users to start.\nAt this point each client should update their user into 'playing' state.\nThe user stays in this state until the user finishes their game, at which point they should be moved to 'finished' status.\nWhen you show the \"play again\"   or   \"leave room\" screen the user should be placed into a 'deciding' status.\nThis allows users to either play again or leave and prevents the game believing it has the correct number of users already available to start the game.\nUsers in the 'finished' or 'deciding' status are still technically in the room and take up a players spot until they leave.\nOnce a user agrees to play again (or is automatically agreed to play again) they should be set to 'playing' status.",
             "params": [
                 {
@@ -712,43 +712,43 @@
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 106,
+            "line": 114,
             "description": "This function accepts the users passed to the  getState  callback handler and returns the current player's object.\nYou should check this response for null - which signifies that the current user could not be located.",
             "class": "iConsole.periodical"
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 130,
+            "line": 138,
             "description": "This function accepts the users passed to the  getState  callback handler and returns the other player objects.\nYou should check this response for being empty.\nNote the current user will never appear in this list...\nAlso note that when users leave a room at any point, they will not appear in the list returned here.\nThe game clients should keep track of which players were playing and their last recorded state and compare that with the list of players still playing.",
             "class": "iConsole.periodical"
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 150,
+            "line": 158,
             "description": "This function accepts the users passed to the  getState  callback handler and returns the users waiting.",
             "class": "iConsole.periodical"
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 157,
+            "line": 165,
             "description": "This function accepts the users passed to the  getState  callback handler and returns the users playing.",
             "class": "iConsole.periodical"
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 164,
+            "line": 172,
             "description": "This function accepts the users passed to the  getState  callback handler and returns the users finished playing.",
             "class": "iConsole.periodical"
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 171,
+            "line": 179,
             "description": "This function accepts the users passed to the  getState  callback handler and returns the users deciding, i.e. still in the room but not yet agreed to play again.",
             "class": "iConsole.periodical"
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 178,
+            "line": 186,
             "description": "This function allows the game to show a button to allow the user to leave the game at any point in time.\nWhen called it will remove the user from the game.",
             "class": "iConsole.periodical"
         },
@@ -828,35 +828,35 @@
         },
         {
             "message": "Missing item type\nThis function should be used by the game to set the players lobby state accordingly.\nFor example a user can be either 'playing'   or   'deciding'.\nMost players are 'waiting' when they join a room and remain in this state until the game determines it has enough users to start.\nAt this point each client should update their user into 'playing' state.\nThe user stays in this state until the user finishes their game, at which point they should be moved to 'finished' status.\nWhen you show the \"play again\"   or   \"leave room\" screen the user should be placed into a 'deciding' status.\nThis allows users to either play again or leave and prevents the game believing it has the correct number of users already available to start the game.\nUsers in the 'finished' or 'deciding' status are still technically in the room and take up a players spot until they leave.\nOnce a user agrees to play again (or is automatically agreed to play again) they should be set to 'playing' status.",
-            "line": " src/console-js/modules/mp.js:89"
+            "line": " src/console-js/modules/mp.js:97"
         },
         {
             "message": "Missing item type\nThis function accepts the users passed to the  getState  callback handler and returns the current player's object.\nYou should check this response for null - which signifies that the current user could not be located.",
-            "line": " src/console-js/modules/mp.js:106"
+            "line": " src/console-js/modules/mp.js:114"
         },
         {
             "message": "Missing item type\nThis function accepts the users passed to the  getState  callback handler and returns the other player objects.\nYou should check this response for being empty.\nNote the current user will never appear in this list...\nAlso note that when users leave a room at any point, they will not appear in the list returned here.\nThe game clients should keep track of which players were playing and their last recorded state and compare that with the list of players still playing.",
-            "line": " src/console-js/modules/mp.js:130"
+            "line": " src/console-js/modules/mp.js:138"
         },
         {
             "message": "Missing item type\nThis function accepts the users passed to the  getState  callback handler and returns the users waiting.",
-            "line": " src/console-js/modules/mp.js:150"
+            "line": " src/console-js/modules/mp.js:158"
         },
         {
             "message": "Missing item type\nThis function accepts the users passed to the  getState  callback handler and returns the users playing.",
-            "line": " src/console-js/modules/mp.js:157"
+            "line": " src/console-js/modules/mp.js:165"
         },
         {
             "message": "Missing item type\nThis function accepts the users passed to the  getState  callback handler and returns the users finished playing.",
-            "line": " src/console-js/modules/mp.js:164"
+            "line": " src/console-js/modules/mp.js:172"
         },
         {
             "message": "Missing item type\nThis function accepts the users passed to the  getState  callback handler and returns the users deciding, i.e. still in the room but not yet agreed to play again.",
-            "line": " src/console-js/modules/mp.js:171"
+            "line": " src/console-js/modules/mp.js:179"
         },
         {
             "message": "Missing item type\nThis function allows the game to show a button to allow the user to leave the game at any point in time.\nWhen called it will remove the user from the game.",
-            "line": " src/console-js/modules/mp.js:178"
+            "line": " src/console-js/modules/mp.js:186"
         }
     ]
 }
