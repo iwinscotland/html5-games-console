@@ -133,7 +133,7 @@ array called &quot;periods&quot;, which is an array of objects. Each of these ob
 &quot;date&quot; in YYYYMMDD format, and a &quot;json&quot; which is a local reference to a given periods actual data file. You can
 provide further details such as a thumbnail image here, but the data in this file should be kept to a minimum for
 only information that is necessary to allow the user to choose the period The referenced JSON file should be used
-to store all the information about what the game needs to present a given perioids data.
+to store all the information about what the game needs to present a given periods data.
 periodical.json:</p>
 <p><pre>
 {
@@ -212,7 +212,7 @@ prior to attempting to load these assets. This ensures that the correct location
                     <ul class="index-list methods">
                         
                             <li class="index-item method">
-                                <a href="#method_gameStarted">gameStarted</a>
+                                <a href="#method_gameEnded">gameEnded</a>
 
                                 
                                 
@@ -283,8 +283,8 @@ prior to attempting to load these assets. This ensures that the correct location
                 <h2 class="off-left">Methods</h2>
 
                 
-                    <div id="method_gameStarted" class="method item">
-    <h3 class="name"><code>gameStarted</code></h3>
+                    <div id="method_gameEnded" class="method item">
+    <h3 class="name"><code>gameEnded</code></h3>
 
     
         <div class="args">
@@ -325,7 +325,7 @@ prior to attempting to load these assets. This ensures that the correct location
             
         
         
-        <a href="../files/src_console-js_modules_mp.js.html#l61"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:61</code></a>
+        <a href="../files/src_console-js_modules_mp.js.html#l111"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:111</code></a>
         
         </p>
 
@@ -336,7 +336,7 @@ prior to attempting to load these assets. This ensures that the correct location
     </div>
 
     <div class="description">
-        <p>This function should be used to flag that the user has started playing the game at the point where lobby activities have concluded and the game client feels it has enough users to begin.</p>
+        <p>This function should be used to flag that the game client has ended the game for all players.</p>
 
     </div>
 
@@ -355,7 +355,7 @@ prior to attempting to load these assets. This ensures that the correct location
                     
 
                     <div class="param-description">
-                        <p>The method accepts an options object which may be expanded later with behaviours for how additional users join the game once it has started.</p>
+                        <p>The method accepts an options object which may be expanded later with behaviours that affect what happens to the user at game end.</p>
 
                     </div>
 
@@ -414,7 +414,7 @@ prior to attempting to load these assets. This ensures that the correct location
             
         
         
-        <a href="../files/src_console-js_modules_mp.js.html#l70"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:70</code></a>
+        <a href="../files/src_console-js_modules_mp.js.html#l102"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:102</code></a>
         
         </p>
 
@@ -425,7 +425,7 @@ prior to attempting to load these assets. This ensures that the correct location
     </div>
 
     <div class="description">
-        <p>This function should be used to flag that the game client has ended the game for all players.</p>
+        <p>This function should be used to flag that the user has started playing the game at the point where lobby activities have concluded and the game client feels it has enough users to begin.</p>
 
     </div>
 
@@ -444,7 +444,7 @@ prior to attempting to load these assets. This ensures that the correct location
                     
 
                     <div class="param-description">
-                        <p>The method accepts an options object which may be expanded later with behaviours that affect what happens to the user at game end.</p>
+                        <p>The method accepts an options object which may be expanded later with behaviours for how additional users join the game once it has started.</p>
 
                     </div>
 
@@ -788,7 +788,7 @@ necessary to display these periodicals, such as thumbnails. The data once obtain
             
         
         
-        <a href="../files/src_console-js_modules_mp.js.html#l28"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:28</code></a>
+        <a href="../files/src_console-js_modules_mp.js.html#l31"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:31</code></a>
         
         </p>
 
@@ -867,7 +867,7 @@ For most games this will return false.</p>
             
         
         
-        <a href="../files/src_console-js_modules_mp.js.html#l39"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:39</code></a>
+        <a href="../files/src_console-js_modules_mp.js.html#l42"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:42</code></a>
         
         </p>
 
@@ -918,7 +918,7 @@ For most games this will return false.</p>
                 <pre>
 {
   game_room_id: "...",                                                        //internal id of no use to you as a game developer
-  server_time: ...,                                                           //milliseconds
+  server_time: ...,                                                           //milliseconds since unix epoch
   users: [                                                                    //users who are part of this room
     { id: "...", nickname: "...",  avatar_url: "..." , state: { ... } }       //state is whatever you pass up
     { ... }
@@ -974,7 +974,7 @@ For most games this will return false.</p>
             
         
         
-        <a href="../files/src_console-js_modules_mp.js.html#l79"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:79</code></a>
+        <a href="../files/src_console-js_modules_mp.js.html#l120"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:120</code></a>
         
         </p>
 
@@ -1005,7 +1005,7 @@ For most games this will return false.</p>
 
                     <div class="param-description">
                         <p>A small state object representing all the data about the user that other game clients need in order to display the status of that user,
-examples include board state in jewel quest, num questions answered correctly in a quiz game and so on.</p>
+examples include board state in jewel quest, number of questions answered correctly in a quiz game and so on.</p>
 
                     </div>
 

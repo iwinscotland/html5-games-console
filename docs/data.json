@@ -97,7 +97,7 @@
             "extension_for": [],
             "file": "src/console-js/modules/iap.js",
             "line": 4,
-            "description": "In App Purchases\n----------------\nThe iWin Games Console supports external In App Purchase providers, all accessible through a single API call,\nwhich means that as a developer, you only need to write support for In App Purchases in one way, to gain support for\nmultiple providers and any future integrations with other IAP providers will continue to be obfuscated behind this\nsingle call.\n\nCurrently Supported Platforms\n-----------------------------\n* Amazon HTML5 App Store\n* Games.com\n* Yahoo Games Network\n\nConfiguration\n-------------\nYou will need to update the game_details.json file, to have an \"iap\" object at the root, and this should contain a\nmapping of sku to an object which describes that sku:\n<pre>\n    \"iap\": {\n      \"com.iwin.more-time\" : {\n          \"name\": \"Get More Time\",\n          \"description\": \"Get More Time\",\n          \"icon\": \"https://s3-external-1.amazonaws.com/com-amazon-mas-catalog/M1I0LM77RX7FC2%2FM2VC2AJFZBAC93%2Fimages%2F_6b7d1378-12ae-48aa-92e2-618476ab5553_ceb500dbf0e42ce1435155dabebfb8b2\",\n          \"currency\": \"usd\",\n          \"amount\": \"0.99\",\n          \"foo\": \"bar\"\n      },\n      \"com.iwin.more-moves\" : {\n          \"name\": \"Get More Moves\",\n          \"description\": \"Get More Moves\",\n          \"icon\": \"https://s3-external-1.amazonaws.com/com-amazon-mas-catalog/M1I0LM77RX7FC2%2FM2VC2AJFZBAC93%2Fimages%2F_6b7d1378-12ae-48aa-92e2-618476ab5553_ceb500dbf0e42ce1435155dabebfb8b2\",\n          \"currency\": \"usd\",\n          \"amount\": \"0.99\",\n          \"foo\": \"bar\"\n      },\n      \"com.iwin.more-midas\" : {\n          \"name\": \"Get More Midas Touches\",\n          \"description\": \"Get More Midas Touches\",\n          \"icon\": \"https://s3-external-1.amazonaws.com/com-amazon-mas-catalog/M1I0LM77RX7FC2%2FM2VC2AJFZBAC93%2Fimages%2F_6b7d1378-12ae-48aa-92e2-618476ab5553_ceb500dbf0e42ce1435155dabebfb8b2\",\n          \"currency\": \"usd\",\n          \"amount\": \"1.99\",\n          \"foo\": \"bar\"\n      },\n      \"com.iwin.fill-lives\" : {\n          \"name\": \"Fill Lives\",\n          \"description\": \"Fill Lives\",\n          \"icon\": \"https://s3-external-1.amazonaws.com/com-amazon-mas-catalog/M1I0LM77RX7FC2%2FM2VC2AJFZBAC93%2Fimages%2F_6b7d1378-12ae-48aa-92e2-618476ab5553_ceb500dbf0e42ce1435155dabebfb8b2\",\n          \"currency\": \"usd\",\n          \"amount\": \"0.99\",\n          \"foo\": \"bar\"\n      }\n   }\n</pre>\nCurrently (owing to restrictions from third party providers) the only currency supported is USD, and the amount should be provided as dollar.cents\n\nYou will also need to create an amazon.sdktester.json file in the root of the released game folder, which reflects the same information (just in an amazon specific manner):\n<pre>\n{\n   \"com.iwin.game-levels\" : {\n       \"itemType\" : \"ENTITLED\",\n       \"price\" : \"0.99\",\n       \"title\": \"Unlock All Levels\",\n       \"description\": \"Unlock All Levels\",\n       \"smallIconUrl\": \"https://s3-external-1.amazonaws.com/com-amazon-mas-catalog/M1I0LM77RX7FC2%2FM2VC2AJFZBAC93%2Fimages%2F_6b7d1378-12ae-48aa-92e2-618476ab5553_ceb500dbf0e42ce1435155dabebfb8b2\"\n   },\n   \"com.iwin.more-time\" : {\n       \"itemType\" : \"CONSUMABLE\",\n       \"price\" : \"0.99\",\n       \"title\": \"Get More Time\",\n       \"description\": \"Get More Time\",\n       \"smallIconUrl\": \"https://s3-external-1.amazonaws.com/com-amazon-mas-catalog/M1I0LM77RX7FC2%2FM2VC2AJFZBAC93%2Fimages%2F_6b7d1378-12ae-48aa-92e2-618476ab5553_ceb500dbf0e42ce1435155dabebfb8b2\"\n   },\n   \"com.iwin.more-moves\" : {\n       \"itemType\" : \"CONSUMABLE\",\n       \"price\" : \"0.99\",\n       \"title\": \"Get More Moves\",\n       \"description\": \"Get More Moves\",\n       \"smallIconUrl\": \"https://s3-external-1.amazonaws.com/com-amazon-mas-catalog/M1I0LM77RX7FC2%2FM2VC2AJFZBAC93%2Fimages%2F_6b7d1378-12ae-48aa-92e2-618476ab5553_ceb500dbf0e42ce1435155dabebfb8b2\"\n   },\n   \"com.iwin.more-midas\" : {\n       \"itemType\" : \"CONSUMABLE\",\n       \"price\" : \"1.99\",\n       \"title\": \"Get More Midas Touches\",\n       \"description\": \"Get More Midas Touches\",\n       \"smallIconUrl\": \"https://s3-external-1.amazonaws.com/com-amazon-mas-catalog/M1I0LM77RX7FC2%2FM2VC2AJFZBAC93%2Fimages%2F_6b7d1378-12ae-48aa-92e2-618476ab5553_ceb500dbf0e42ce1435155dabebfb8b2\"\n   },\n   \"com.iwin.fill-lives\" : {\n       \"itemType\" : \"CONSUMABLE\",\n       \"price\" : \"0.99\",\n       \"title\": \"Fill Lives\",\n       \"description\": \"Fill Lives\",\n       \"smallIconUrl\": \"https://s3-external-1.amazonaws.com/com-amazon-mas-catalog/M1I0LM77RX7FC2%2FM2VC2AJFZBAC93%2Fimages%2F_6b7d1378-12ae-48aa-92e2-618476ab5553_ceb500dbf0e42ce1435155dabebfb8b2\"\n   }\n}\n</pre>\n\nIntegration\n-----------\nThe <code>[iConsole.iap](iConsole.iap.html)</code> class is the integration point that developers should use to determine if the IAP platform is supported\n(i.e. that the game is running on a platform that supports IAP or not), and then to make these purchases. Once the configuration is correct, using the IAP\nplatform is quite simple:\n\n<pre>\n// Decorate my game differently if IAP is supported\nif ( <a href=\"iConsole.iap.html#method_isSupported\">iConsole.iap.isSupported()</a> ) {\n   myGame.state.buyMoreLivesEnabled = true;\n   myGame.state.buyMoreMovesEnabled = true;\n}\n\n/**\n * Handler for Buy More Lives button\n *&#47;\nfunction buyMoreLivesClicked() {\n   // We don't need to test to see if IAP is supported. If it isn't supported, this call will call the failed block\n   // After a short delay (i.e. after a setTimeout of 1ms)\n   <a href=\"iConsole.iap.html#method_purchase\">iConsole.iap.purchase('buymorelivessku')</a>\n      .success(purchaseSuccess)\n      .failure(purchaseFailure);\n}\n\n/**\n * Handler for when a purchase succeeds\n *&#47;\nfunction purchaseSuccess(sku) {\n   switch (sku) {\n      case 'buymorelivessku':\n         myGame.state.lives += 5;\n         break;\n      case 'buymoremovessku':\n         myGame.state.moves += 10;\n         break;\n   }\n}\n/**\n * Handler for when a purchase succeeds\n *&#47;\nfunction purchaseFailure(sku) {\n   console.log('Purchase failed for sku=' + sku );\n}\n</pre>\n\nLaunching / Testing\n-------------------\nNormally, a console enabled game is launched (on a local development server, with host file entry of\n<code>127.0.0.1 local.games.iwin.com</code>) with\n[http://local.games.iwin.com/#/game/](http://local.games.iwin.com/#/game/) where the folder after the # symbol tells\nthe console where to laod the game from. You can append on to this URL, the following\n* &#35;!amazon to enable Amazon integration\n * [http://local.games.iwin.com/#/game/#!amazon](http://local.games.iwin.com/#/game/#!amazon)\n* &#35;!gamescom to enable Games.com integration\n * [http://local.games.iwin.com/#/game/#!gamescom](http://local.games.iwin.com/#/game/#!gamescom)\n* &#35;!yahoo to enable Yahoo integration\n * [http://local.games.iwin.com/#/game/#!yahoo](http://local.games.iwin.com/#/game/#!yahoo)\n\n### Amazon\nThis is the simplest integration to test, as it works out of the box, and does not require any special work-arounds\nor notes. In App Purchases complete when you attempt them without costing real money.\n### Games.com\nThe games.com integration requires you to configure a HTML5 game in [http://developer.games.com](http://developer.games.com)\nand to insert this link (for initial testing purposes) in the externally hosted URL. Also, their In App Purchasing\nopens up a pop-up window which may be automatically blocked (which means your purchases will fail), so be aware of\nthis issue. When making a purchase, you can use the magic credit card 4444444444444448 (with any other value for the\nrest of the fields).\n### Yahoo\nYou will need to set up an externally hosted Canvas game in the Yahoo development. The remainder of this integration\nremains un-documented.\n\nFurther Platform Integration\n----------------------------\nBeyond In-App-Purchasing, these platforms also offer other services, which are supported by the Console:\n### Amazon\n* amazonmotiongesturetilt - When on a Fire Phone, you can tilt the phone around it's Y axis, which Amazon request is used\nto hide any menus. This has been exposed in the iConsole as:\n<pre><a href=\"iConsole.game.html#method_onEvent\">iConsole.game.onEvent('tiltYaxis', function(...){...});</a></pre>\n* Home widget label - When the App is installed onto an Amazon device, it has space for a label below the icon on the\nhome screen. Typically, this can be used to provide contextual information about the user's progress in the game, such\nas which level they are on. This is available as:\n<pre><a href=\"iConsole.game.html#method_setHomeWidgetLabel\">iConsole.game.setHomeWidgetLabel('Continue playing from level 9');</a></pre>\n\n### Games.com\n* All user data is stored on the Games.com servers rather than the iWin Servers",
+            "description": "In App Purchases\n----------------\nThe iWin Games Console supports external In App Purchase providers, all accessible through a single API call,\nwhich means that as a developer, you only need to write support for In App Purchases in one way, to gain support for\nmultiple providers and any future integrations with other IAP providers will continue to be obfuscated behind this\nsingle call.\n\nCurrently Supported Platforms\n-----------------------------\n* Amazon HTML5 App Store\n* Games.com\n* Yahoo Games Network\n\nConfiguration\n-------------\nYou will need to update the game_details.json file, to have an \"iap\" object at the root, and this should contain a\nmapping of sku to an object which describes that sku:\n<pre>\n    \"iap\": {\n      \"com.iwin.more-time\" : {\n          \"name\": \"Get More Time\",\n          \"description\": \"Get More Time\",\n          \"icon\": \"https://s3-external-1.amazonaws.com/com-amazon-mas-catalog/M1I0LM77RX7FC2%2FM2VC2AJFZBAC93%2Fimages%2F_6b7d1378-12ae-48aa-92e2-618476ab5553_ceb500dbf0e42ce1435155dabebfb8b2\",\n          \"currency\": \"usd\",\n          \"amount\": \"0.99\",\n          \"foo\": \"bar\"\n      },\n      \"com.iwin.more-moves\" : {\n          \"name\": \"Get More Moves\",\n          \"description\": \"Get More Moves\",\n          \"icon\": \"https://s3-external-1.amazonaws.com/com-amazon-mas-catalog/M1I0LM77RX7FC2%2FM2VC2AJFZBAC93%2Fimages%2F_6b7d1378-12ae-48aa-92e2-618476ab5553_ceb500dbf0e42ce1435155dabebfb8b2\",\n          \"currency\": \"usd\",\n          \"amount\": \"0.99\",\n          \"foo\": \"bar\"\n      },\n      \"com.iwin.more-midas\" : {\n          \"name\": \"Get More Midas Touches\",\n          \"description\": \"Get More Midas Touches\",\n          \"icon\": \"https://s3-external-1.amazonaws.com/com-amazon-mas-catalog/M1I0LM77RX7FC2%2FM2VC2AJFZBAC93%2Fimages%2F_6b7d1378-12ae-48aa-92e2-618476ab5553_ceb500dbf0e42ce1435155dabebfb8b2\",\n          \"currency\": \"usd\",\n          \"amount\": \"1.99\",\n          \"foo\": \"bar\"\n      },\n      \"com.iwin.fill-lives\" : {\n          \"name\": \"Fill Lives\",\n          \"description\": \"Fill Lives\",\n          \"icon\": \"https://s3-external-1.amazonaws.com/com-amazon-mas-catalog/M1I0LM77RX7FC2%2FM2VC2AJFZBAC93%2Fimages%2F_6b7d1378-12ae-48aa-92e2-618476ab5553_ceb500dbf0e42ce1435155dabebfb8b2\",\n          \"currency\": \"usd\",\n          \"amount\": \"0.99\",\n          \"foo\": \"bar\"\n      }\n   }\n</pre>\nCurrently (owing to restrictions from third party providers) the only currency supported is USD, and the amount should be provided as dollar.cents\n\nYou will also need to create an amazon.sdktester.json file in the root of the released game folder, which reflects the same information (just in an amazon specific manner):\n<pre>\n{\n   \"com.iwin.game-levels\" : {\n       \"itemType\" : \"ENTITLED\",\n       \"price\" : \"0.99\",\n       \"title\": \"Unlock All Levels\",\n       \"description\": \"Unlock All Levels\",\n       \"smallIconUrl\": \"https://s3-external-1.amazonaws.com/com-amazon-mas-catalog/M1I0LM77RX7FC2%2FM2VC2AJFZBAC93%2Fimages%2F_6b7d1378-12ae-48aa-92e2-618476ab5553_ceb500dbf0e42ce1435155dabebfb8b2\"\n   },\n   \"com.iwin.more-time\" : {\n       \"itemType\" : \"CONSUMABLE\",\n       \"price\" : \"0.99\",\n       \"title\": \"Get More Time\",\n       \"description\": \"Get More Time\",\n       \"smallIconUrl\": \"https://s3-external-1.amazonaws.com/com-amazon-mas-catalog/M1I0LM77RX7FC2%2FM2VC2AJFZBAC93%2Fimages%2F_6b7d1378-12ae-48aa-92e2-618476ab5553_ceb500dbf0e42ce1435155dabebfb8b2\"\n   },\n   \"com.iwin.more-moves\" : {\n       \"itemType\" : \"CONSUMABLE\",\n       \"price\" : \"0.99\",\n       \"title\": \"Get More Moves\",\n       \"description\": \"Get More Moves\",\n       \"smallIconUrl\": \"https://s3-external-1.amazonaws.com/com-amazon-mas-catalog/M1I0LM77RX7FC2%2FM2VC2AJFZBAC93%2Fimages%2F_6b7d1378-12ae-48aa-92e2-618476ab5553_ceb500dbf0e42ce1435155dabebfb8b2\"\n   },\n   \"com.iwin.more-midas\" : {\n       \"itemType\" : \"CONSUMABLE\",\n       \"price\" : \"1.99\",\n       \"title\": \"Get More Midas Touches\",\n       \"description\": \"Get More Midas Touches\",\n       \"smallIconUrl\": \"https://s3-external-1.amazonaws.com/com-amazon-mas-catalog/M1I0LM77RX7FC2%2FM2VC2AJFZBAC93%2Fimages%2F_6b7d1378-12ae-48aa-92e2-618476ab5553_ceb500dbf0e42ce1435155dabebfb8b2\"\n   },\n   \"com.iwin.fill-lives\" : {\n       \"itemType\" : \"CONSUMABLE\",\n       \"price\" : \"0.99\",\n       \"title\": \"Fill Lives\",\n       \"description\": \"Fill Lives\",\n       \"smallIconUrl\": \"https://s3-external-1.amazonaws.com/com-amazon-mas-catalog/M1I0LM77RX7FC2%2FM2VC2AJFZBAC93%2Fimages%2F_6b7d1378-12ae-48aa-92e2-618476ab5553_ceb500dbf0e42ce1435155dabebfb8b2\"\n   }\n}\n</pre>\n\nIntegration\n-----------\nThe <code>[iConsole.iap](iConsole.iap.html)</code> class is the integration point that developers should use to determine if the IAP platform is supported\n(i.e. that the game is running on a platform that supports IAP or not), and then to make these purchases. Once the configuration is correct, using the IAP\nplatform is quite simple:\n\n<pre>\n// Decorate my game differently if IAP is supported\nif ( <a href=\"iConsole.iap.html#method_isSupported\">iConsole.iap.isSupported()</a> ) {\n   myGame.state.buyMoreLivesEnabled = true;\n   myGame.state.buyMoreMovesEnabled = true;\n}\n\n/**\n * Handler for Buy More Lives button\n *&#47;\nfunction buyMoreLivesClicked() {\n   // We don't need to test to see if IAP is supported. If it isn't supported, this call will call the failed block\n   // After a short delay (i.e. after a setTimeout of 1ms)\n   <a href=\"iConsole.iap.html#method_purchase\">iConsole.iap.purchase('buymorelivessku')</a>\n      .success(purchaseSuccess)\n      .failure(purchaseFailure);\n}\n\n/**\n * Handler for when a purchase succeeds\n *&#47;\nfunction purchaseSuccess(sku) {\n   switch (sku) {\n      case 'buymorelivessku':\n         myGame.state.lives += 5;\n         break;\n      case 'buymoremovessku':\n         myGame.state.moves += 10;\n         break;\n   }\n}\n/**\n * Handler for when a purchase fails\n *&#47;\nfunction purchaseFailure(sku) {\n   console.log('Purchase failed for sku=' + sku );\n}\n</pre>\n\nLaunching / Testing\n-------------------\nNormally, a console enabled game is launched (on a local development server, with host file entry of\n<code>127.0.0.1 local.games.iwin.com</code>) with\n[http://local.games.iwin.com/#/game/](http://local.games.iwin.com/#/game/) where the folder after the # symbol tells\nthe console where to load the game from. You can append on to this URL, the following\n* &#35;!amazon to enable Amazon integration\n * [http://local.games.iwin.com/#/game/#!amazon](http://local.games.iwin.com/#/game/#!amazon)\n* &#35;!gamescom to enable Games.com integration\n * [http://local.games.iwin.com/#/game/#!gamescom](http://local.games.iwin.com/#/game/#!gamescom)\n* &#35;!yahoo to enable Yahoo integration\n * [http://local.games.iwin.com/#/game/#!yahoo](http://local.games.iwin.com/#/game/#!yahoo)\n\n### Amazon\nThis is the simplest integration to test, as it works out of the box, and does not require any special workarounds\nor notes. In App Purchases complete when you attempt them without costing real money.\n### Games.com\nThe games.com integration requires you to configure a HTML5 game in [http://developer.games.com](http://developer.games.com)\nand to insert this link (for initial testing purposes) in the externally hosted URL. Also, their In App Purchasing\nopens up a pop-up window which may be automatically blocked (which means your purchases will fail), so be aware of\nthis issue. When making a purchase, you can use the magic credit card 4444444444444448 (with any other value for the\nrest of the fields).\n### Yahoo\nYou will need to set up an externally hosted Canvas game in the Yahoo development. The remainder of this integration\nremains undocumented.\n\nFurther Platform Integration\n----------------------------\nBeyond In-App-Purchasing, these platforms also offer other services, which are supported by the Console:\n### Amazon\n* amazonmotiongesturetilt - When on a Fire Phone, you can tilt the phone around it's Y axis, which Amazon request is used\nto hide any menus. This has been exposed in the iConsole as:\n<pre><a href=\"iConsole.game.html#method_onEvent\">iConsole.game.onEvent('tiltYaxis', function(...){...});</a></pre>\n* Home widget label - When the App is installed onto an Amazon device, it has space for a label below the icon on the\nhome screen. Typically, this can be used to provide contextual information about the user's progress in the game, such\nas which level they are on. This is available as:\n<pre><a href=\"iConsole.game.html#method_setHomeWidgetLabel\">iConsole.game.setHomeWidgetLabel('Continue playing from level 9');</a></pre>\n\n### Games.com\n* All user data is stored on the Games.com servers rather than the iWin Servers",
             "type": "{iConsole.iap|*|{}}"
         },
         "iConsole.periodical": {
@@ -110,7 +110,7 @@
             "extension_for": [],
             "file": "src/console-js/modules/periodical.js",
             "line": 2,
-            "description": "Periodical\n-------\nPeriodical game data (i.e. daily games) payload handling via the console.\n\nPeriodical files should be stored in a folder call periodical inside the parent of the game directory... i.e.\nin the folder beside site-console:\n   + game\n   + periodical\n   + site-console\n   ...\n\nWhen the game is released onto production, this folder sits alongside the\nversions of the game\n   + periodical\n   + v_72\n   + v_73\n   ...\n\nInside the periodical folder, should be a file periodical.json. It should contain in the root of the JSON, an\narray called \"periods\", which is an array of objects. Each of these objects should have at least a \"name\", a\n\"date\" in YYYYMMDD format, and a \"json\" which is a local reference to a given periods actual data file. You can\nprovide further details such as a thumbnail image here, but the data in this file should be kept to a minimum for\nonly information that is necessary to allow the user to choose the period The referenced JSON file should be used\nto store all the information about what the game needs to present a given perioids data.\nperiodical.json:\n<pre>\n{\n   \"periods\": [\n\t\t{\n           \"json\": \"daily-test-140905-1.json\",\n\t\t\t\"name\": \"Test A\",\n\t\t\t\"date\": \"20140701\"\n       },\n       {\n           \"json\": \"daily-test-140905-2.json\",\n\t\t\t\"name\": \"Test B\",\n\t\t\t\"date\": \"20140630\"\n       },\n       {\n           \"json\": \"daily-test-140905-3.json\",\n\t\t\t\"name\": \"Test C\",\n\t\t\t\"date\": \"20140629\"\n       }\n   ]\n}\n</pre>\nThe data format for each periods json file is entirely at the games discretion, however, you are strongly\nrecommended to have a \"periodical\" object at the root of each periods data, and this should include everything\nyou need to represent this game to allow the user to choose that period (for example, the name of the puzzle,\na picture of that puzzle etc...). We have a process to take source data and convert this into data suited for\nlong life caching and better user browser performance, and it can automatically generate the parent periodical.json\nfile, and uses the \"periodical\" block in each periods data to generate the \"name\" and other data attributes\nneeded.\n\nOnce you have periodical data, you will need to alter the game_details.json file to have   <br/>\n\"periodical\": true   </br>\nset, in order for the console to consider your game a candidate for enabling periodical data (improper setting\nof this value either results in a volume of 404s, or periodical functions not working).\n\nInside the game, you can call:<pre>\niConsole.periodical.getPeriods().result( function( periodData ) {\n   // ...\n});\n</pre>\nWhich will return you the basic objects from the periodical.json file, including name and date (and any data you\nhave injected there).\n\nYou should use this data to allow the user to choose a period to play, and you should obtain an index from this\narray that the user has chosen. In order to download that data, you should then call:<pre>\niConsole.periodical.getData( indexInArrayThatWasChosen ).result( function( data ) {\n   // ...\n});\n</pre>\nIf any of your data contains URLs to assets relative to that periods data, such as images, you should call:<pre>\nvar realURItoCall = iConsole.periodical.getFileURI('myImage.jpg');\n</pre>\nprior to attempting to load these assets. This ensures that the correct location for these assets are used",
+            "description": "Periodical\n-------\nPeriodical game data (i.e. daily games) payload handling via the console.\n\nPeriodical files should be stored in a folder call periodical inside the parent of the game directory... i.e.\nin the folder beside site-console:\n   + game\n   + periodical\n   + site-console\n   ...\n\nWhen the game is released onto production, this folder sits alongside the\nversions of the game\n   + periodical\n   + v_72\n   + v_73\n   ...\n\nInside the periodical folder, should be a file periodical.json. It should contain in the root of the JSON, an\narray called \"periods\", which is an array of objects. Each of these objects should have at least a \"name\", a\n\"date\" in YYYYMMDD format, and a \"json\" which is a local reference to a given periods actual data file. You can\nprovide further details such as a thumbnail image here, but the data in this file should be kept to a minimum for\nonly information that is necessary to allow the user to choose the period The referenced JSON file should be used\nto store all the information about what the game needs to present a given periods data.\nperiodical.json:\n<pre>\n{\n   \"periods\": [\n\t\t{\n           \"json\": \"daily-test-140905-1.json\",\n\t\t\t\"name\": \"Test A\",\n\t\t\t\"date\": \"20140701\"\n       },\n       {\n           \"json\": \"daily-test-140905-2.json\",\n\t\t\t\"name\": \"Test B\",\n\t\t\t\"date\": \"20140630\"\n       },\n       {\n           \"json\": \"daily-test-140905-3.json\",\n\t\t\t\"name\": \"Test C\",\n\t\t\t\"date\": \"20140629\"\n       }\n   ]\n}\n</pre>\nThe data format for each periods json file is entirely at the games discretion, however, you are strongly\nrecommended to have a \"periodical\" object at the root of each periods data, and this should include everything\nyou need to represent this game to allow the user to choose that period (for example, the name of the puzzle,\na picture of that puzzle etc...). We have a process to take source data and convert this into data suited for\nlong life caching and better user browser performance, and it can automatically generate the parent periodical.json\nfile, and uses the \"periodical\" block in each periods data to generate the \"name\" and other data attributes\nneeded.\n\nOnce you have periodical data, you will need to alter the game_details.json file to have   <br/>\n\"periodical\": true   </br>\nset, in order for the console to consider your game a candidate for enabling periodical data (improper setting\nof this value either results in a volume of 404s, or periodical functions not working).\n\nInside the game, you can call:<pre>\niConsole.periodical.getPeriods().result( function( periodData ) {\n   // ...\n});\n</pre>\nWhich will return you the basic objects from the periodical.json file, including name and date (and any data you\nhave injected there).\n\nYou should use this data to allow the user to choose a period to play, and you should obtain an index from this\narray that the user has chosen. In order to download that data, you should then call:<pre>\niConsole.periodical.getData( indexInArrayThatWasChosen ).result( function( data ) {\n   // ...\n});\n</pre>\nIf any of your data contains URLs to assets relative to that periods data, such as images, you should call:<pre>\nvar realURItoCall = iConsole.periodical.getFileURI('myImage.jpg');\n</pre>\nprior to attempting to load these assets. This ensures that the correct location for these assets are used",
             "type": "{iConsole.periodical|*|{}}"
         }
     },
@@ -585,7 +585,7 @@
                 }
             ],
             "return": {
-                "description": "An object which contains two functions, success and failure, which should each be called\nwith the function you wish to call when the purchase succeeds or fails. These callbacks will be called a\nsingle parameter, the sku that was attempted to be purchased. These calls can be directly chained:",
+                "description": "An object which contains two functions, success and failure, which should each be called\nwith the function you wish to call when the purchase succeeds or fails. These callbacks will be called with a\nsingle parameter, the sku that was attempted to be purchased. These calls can be directly chained:",
                 "type": "Object"
             },
             "example": [
@@ -625,7 +625,7 @@
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 28,
+            "line": 31,
             "description": "This function determines whether mutilplayer support has been enabled.\nIf you were expecting it to have been enabled check your game_details.json config w.r.t. multiplayer additions.\nFor most games this will return false.",
             "itemtype": "method",
             "name": "isSupported",
@@ -637,7 +637,7 @@
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 39,
+            "line": 42,
             "description": "This function allows you to register a callback handler for each tick of game state. Game state is polled every n seconds.",
             "itemtype": "method",
             "name": "registerGetState",
@@ -649,13 +649,26 @@
                 }
             ],
             "example": [
-                "\n<pre>\n{\n  game_room_id: \"...\",                                                        //internal id of no use to you as a game developer\n  server_time: ...,                                                           //milliseconds\n  users: [                                                                    //users who are part of this room\n    { id: \"...\", nickname: \"...\",  avatar_url: \"...\" , state: { ... } }       //state is whatever you pass up\n    { ... }\n    { ... }\n  ]\n}\n</pre>"
+                "\n<pre>\n{\n  game_room_id: \"...\",                                                        //internal id of no use to you as a game developer\n  server_time: ...,                                                           //milliseconds since unix epoch\n  users: [                                                                    //users who are part of this room\n    { id: \"...\", nickname: \"...\",  avatar_url: \"...\" , state: { ... } }       //state is whatever you pass up\n    { ... }\n    { ... }\n  ]\n}\n</pre>"
             ],
             "class": "iConsole.periodical"
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 61,
+            "line": 64,
+            "description": "This function should be used to initiate a user and assign him to the a Room in the multiplayer service.",
+            "return": {
+                "description": "An object which contains two functions, success and failure, which should each be called\nwith the function you wish to call when the assignment succeeds or fails. These calls can be directly chained:",
+                "type": "Object"
+            },
+            "example": [
+                "\n<pre>\n    iConsole.mp.autoAssignUserToRoom().success(mySuccessFunction).failure(myFailureFunction);\n</pre>"
+            ],
+            "class": "iConsole.periodical"
+        },
+        {
+            "file": "src/console-js/modules/mp.js",
+            "line": 102,
             "description": "This function should be used to flag that the user has started playing the game at the point where lobby activities have concluded and the game client feels it has enough users to begin.",
             "itemtype": "method",
             "name": "gameStarted",
@@ -670,10 +683,10 @@
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 70,
+            "line": 111,
             "description": "This function should be used to flag that the game client has ended the game for all players.",
             "itemtype": "method",
-            "name": "gameStarted",
+            "name": "gameEnded",
             "params": [
                 {
                     "name": "options",
@@ -685,14 +698,14 @@
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 79,
+            "line": 120,
             "description": "This function should be used to update the current players state - other game clients will be responsible for updating their own player's state.",
             "itemtype": "method",
             "name": "updateState",
             "params": [
                 {
                     "name": "state",
-                    "description": "A small state object representing all the data about the user that other game clients need in order to display the status of that user,\nexamples include board state in jewel quest, num questions answered correctly in a quiz game and so on.",
+                    "description": "A small state object representing all the data about the user that other game clients need in order to display the status of that user,\nexamples include board state in jewel quest, number of questions answered correctly in a quiz game and so on.",
                     "type": "Object"
                 }
             ],
@@ -700,7 +713,7 @@
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 89,
+            "line": 130,
             "description": "This function should be used by the game to set the players lobby state accordingly.\nFor example a user can be either 'playing'   or   'deciding'.\nMost players are 'waiting' when they join a room and remain in this state until the game determines it has enough users to start.\nAt this point each client should update their user into 'playing' state.\nThe user stays in this state until the user finishes their game, at which point they should be moved to 'finished' status.\nWhen you show the \"play again\"   or   \"leave room\" screen the user should be placed into a 'deciding' status.\nThis allows users to either play again or leave and prevents the game believing it has the correct number of users already available to start the game.\nUsers in the 'finished' or 'deciding' status are still technically in the room and take up a players spot until they leave.\nOnce a user agrees to play again (or is automatically agreed to play again) they should be set to 'playing' status.",
             "params": [
                 {
@@ -712,43 +725,43 @@
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 106,
+            "line": 171,
             "description": "This function accepts the users passed to the  getState  callback handler and returns the current player's object.\nYou should check this response for null - which signifies that the current user could not be located.",
             "class": "iConsole.periodical"
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 130,
+            "line": 191,
             "description": "This function accepts the users passed to the  getState  callback handler and returns the other player objects.\nYou should check this response for being empty.\nNote the current user will never appear in this list...\nAlso note that when users leave a room at any point, they will not appear in the list returned here.\nThe game clients should keep track of which players were playing and their last recorded state and compare that with the list of players still playing.",
             "class": "iConsole.periodical"
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 150,
+            "line": 209,
             "description": "This function accepts the users passed to the  getState  callback handler and returns the users waiting.",
             "class": "iConsole.periodical"
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 157,
+            "line": 216,
             "description": "This function accepts the users passed to the  getState  callback handler and returns the users playing.",
             "class": "iConsole.periodical"
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 164,
+            "line": 223,
             "description": "This function accepts the users passed to the  getState  callback handler and returns the users finished playing.",
             "class": "iConsole.periodical"
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 171,
+            "line": 230,
             "description": "This function accepts the users passed to the  getState  callback handler and returns the users deciding, i.e. still in the room but not yet agreed to play again.",
             "class": "iConsole.periodical"
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 178,
+            "line": 237,
             "description": "This function allows the game to show a button to allow the user to leave the game at any point in time.\nWhen called it will remove the user from the game.",
             "class": "iConsole.periodical"
         },
@@ -827,36 +840,40 @@
             "line": " src/console-js/modules/mp.js:3"
         },
         {
+            "message": "Missing item type\nThis function should be used to initiate a user and assign him to the a Room in the multiplayer service.",
+            "line": " src/console-js/modules/mp.js:64"
+        },
+        {
             "message": "Missing item type\nThis function should be used by the game to set the players lobby state accordingly.\nFor example a user can be either 'playing'   or   'deciding'.\nMost players are 'waiting' when they join a room and remain in this state until the game determines it has enough users to start.\nAt this point each client should update their user into 'playing' state.\nThe user stays in this state until the user finishes their game, at which point they should be moved to 'finished' status.\nWhen you show the \"play again\"   or   \"leave room\" screen the user should be placed into a 'deciding' status.\nThis allows users to either play again or leave and prevents the game believing it has the correct number of users already available to start the game.\nUsers in the 'finished' or 'deciding' status are still technically in the room and take up a players spot until they leave.\nOnce a user agrees to play again (or is automatically agreed to play again) they should be set to 'playing' status.",
-            "line": " src/console-js/modules/mp.js:89"
-        },
-        {
-            "message": "Missing item type\nThis function accepts the users passed to the  getState  callback handler and returns the current player's object.\nYou should check this response for null - which signifies that the current user could not be located.",
-            "line": " src/console-js/modules/mp.js:106"
-        },
-        {
-            "message": "Missing item type\nThis function accepts the users passed to the  getState  callback handler and returns the other player objects.\nYou should check this response for being empty.\nNote the current user will never appear in this list...\nAlso note that when users leave a room at any point, they will not appear in the list returned here.\nThe game clients should keep track of which players were playing and their last recorded state and compare that with the list of players still playing.",
             "line": " src/console-js/modules/mp.js:130"
         },
         {
-            "message": "Missing item type\nThis function accepts the users passed to the  getState  callback handler and returns the users waiting.",
-            "line": " src/console-js/modules/mp.js:150"
-        },
-        {
-            "message": "Missing item type\nThis function accepts the users passed to the  getState  callback handler and returns the users playing.",
-            "line": " src/console-js/modules/mp.js:157"
-        },
-        {
-            "message": "Missing item type\nThis function accepts the users passed to the  getState  callback handler and returns the users finished playing.",
-            "line": " src/console-js/modules/mp.js:164"
-        },
-        {
-            "message": "Missing item type\nThis function accepts the users passed to the  getState  callback handler and returns the users deciding, i.e. still in the room but not yet agreed to play again.",
+            "message": "Missing item type\nThis function accepts the users passed to the  getState  callback handler and returns the current player's object.\nYou should check this response for null - which signifies that the current user could not be located.",
             "line": " src/console-js/modules/mp.js:171"
         },
         {
+            "message": "Missing item type\nThis function accepts the users passed to the  getState  callback handler and returns the other player objects.\nYou should check this response for being empty.\nNote the current user will never appear in this list...\nAlso note that when users leave a room at any point, they will not appear in the list returned here.\nThe game clients should keep track of which players were playing and their last recorded state and compare that with the list of players still playing.",
+            "line": " src/console-js/modules/mp.js:191"
+        },
+        {
+            "message": "Missing item type\nThis function accepts the users passed to the  getState  callback handler and returns the users waiting.",
+            "line": " src/console-js/modules/mp.js:209"
+        },
+        {
+            "message": "Missing item type\nThis function accepts the users passed to the  getState  callback handler and returns the users playing.",
+            "line": " src/console-js/modules/mp.js:216"
+        },
+        {
+            "message": "Missing item type\nThis function accepts the users passed to the  getState  callback handler and returns the users finished playing.",
+            "line": " src/console-js/modules/mp.js:223"
+        },
+        {
+            "message": "Missing item type\nThis function accepts the users passed to the  getState  callback handler and returns the users deciding, i.e. still in the room but not yet agreed to play again.",
+            "line": " src/console-js/modules/mp.js:230"
+        },
+        {
             "message": "Missing item type\nThis function allows the game to show a button to allow the user to leave the game at any point in time.\nWhen called it will remove the user from the game.",
-            "line": " src/console-js/modules/mp.js:178"
+            "line": " src/console-js/modules/mp.js:237"
         }
     ]
 }

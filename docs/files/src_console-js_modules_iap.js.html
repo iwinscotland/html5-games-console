@@ -232,7 +232,7 @@
  *    }
  * }
      * /**
-     *  * Handler for when a purchase succeeds
+     *  * Handler for when a purchase fails
      *  *&amp;#47;
      * function purchaseFailure(sku) {
  *    console.log(&#x27;Purchase failed for sku=&#x27; + sku );
@@ -244,7 +244,7 @@
      * Normally, a console enabled game is launched (on a local development server, with host file entry of
      * &lt;code&gt;127.0.0.1 local.games.iwin.com&lt;/code&gt;) with
      * [http://local.games.iwin.com/#/game/](http://local.games.iwin.com/#/game/) where the folder after the # symbol tells
-     * the console where to laod the game from. You can append on to this URL, the following
+     * the console where to load the game from. You can append on to this URL, the following
      * * &amp;#35;!amazon to enable Amazon integration
      *  * [http://local.games.iwin.com/#/game/#!amazon](http://local.games.iwin.com/#/game/#!amazon)
      * * &amp;#35;!gamescom to enable Games.com integration
@@ -253,7 +253,7 @@
      *  * [http://local.games.iwin.com/#/game/#!yahoo](http://local.games.iwin.com/#/game/#!yahoo)
      *
      * ### Amazon
-     * This is the simplest integration to test, as it works out of the box, and does not require any special work-arounds
+     * This is the simplest integration to test, as it works out of the box, and does not require any special workarounds
      * or notes. In App Purchases complete when you attempt them without costing real money.
      * ### Games.com
      * The games.com integration requires you to configure a HTML5 game in [http://developer.games.com](http://developer.games.com)
@@ -263,7 +263,7 @@
      * rest of the fields).
      * ### Yahoo
      * You will need to set up an externally hosted Canvas game in the Yahoo development. The remainder of this integration
-     * remains un-documented.
+     * remains undocumented.
      *
      * Further Platform Integration
      * ----------------------------
@@ -307,7 +307,7 @@
          * @method purchase
          * @param sku {string} The sku item you wish to purchase
          * @return {Object} An object which contains two functions, success and failure, which should each be called
-         * with the function you wish to call when the purchase succeeds or fails. These callbacks will be called a
+         * with the function you wish to call when the purchase succeeds or fails. These callbacks will be called with a
          * single parameter, the sku that was attempted to be purchased. These calls can be directly chained:
          * @example
          * &lt;pre&gt;
