@@ -301,6 +301,10 @@ prior to attempting to load these assets. This ensures that the correct location
     
 
     
+        <span class="returns-inline">
+            <span class="type">Object</span>
+        </span>
+    
 
     
 
@@ -325,7 +329,7 @@ prior to attempting to load these assets. This ensures that the correct location
             
         
         
-        <a href="../files/src_console-js_modules_mp.js.html#l78"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:78</code></a>
+        <a href="../files/src_console-js_modules_mp.js.html#l119"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:119</code></a>
         
         </p>
 
@@ -355,7 +359,8 @@ prior to attempting to load these assets. This ensures that the correct location
                     
 
                     <div class="param-description">
-                        <p>The method accepts an options object which may be expanded later with behaviours that affect what happens to the user at game end.</p>
+                        <p>The method accepts an options object which may be expanded later with behaviours that
+affect what happens to the user at game end.</p>
 
                     </div>
 
@@ -367,7 +372,32 @@ prior to attempting to load these assets. This ensures that the correct location
     
 
     
+        <div class="returns">
+            <h4>Returns:</h4>
 
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Object</span>:
+                    
+                    <p>An object which contains two functions, success and failure, which should each be called
+with the function you wish to call when the assignment succeeds or fails. These calls can be directly chained:</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre>
+    iConsole.mp.gameEnded(options).success(mySuccessFunction).failure(myFailureFunction);
+</pre>
+            </div>
+        </div>
     
 </div>
 
@@ -389,6 +419,10 @@ prior to attempting to load these assets. This ensures that the correct location
         </div>
     
 
+    
+        <span class="returns-inline">
+            <span class="type">Object</span>
+        </span>
     
 
     
@@ -414,7 +448,7 @@ prior to attempting to load these assets. This ensures that the correct location
             
         
         
-        <a href="../files/src_console-js_modules_mp.js.html#l69"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:69</code></a>
+        <a href="../files/src_console-js_modules_mp.js.html#l102"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:102</code></a>
         
         </p>
 
@@ -425,7 +459,8 @@ prior to attempting to load these assets. This ensures that the correct location
     </div>
 
     <div class="description">
-        <p>This function should be used to flag that the user has started playing the game at the point where lobby activities have concluded and the game client feels it has enough users to begin.</p>
+        <p>This function should be used to flag that the user has started playing the game at the point where lobby activities
+have concluded and the game client feels it has enough users to begin.</p>
 
     </div>
 
@@ -444,7 +479,8 @@ prior to attempting to load these assets. This ensures that the correct location
                     
 
                     <div class="param-description">
-                        <p>The method accepts an options object which may be expanded later with behaviours for how additional users join the game once it has started.</p>
+                        <p>The method accepts an options object which may be expanded later with behaviours for how
+additional users join the game once it has started.</p>
 
                     </div>
 
@@ -456,7 +492,32 @@ prior to attempting to load these assets. This ensures that the correct location
     
 
     
+        <div class="returns">
+            <h4>Returns:</h4>
 
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Object</span>:
+                    
+                    <p>An object which contains two functions, success and failure, which should each be called
+with the function you wish to call when the assignment succeeds or fails. These calls can be directly chained:</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre>
+    iConsole.mp.gameStarted(options).success(mySuccessFunction).failure(myFailureFunction);
+</pre>
+            </div>
+        </div>
     
 </div>
 
@@ -950,6 +1011,10 @@ For most games this will return false.</p>
     
 
     
+        <span class="returns-inline">
+            <span class="type">Object</span>
+        </span>
+    
 
     
 
@@ -974,7 +1039,7 @@ For most games this will return false.</p>
             
         
         
-        <a href="../files/src_console-js_modules_mp.js.html#l87"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:87</code></a>
+        <a href="../files/src_console-js_modules_mp.js.html#l135"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:135</code></a>
         
         </p>
 
@@ -985,7 +1050,8 @@ For most games this will return false.</p>
     </div>
 
     <div class="description">
-        <p>This function should be used to update the current players state - other game clients will be responsible for updating their own player&#39;s state.</p>
+        <p>This function should be used to update the current players state - other game clients will be responsible for updating
+their own player&#39;s state.</p>
 
     </div>
 
@@ -1004,8 +1070,9 @@ For most games this will return false.</p>
                     
 
                     <div class="param-description">
-                        <p>A small state object representing all the data about the user that other game clients need in order to display the status of that user,
-examples include board state in jewel quest, number of questions answered correctly in a quiz game and so on.</p>
+                        <p>A small state object representing all the data about the user that other game clients need in order
+to display the status of that user, examples include board state in jewel quest, number of questions answered correctly
+in a quiz game and so on.</p>
 
                     </div>
 
@@ -1017,7 +1084,32 @@ examples include board state in jewel quest, number of questions answered correc
     
 
     
+        <div class="returns">
+            <h4>Returns:</h4>
 
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Object</span>:
+                    
+                    <p>An object which contains two functions, success and failure, which should each be called
+with the function you wish to call when the assignment succeeds or fails. These calls can be directly chained:</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre>
+    iConsole.mp.updateState({score: 45}).success(mySuccessFunction).failure(myFailureFunction);
+</pre>
+            </div>
+        </div>
     
 </div>
 

@@ -152,42 +152,98 @@
          * }
          * &lt;/pre&gt;
          */
-        registerGetState: function( callback ) {
+        registerGetState: function(callback) {
             iConsole.mp.internal.getStateCallback = callback;
         },
 
 
+        /**
+         * This function should be used to initiate a user and assign him to the a Room in the multiplayer service.
+         * @return {Object} An object which contains two functions, success and failure, which should each be called
+         * with the function you wish to call when the assignment succeeds or fails. These calls can be directly chained:
+         * @example
+         * &lt;pre&gt;
+         *     iConsole.mp.autoAssignUserToRoom().success(mySuccessFunction).failure(myFailureFunction);
+         * &lt;/pre&gt;
+         */
         autoAssignUserToRoom: function() {
-            iConsole.mp.internal.autoAssignUserToRoom();
+            return (function(){
+                var successCallback = null;
+                var failureCallback = null;
+                iConsole.XDM.sendAutoAssignUserToRoom({user_id: iConsole.mp.internal.user_id}).result(function(data) {
+                    if (data.status === &#x27;OK&#x27;) {
+                        iConsole.mp.internal.game_room_id = data.room_id;
+                        if (successCallback) {
+                            successCallback();
+                        }
+                    } else if (failureCallback) {
+                        failureCallback();
+                    }
+                });
+                var returnable = {
+                    success: function(callback) {
+                        successCallback = callback;
+                        return returnable;
+                    },
+                    failure: function(callback) {
+                        failureCallback = callback;
+                        return returnable;
+                    }
+                };
+                return returnable;
+            })();
         },
 
 
         /**
-         * This function should be used to flag that the user has started playing the game at the point where lobby activities have concluded and the game client feels it has enough users to begin.
+         * This function should be used to flag that the user has started playing the game at the point where lobby activities
+         * have concluded and the game client feels it has enough users to begin.
          * @method gameStarted
-         * @param options {Object} The method accepts an options object which may be expanded later with behaviours for how additional users join the game once it has started.
+         * @param options {Object} The method accepts an options object which may be expanded later with behaviours for how
+         * additional users join the game once it has started.
+         * @return {Object} An object which contains two functions, success and failure, which should each be called
+         * with the function you wish to call when the assignment succeeds or fails. These calls can be directly chained:
+         * @example
+         * &lt;pre&gt;
+         *     iConsole.mp.gameStarted(options).success(mySuccessFunction).failure(myFailureFunction);
+         * &lt;/pre&gt;
          */
-        gameStarted: function( options ) {
+        gameStarted: function (options) {
             iConsole.mp.internal.updateLobbyRoomState(iConsole.mp.LOBBY_ROOM_STATE_GAME_STARTED);
         },
 
         /**
          * This function should be used to flag that the game client has ended the game for all players.
          * @method gameEnded
-         * @param options {Object} The method accepts an options object which may be expanded later with behaviours that affect what happens to the user at game end.
+         * @param options {Object} The method accepts an options object which may be expanded later with behaviours that
+         * affect what happens to the user at game end.
+         * @return {Object} An object which contains two functions, success and failure, which should each be called
+         * with the function you wish to call when the assignment succeeds or fails. These calls can be directly chained:
+         * @example
+         * &lt;pre&gt;
+         *     iConsole.mp.gameEnded(options).success(mySuccessFunction).failure(myFailureFunction);
+         * &lt;/pre&gt;
          */
-        gameEnded: function( options ) {
+        gameEnded: function(options) {
             iConsole.mp.internal.updateLobbyRoomState(iConsole.mp.LOBBY_ROOM_STATE_GAME_ENDED);
         },
 
         /**
-         * This function should be used to update the current players state - other game clients will be responsible for updating their own player&#x27;s state.
+         * This function should be used to update the current players state - other game clients will be responsible for updating
+         * their own player&#x27;s state.
          * @method updateState
-         * @param state {Object} A small state object representing all the data about the user that other game clients need in order to display the status of that user,
-         * examples include board state in jewel quest, number of questions answered correctly in a quiz game and so on.
+         * @param state {Object} A small state object representing all the data about the user that other game clients need in order
+         * to display the status of that user, examples include board state in jewel quest, number of questions answered correctly
+         * in a quiz game and so on.
+         * @return {Object} An object which contains two functions, success and failure, which should each be called
+         * with the function you wish to call when the assignment succeeds or fails. These calls can be directly chained:
+         * @example
+         * &lt;pre&gt;
+         *     iConsole.mp.updateState({score: 45}).success(mySuccessFunction).failure(myFailureFunction);
+         * &lt;/pre&gt;
          */
-        updateState: function( state ) {
-            iConsole.mp.internal.mockDeleteMeLater_PushStateToServer( state );
+        updateState: function(state) {
+            iConsole.mp.internal.pushStateToServer( state );
         },
 
         /**
@@ -197,33 +253,63 @@
          * At this point each client should update their user into &#x27;playing&#x27; state.
          * The user stays in this state until the user finishes their game, at which point they should be moved to &#x27;finished&#x27; status.
          * When you show the &quot;play again&quot;   or   &quot;leave room&quot; screen the user should be placed into a &#x27;deciding&#x27; status.
-         * This allows users to either play again or leave and prevents the game believing it has the correct number of users already available to start the game.
+         * This allows users to either play again or leave and prevents the game believing it has the correct number of users
+         * already available to start the game.
          * Users in the &#x27;finished&#x27; or &#x27;deciding&#x27; status are still technically in the room and take up a players spot until they leave.
          * Once a user agrees to play again (or is automatically agreed to play again) they should be set to &#x27;playing&#x27; status.
-         * @param lobbyState, must be either iConsole.mp.LOBBY_STATE_WAITING, iConsole.mp.LOBBY_STATE_PLAYING, iConsole.mp.LOBBY_STATE_FINISHED, iConsole.mp.LOBBY_STATE_DECIDING
+         * @param lobbyState, must be either iConsole.mp.LOBBY_STATE_WAITING, iConsole.mp.LOBBY_STATE_PLAYING, iConsole.mp.LOBBY_STATE_FINISHED,
+         * iConsole.mp.LOBBY_STATE_DECIDING
+         * @return {Object} An object which contains two functions, success and failure, which should each be called
+         * with the function you wish to call when the assignment succeeds or fails. These calls can be directly chained:
+         * @example
+         * &lt;pre&gt;
+         *     iConsole.mp.updateUsersLobbyState(iConsole.mp.LOBBY_STATE_WAITING).success(mySuccessFunction).failure(myFailureFunction);
+         * &lt;/pre&gt;
          */
-        updateUsersLobbyState: function( lobbyState ) {
-            var remoteUrl = &#x27;http://multiplayer.iwin.com/lobby/game/update/&#x27; + iConsole.mp.internal.mockDeleteMeLater_game_room_id + &#x27;/user/&#x27; + iConsole.mp.internal.mockDeleteMeLater_user_id + &#x27;?lobby_state=&#x27; + lobbyState;
-            $.getJSON( remoteUrl, function(json) {});
+        updateUsersLobbyState: function(lobbyState) {
+            if (iConsole.mp.internal.game_room_id !== null &amp;&amp; iConsole.mp.internal.game_room_id !== undefined) {
+                return (function(){
+                    var successCallback = null;
+                    var failureCallback = null;
+                    iConsole.XDM.sendUpdateUsersLobbyState({ user_id: iConsole.mp.internal.user_id,
+                        game_room_id: iConsole.mp.internal.game_room_id,
+                        lobby_state: lobbyState }).result(function(data) {
+                        if (data.status === &#x27;OK&#x27;) {
+                            if (successCallback) {
+                                successCallback();
+                            }
+                        } else if (failureCallback) {
+                            failureCallback();
+                        }
+                    });
+                    var returnable = {
+                        success: function(callback) {
+                            successCallback = callback;
+                            return returnable;
+                        },
+                        failure: function(callback) {
+                            failureCallback = callback;
+                            return returnable;
+                        }
+                    };
+                    return returnable;
+                })();
+            }
         },
 
         /**
         * This function accepts the users passed to the  getState  callback handler and returns the current player&#x27;s object.
         * You should check this response for null - which signifies that the current user could not be located.
         */
-        getCurrentPlayer: function ( allUsers, voyeur_users ) {
-            for ( var x=0; x&lt; allUsers.length; x++ )
-            {
-                if ( allUsers[x].id === iConsole.mp.internal.mockDeleteMeLater_user_id )
-                {
+        getCurrentPlayer: function (allUsers, voyeur_users) {
+            for (var x = 0; x &lt; allUsers.length; x++) {
+                if (allUsers[x].id === iConsole.mp.internal.user_id) {
                     return allUsers[x];
                 }
             }
 
-            for ( var y=0; y&lt; voyeur_users.length; y++ )
-            {
-                if ( voyeur_users[y].id === iConsole.mp.internal.mockDeleteMeLater_user_id )
-                {
+            for (var y = 0; y &lt; voyeur_users.length; y++) {
+                if (voyeur_users[y].id === iConsole.mp.internal.user_id) {
                     return voyeur_users[y];
                 }
             }
@@ -237,14 +323,12 @@
         * Note the current user will never appear in this list...
         * Also note that when users leave a room at any point, they will not appear in the list returned here.
         * The game clients should keep track of which players were playing and their last recorded state and compare that with the list of players still playing.
-        */		
-        getOtherPlayers: function( allUsers ) {
+        */
+        getOtherPlayers: function (allUsers) {
             var otherUsers = [];
-            for ( var x=0; x&lt; allUsers.length; x++ )
-            {
-                if ( allUsers[x].id !== iConsole.mp.internal.mockDeleteMeLater_user_id )
-                {
-                    otherUsers.push( allUsers[x] );
+            for (var x = 0; x &lt; allUsers.length; x++) {
+                if (allUsers[x].id !== iConsole.mp.internal.user_id) {
+                    otherUsers.push(allUsers[x]);
                 }
             }
             return otherUsers;
@@ -254,160 +338,227 @@
         /**
          * This function accepts the users passed to the  getState  callback handler and returns the users waiting.
          */
-        getWaitingUsers: function( allUsers ) {
-            return iConsole.mp.internal.getUsersWithLobbyState( allUsers, iConsole.mp.LOBBY_STATE_WAITING );
+        getWaitingUsers: function (allUsers) {
+            return iConsole.mp.internal.getUsersWithLobbyState(allUsers, iConsole.mp.LOBBY_STATE_WAITING);
         },
 
         /**
          * This function accepts the users passed to the  getState  callback handler and returns the users playing.
          */
-        getPlayingUsers: function( allUsers ) {
-            return iConsole.mp.internal.getUsersWithLobbyState( allUsers, iConsole.mp.LOBBY_STATE_PLAYING );
+        getPlayingUsers: function (allUsers) {
+            return iConsole.mp.internal.getUsersWithLobbyState(allUsers, iConsole.mp.LOBBY_STATE_PLAYING);
         },
 
         /**
          * This function accepts the users passed to the  getState  callback handler and returns the users finished playing.
          */
-        getFinishedUsers: function( allUsers ) {
-            return iConsole.mp.internal.getUsersWithLobbyState( allUsers, iConsole.mp.LOBBY_STATE_FINISHED );
+        getFinishedUsers: function (allUsers) {
+            return iConsole.mp.internal.getUsersWithLobbyState(allUsers, iConsole.mp.LOBBY_STATE_FINISHED);
         },
 
         /**
-         * This function accepts the users passed to the  getState  callback handler and returns the users deciding, i.e. still in the room but not yet agreed to play again.
+         * This function accepts the users passed to the  getState  callback handler and returns the users deciding,
+         * i.e. still in the room but not yet agreed to play again.
          */
-        getDecidingUsers: function( allUsers ) {
-            return iConsole.mp.internal.getUsersWithLobbyState( allUsers, iConsole.mp.LOBBY_STATE_DECIDING );
+        getDecidingUsers: function (allUsers) {
+            return iConsole.mp.internal.getUsersWithLobbyState(allUsers, iConsole.mp.LOBBY_STATE_DECIDING);
         },
 
         /**
          * This function allows the game to show a button to allow the user to leave the game at any point in time.
          * When called it will remove the user from the game.
+         * @return {Object} An object which contains two functions, success and failure, which should each be called
+         * with the function you wish to call when the assignment succeeds or fails. These calls can be directly chained:
+         * @example
+         * &lt;pre&gt;
+         *     iConsole.mp.userLeftRoom().success(mySuccessFunction).failure(myFailureFunction);
+         * &lt;/pre&gt;
          */
         userLeftRoom: function( ) {
-            var remoteUrl = &#x27;http://multiplayer.iwin.com/game/remove/&#x27; + iConsole.mp.internal.mockDeleteMeLater_game_room_id + &#x27;/user/&#x27; + iConsole.mp.internal.mockDeleteMeLater_user_id;
-            $.getJSON( remoteUrl, function(json) {});
+            return (function(){
+                var successCallback = null;
+                var failureCallback = null;
+                iConsole.XDM.sendRemoveUserFromRoom({ user_id: iConsole.mp.internal.user_id,
+                                                      game_room_id: iConsole.mp.internal.game_room_id }).result(function(data) {
+                    if (data.status === &#x27;OK&#x27;) {
+                        if (successCallback) {
+                            successCallback();
+                        }
+                    } else if (failureCallback) {
+                        failureCallback();
+                    }
+                });
+                var returnable = {
+                    success: function(callback) {
+                        successCallback = callback;
+                        return returnable;
+                    },
+                    failure: function(callback) {
+                        failureCallback = callback;
+                        return returnable;
+                    }
+                };
+                return returnable;
+            })();
         },
-
 
         internal: {
             supported: false,
             getStateCallback: null,
-            //todo later - rework all this later when you do the full integration
-            mockDeleteMeLater_game_room_id: null,
-            mockDeleteMeLater_user_id: null,
-            mockDeleteMeLater_user_nickname: null,
-            mockDeleteMeLater_pollForServerStateInterval: null,
-            mockDeleteMeLater_PollForServerStateDelay: 3000,
+            pollForServerStateInterval: null,
+            pollForServerStateDelay: 3000,
+            pollForUserAliveDelay: 300000,
+            userAliveTimer: (new Date()).getTime(),
 
             user_id: guid(),
             game_room_id: null,
-            game_code: null,
-            max_players_per_room: null,
 
             initializeMP: function(data) {
                 iConsole.mp.internal.supported = true;
                 if ( iConsole.mp.internal.supported )
                 {
-                    iConsole.mp.internal.mockDeleteMeLater_StartPollingServerForState();
-                    iConsole.mp.internal.mockDeleteMeLater_PollForServerStateDelay = data.state_poll_every_n_seconds * 1000;
-                    iConsole.mp.internal.game_code = data.game_code;
-                    iConsole.mp.internal.max_players_per_room = data.max_players_per_room;
-                    iConsole.mp.internal.mockDeleteMeLater_user_id = iConsole.mp.internal.user_id;
-                    // todo should autoAssignUserToRoom here
-                    // iConsole.mp.internal.autoAssignUserToRoom();
-                }
-            },
-
-            autoAssignUserToRoom: function() {
-                if ( iConsole.mp.internal.supported &amp;&amp; iConsole.mp.internal.mockDeleteMeLater_user_id !== null ) {
-                    if ( window.$ ) {
-                        var userId = iConsole.mp.internal.user_id;
-                        var gameId = iConsole.mp.internal.game_code;
-                        var userNickname = iConsole.mp.internal.mockDeleteMeLater_user_nickname || &#x27;Player&#x27; + Math.floor((Math.random() * 100) + 1);  // todo from login service pass to data, iwinGameServices.user.currentUser().name
-                        var userAvatarUrl = &#x27;http://placehold.it/200x200/ff0000/000000?text=&#x27; + userNickname;  // todo from login service, iwinGameServices.user.currentUser().photo_url
-                        var userType = &quot;real&quot;;
-                        var playersPerRoom = iConsole.mp.internal.max_players_per_room;
-                        var remoteUrl = &#x27;http://multiplayer.iwin.com/game/autoassign/user/&#x27; + userId + &#x27;/rooms/&#x27; + gameId +
-                            &#x27;?user_nickname=&#x27; + userNickname + &#x27;&amp;user_type=&#x27; + userType + &#x27;&amp;user_avatar=&#x27; + userAvatarUrl +&#x27;&amp;players_per_room=&#x27; + playersPerRoom;
-                        $.getJSON( remoteUrl, function(json) {
-                            iConsole.mp.internal.game_room_id = json.room_id;
-                            iConsole.mp.internal.mockDeleteMeLater_game_room_id = json.room_id;
-                        });
-                    }
+                    iConsole.mp.internal.startPollingServerForState();
+                    iConsole.mp.internal.startPollingUserAlive();
+                    iConsole.mp.internal.pollForServerStateDelay = data.state_poll_every_n_seconds * 1000;
                 }
             },
 
             updateLobbyRoomState: function(state) {
-                if ( iConsole.mp.internal.supported &amp;&amp;
-                     iConsole.mp.internal.mockDeleteMeLater_game_room_id !== null ) {
-                    if (window.$) {
-                        var state_with_encoding = encodeURIComponent(state);
-                        var remoteUrl = &#x27;http://multiplayer.iwin.com/game/updatestate/&#x27; + iConsole.mp.internal.mockDeleteMeLater_game_room_id + &#x27;?state=&#x27; + state_with_encoding;
-                        $.getJSON( remoteUrl, function(json) {
+                if (iConsole.mp.internal.game_room_id !== null &amp;&amp; iConsole.mp.internal.game_room_id !== undefined) {
+                    return (function(){
+                        var successCallback = null;
+                        var failureCallback = null;
+                        iConsole.XDM.sendUpdateLobbyRoomState({game_room_id: iConsole.mp.internal.game_room_id, room_state: state}).result(function(data) {
+                            if (data.status === &#x27;OK&#x27;) {
+                                if (successCallback) {
+                                    successCallback();
+                                }
+                            } else if (failureCallback) {
+                                failureCallback();
+                            }
                         });
-                    }
+                        var returnable = {
+                            success: function(callback) {
+                                successCallback = callback;
+                                return returnable;
+                            },
+                            failure: function(callback) {
+                                failureCallback = callback;
+                                return returnable;
+                            }
+                        };
+                        return returnable;
+                    })();
                 }
             },
 
-            //Assumes your game client has JQuery for the moment.
-            mockDeleteMeLater_PushStateToServer: function(state) {
-                if ( iConsole.mp.internal.supported &amp;&amp; iConsole.mp.internal.mockDeleteMeLater_game_room_id !== null &amp;&amp; iConsole.mp.internal.mockDeleteMeLater_user_id !== null ) {
-                    if ( window.$ ) {
-                        var state_as_json = JSON.stringify(state);
-                        var state_as_json_with_encoding = encodeURIComponent(state_as_json);
-                        var remoteUrl = &#x27;http://multiplayer.iwin.com/game/update/&#x27; + iConsole.mp.internal.mockDeleteMeLater_game_room_id + &#x27;/user/&#x27; + iConsole.mp.internal.mockDeleteMeLater_user_id + &#x27;?state=&#x27; + state_as_json_with_encoding;
-                        $.getJSON( remoteUrl, function(json) {
+            pushStateToServer: function(state) {
+                if (iConsole.mp.internal.game_room_id !== null &amp;&amp; iConsole.mp.internal.game_room_id !== undefined) {
+                    iConsole.mp.internal.userAliveTimer = (new Date()).getTime();
+                    return (function(){
+                        var successCallback = null;
+                        var failureCallback = null;
+                        iConsole.XDM.sendPushStateToServer({ user_id: iConsole.mp.internal.user_id,
+                            game_room_id: iConsole.mp.internal.game_room_id,
+                            user_state: state }).result(function(data) {
+                            if (data.status === &#x27;OK&#x27;) {
+                                if (successCallback) {
+                                    successCallback();
+                                }
+                            } else if (failureCallback) {
+                                failureCallback();
+                            }
                         });
-                    }
+                        var returnable = {
+                            success: function(callback) {
+                                successCallback = callback;
+                                return returnable;
+                            },
+                            failure: function(callback) {
+                                failureCallback = callback;
+                                return returnable;
+                            }
+                        };
+                        return returnable;
+                    })();
                 }
             },
 
-            //Assumes your game client has JQuery for the moment.
-            mockDeleteMeLater_StartPollingServerForState: function() {
-                iConsole.mp.internal.mockDeleteMeLater_pollForServerStateInterval = setInterval( iConsole.mp.internal.mockDeleteMeLater_PollForServerState, iConsole.mp.internal.mockDeleteMeLater_PollForServerStateDelay);
-            },
-
-            mockDeleteMeLater_PollForServerState: function() {
-                if ( iConsole.mp.internal.supported &amp;&amp; iConsole.mp.internal.mockDeleteMeLater_game_room_id !== null &amp;&amp; iConsole.mp.internal.mockDeleteMeLater_user_id !== null )
-                {
-                    if ( window.$ )
-                    {
-                        var remoteUrl = &#x27;http://multiplayer.iwin.com/game/state/&#x27; + iConsole.mp.internal.mockDeleteMeLater_game_room_id;
-                        $.getJSON( remoteUrl, function(json) {
-                            iConsole.mp.internal.mockDeleteMeLater_PerformCallback( iConsole.mp.internal.getStateCallback ,json );
-                        });
-                    }
+            postUserAlive: function() {
+                var now = (new Date().getTime());
+                if ((now - iConsole.mp.internal.pollForUserAliveDelay) &gt; iConsole.mp.internal.userAliveTimer) {
+                    iConsole.mp.internal.pushStateToServer(null);
                 }
             },
 
-            mockDeleteMeLater_PerformCallback: function( theFunction, callbackWith )
-            {
-                if ( theFunction !== undefined &amp;&amp; theFunction )
-                {
-                    if ( callbackWith !== null )
-                    {
-                        theFunction( callbackWith );
+            startPollingServerForState: function() {
+                iConsole.mp.internal.pollForServerStateInterval = setInterval(iConsole.mp.internal.pollForServerState, iConsole.mp.internal.pollForServerStateDelay);
+            },
+
+            startPollingUserAlive: function() {
+                iConsole.mp.internal.pollForServerStateInterval = setInterval(iConsole.mp.internal.postUserAlive, iConsole.mp.internal.pollForUserAliveDelay);
+            },
+
+            pollForServerState: function() {
+                if (iConsole.mp.internal.game_room_id !== null &amp;&amp; iConsole.mp.internal.game_room_id !== undefined) {
+                    iConsole.XDM.sendPollForServerState({ game_room_id: iConsole.mp.internal.game_room_id })
+                        .result(function(data) {
+                            if (data !== null) {
+                                var json = data;
+                                iConsole.mp.internal.performCallback(iConsole.mp.internal.getStateCallback, json);
+                            }
+                        });
+                }
+            },
+
+            performCallback: function (theFunction, callbackWith) {
+                if (theFunction !== undefined &amp;&amp; theFunction) {
+                    if (callbackWith !== null) {
+                        theFunction(callbackWith);
                     }
-                    else
-                    {
+                    else {
                         theFunction();
                     }
                 }
             },
 
-            getUsersWithLobbyState: function( allUsers, someType )
-            {
+            getUsersWithLobbyState: function (allUsers, someType) {
                 var users = [];
-                for ( var x=0; x&lt; allUsers.length; x++ )
-                {
-                    if ( allUsers[x].lobby_state === someType )
-                    {
-                        users.push( allUsers[x] );
+                for (var x = 0; x &lt; allUsers.length; x++) {
+                    if (allUsers[x].lobby_state === someType) {
+                        users.push(allUsers[x]);
                     }
                 }
                 return users;
             }
-
+        },
+        simple: {
+            isSupported: function() {
+                var request = iConsole.XDM.sendMPSimpleIsSupported();
+                return {
+                    result: function(callback) {
+                        request.result(function(data) {
+                            if (JSON.stringify(data) === &#x27;{}&#x27;) {
+                                callback(false);
+                            } else {
+                                callback(true);
+                            }
+                        });
+                    }
+                };
+            },
+            requestSession: function() {
+                return iConsole.XDM.sendMPSimpleRequestSession();
+            },
+            reportScore: function(score) {
+                return iConsole.XDM.sendMPSimpleReportScore({score: score});
+            },
+            abortSession: function() {
+                return iConsole.XDM.sendMPSimpleAbortSession();
+            },
+            endSession: function(score) {
+                return iConsole.XDM.sendMPSimpleEndSession({score: score});
+            }
         }
     });
 
