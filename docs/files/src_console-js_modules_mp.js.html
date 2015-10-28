@@ -114,6 +114,7 @@
 
         LOBBY_ROOM_STATE_GAME_STARTED: &quot;game_started&quot;,
         LOBBY_ROOM_STATE_GAME_ENDED: &quot;game_ended&quot;,
+        LOBBY_ROOM_STATE_GAME_WAITING: &quot;waiting&quot;,
 
 
         initModule:function($super, data){
@@ -209,7 +210,7 @@
          * &lt;/pre&gt;
          */
         gameStarted: function (options) {
-            iConsole.mp.internal.updateLobbyRoomState(iConsole.mp.LOBBY_ROOM_STATE_GAME_STARTED);
+            return iConsole.mp.internal.updateLobbyRoomState(iConsole.mp.LOBBY_ROOM_STATE_GAME_STARTED);
         },
 
         /**
@@ -225,7 +226,7 @@
          * &lt;/pre&gt;
          */
         gameEnded: function(options) {
-            iConsole.mp.internal.updateLobbyRoomState(iConsole.mp.LOBBY_ROOM_STATE_GAME_ENDED);
+            return iConsole.mp.internal.updateLobbyRoomState(iConsole.mp.LOBBY_ROOM_STATE_GAME_ENDED);
         },
 
         /**
@@ -243,7 +244,7 @@
          * &lt;/pre&gt;
          */
         updateState: function(state) {
-            iConsole.mp.internal.pushStateToServer( state );
+            return iConsole.mp.internal.pushStateToServer( state );
         },
 
         /**
@@ -382,6 +383,7 @@
                                                       game_room_id: iConsole.mp.internal.game_room_id }).result(function(data) {
                     if (data.status === &#x27;OK&#x27;) {
                         if (successCallback) {
+                            iConsole.mp.internal.game_room_id = null;
                             successCallback();
                         }
                     } else if (failureCallback) {
@@ -505,7 +507,9 @@
                         .result(function(data) {
                             if (data !== null) {
                                 var json = data;
-                                iConsole.mp.internal.performCallback(iConsole.mp.internal.getStateCallback, json);
+                                if (json.status !== false) {
+                                    iConsole.mp.internal.performCallback(iConsole.mp.internal.getStateCallback, json);
+                                }
                             }
                         });
                 }
