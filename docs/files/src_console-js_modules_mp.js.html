@@ -49,6 +49,10 @@
             
                 <li><a href="../classes/iConsole.iap.html">iConsole.iap</a></li>
             
+                <li><a href="../classes/iConsole.mp.html">iConsole.mp</a></li>
+            
+                <li><a href="../classes/iConsole.mp.simple.html">iConsole.mp.simple</a></li>
+            
                 <li><a href="../classes/iConsole.periodical.html">iConsole.periodical</a></li>
             
             </ul>
@@ -100,6 +104,8 @@
      * Multiplayer
      * ----------------
      * todo later - Docs need done as we get to the point of filling out this implementation
+     * @class iConsole.mp
+     * @type {iConsole.mp|*|{}}
      */
     var MP = Class.create(Module, {
 
@@ -123,6 +129,8 @@
 
         init:function($super, data){
             $super(data);
+            iConsole.game.onEvent(&#x27;mpSimpleTournamentStarted&#x27;, iConsole.mp.simple.internal.mpSimpleTournamentStarted);
+            iConsole.game.onEvent(&#x27;mpSimpleSkillzExited&#x27;, iConsole.mp.simple.internal.mpSimpleSkillzExited);
         },
 
         /**
@@ -536,7 +544,107 @@
                 return users;
             }
         },
+        /**
+         * Simple Multiplayer Mode
+         * ---------------
+         *
+         * Within our mobile application, we have the potential to integrate with an asynchronous Multiplayer experience
+         * currently partnering with Skillz. This multiplayer experience works such that you can initiate the
+         * Multiplayer experience, which loads up the third party UI, allowing the user to join an asynchronous
+         * gaming tournament (which could be head to head, or n players, or play as many times in a given time frame to
+         * attempt to get the highest score). Once the game has made the choice to work in Multiplayer mode, it must
+         * behave differently than normal, in such that the game is not listening to a user input for when the game
+         * should start, or what type of level to show the user, but instead listen to callbacks from this API as to
+         * when a level should be started.
+         *
+         * During the progress of a level, the game should regularly report the user&#x27;s current score (this could be
+         * every n seconds, or whenever the score is increased). This is such that it is easier to determine if foul
+         * play has come in to effect. Remember that users can and will be playing for REAL MONEY as well as virtual
+         * currency.
+         *
+         * The typical flow would be to:
+         * * register the session started callback, to ensure that your game is notified of
+         * when the MP experience has determined the user is about to start a tournament
+         * * register the exit multiplayer callback, to ensure that the game is aware of what mode it should be working
+         * in
+         * * Either bind a button to the startMultiplayer (i.e. a Start Multiplayer Mode button on the UI), or if the
+         * game is going to launch straight in to Multiplayer mode, to call startMultiplayer when it is fully configured
+         * and ready to start listening to the callbacks for the tournament session started.
+         * * When the callback to the session started has occurred, you should read the attributes passed in the object
+         * to callback function, to determine any configuration needed to be applied. For example a tournament may be
+         * configured to disable all collectible powerups, to further increase difficulty. The game session should then
+         * begin.
+         * * During a game session, if you are playing in a Multiplayer session, you should report regularly the players
+         * score, to ensure that foul play can be detected by the third party provider.
+         * * Once a game has completed, you should endSession with the users score. At this point the game should be
+         * prepared to receive a callback on either the session started callback, or the exiting multiplayer callback
+         * * If the game offers the ability, if the user ends their current game, it should call abortSession to notify
+         * the third party the player has forfeited their tournament.
+         *
+         * It should be noted that on the mobile application (but not on the desktop console), the
+         * &lt;code&gt;Math.random&lt;/code&gt; object will be overridden with a slightly slower implementation. This implementation
+         * will ensure that all players in a given ongoing tournament will have the same random seed at the start of
+         * their game session. This should mean that all players see the same initial state. Your game should not
+         * (unless explicitly required to do so) take any other factors in to account when attempting to use a random
+         * number (i.e. don&#x27;t do Math.random() * 10000 + Date.now() - oldTimeStamp). In the case of a traditional
+         * Match 3 game, this should mean that two players with the same seed, should be able to play identical moves
+         * and see identical elements on their board at each move. Scoring should not be using any random element, but
+         * can use time (to reward faster activity for example).
+         *
+         * To verify this behavior on a desktop console, append #!mpsimpledebug to the url of the console/game url:
+         * http://s.games.iwin.com/m/console/v_217/#/m/iwin/bubble-town-quest/v_117/#!mpsimpledebug
+         *
+         *
+         * This indicates to the console that it should say that the iConsole.mp.simple.isSupported should return true,
+         * and allow for debug calls to be made on the Javascript Console.
+         *
+         *
+         * When your game implements the iConsole.mp.simple calls, you will see the javascript console report this:
+         * * iConsole.game.exitApplication - &quot;Game has requested to exit the application - unsupported on this client&quot;
+         * * iConsole.mp.simple.startMultiplayer - an Alert box will appear on screen
+         * * iConsole.mp.simple.reportScore - &quot;Game Score reported as XXX&quot; where XXX is the score
+         * * iConsole.mp.simple.abortSession - &quot;User aborted game, returning control to game in 5 seconds time&quot;
+         * * iConsole.mp.simple.endSession - &quot;Game finished with score XXX returning control to game in 5 seconds time&quot; where XXX is the score
+         *
+         *
+         * Once you have called iConsole.mp.simple.startMultiplayer from the debug desktop javascript console, two
+         * methods are available on the window object:
+         * &lt;pre&gt;
+         * // Call this function from the javascript console to pretend to initiate a new Multiplayer Tournament Session
+         * // You can pass in an object which can contain key/value pairs, which will be exposed to the sessionStarted
+         * // callback function
+         * window.startMPSimpleSession( {
+         *     tournamentParam1 : tournamentValue1,
+         *     ...
+         *     tournamentParamN : tournamentValueN
+         * } );
+         *
+         * // Call this function to pretend to exit out of the multiplayer experience from the third party.
+         * window.exitMP();
+         * &lt;/pre&gt;
+         * @class iConsole.mp.simple
+         * @type {iConsole.mp.simple|*|{}}
+         */
         simple: {
+            /**
+             * This asynchronous call should be made to feature flip your game into which mode it should operate in.
+             * @return {Object} An object that contains a member function &lt;code&gt;result&lt;/code&gt; that you should call with a
+             * callback function that will be fired shortly after this call. The format of result function is
+             * &lt;pre&gt;result( callbackFunction );&lt;/pre&gt;
+             * Where callbackFunction is a function that will be called with a single parameter, a boolean that will
+             * determine if Simple Multiplayer is supported or not.
+             * @example
+             * &lt;pre&gt;
+             * iConsole.mp.simple.isSupported().result( function( supported ) {
+             *    if ( supported ) {
+             *      myGame.setUpForMultiPlayer();
+             *    } else {
+             *      myGame.setUpForSinglePlayer();
+             *    }
+             * } );
+             * &lt;/pre&gt;
+             * @method isSupported
+             */
             isSupported: function() {
                 var request = iConsole.XDM.sendMPSimpleIsSupported();
                 return {
@@ -551,17 +659,224 @@
                     }
                 };
             },
-            requestSession: function() {
-                return iConsole.XDM.sendMPSimpleRequestSession();
+            /**
+             * Register a single callback function that should be called whenever the Multiplayer experience launches a
+             * new Tournament session, and requires the game to configure itself accordingly, and then start playing the
+             * game.
+             * @param callback {Function} The callback function that will be called every time the Multiplayer
+             * experience wants to start a new game session. This callback function will be passed an Object which
+             * contains a number of values:
+             * &lt;pre&gt;
+             * {
+             *  // A text description of the tournament
+             *  matchDescription : &quot;eg: Practice before you go pro!&quot;,
+             *
+             *  // How much it cost in real cash to join the tournament
+             *  entryCash : 0,
+             *
+             *  // The tournament id
+             *  id : 1855266,
+             *
+             *  // The name of the tournament type
+             *  name : &quot;Novice&quot;,
+             *
+             *  // The amount of virtual currency it cost the user to join the tournament
+             *  entryPoints : 1,
+             *
+             *  // The third party user (not to be confused with the iwin user)
+             *  player : {
+             *      // User&#x27;s ID
+             *      id : 49082,
+             *
+             *      // User&#x27;s nick name
+             *      displayName : &quot;JudiciousTower&quot;,
+             *
+             *      // a URL for a flag image for the users location
+             *      flagURL : &quot;https://cdn.sandbox.skillz.com/flags/US.png&quot;,
+             *
+             *      // a URL for an image for their avatar
+             *      avatarURL : &quot;https://cdn.sandbox.skillz.com/default-profile-pics/Girl2_003.png&quot;
+             *  },
+             *
+             *  // A Flag to identify if this tournament is being played for cash (some tournaments may be offered for
+             *  // a cash prize, but with virtual currency as the entry fee)
+             *  isCash : false,
+             *
+             *  // If configured in the third party, we can add multiple key value pairs to the tournament if required,
+             *  // they would be listed in this object where XXX is the key name, and YYY is the value
+             *  XXX : YYY
+             * }
+             * &lt;/pre&gt;
+             * @example
+             * &lt;pre&gt;
+             * iConsole.mp.simple.registerSessionStartedCallback( function( tournamentData ) {
+             *    myGame.resetGameBoard();
+             *    myGame.configureGameBoardForMultiplayer( tournamentData );
+             *    myGame.startGameSession();
+             * } );
+             * &lt;/pre&gt;
+             * @method registerSessionStartedCallback
+             */
+            registerSessionStartedCallback: function(callback) {
+                iConsole.mp.simple.internal.sessionStartedCallback = callback;
             },
+            /**
+             * Register a single callback function that should be called whenever the Multiplayer experience exits. This
+             * is typically done by a user action declaring through the third party, that they no longer wish to play
+             * the current game in Multiplayer mode. If your game supports both modes of operation, you should return to
+             * either a single player mode, or a menu allowing the user to choose the type of play they want to do
+             * @param callback {Function} The callback function that will be called every time the Multiplayer
+             * experience wants to exit out of Multiplayer mode.
+             * @example
+             * &lt;pre&gt;
+             * iConsole.mp.simple.registerExitMultiplayerCallback( function() {
+             *    // Game supports Single Player mode
+             *    myGame.resetToSinglePlayerMode();
+             * } );
+             * &lt;/pre&gt;
+             * @example
+             * &lt;pre&gt;
+             * iConsole.mp.simple.registerExitMultiplayerCallback( function() {
+             *    // Game doesn&#x27;t support Single Player mode
+             *    iConsole.game.exitApplication();
+             * } );
+             * &lt;/pre&gt;
+             * @method registerExitMultiplayerCallback
+             */
+            registerExitMultiplayerCallback: function(callback) {
+                iConsole.mp.simple.internal.exitMultiplayerCallback = callback;
+            },
+
+            /**
+             * This function will launch the Multiplayer Experience, and launch the UI from the third party, which
+             * handles virtual currency, tournament matching, user identity and launching etc. It should only be called
+             * once you have registered your callbacks for session starting and exiting multiplayer mode. An example of
+             * when you would call this would either be as the result of a user clicking on a &quot;Play Multiplayer&quot; button,
+             * or as part of the game launching process when the game doesn&#x27;t support Single Player.
+             * @example
+             * &lt;pre&gt;
+             * myGame.buttons.multiPlayerMode.onClick = function() {
+             *    iConsole.mp.simple.startMultiplayer();
+             * };
+             * &lt;/pre&gt;
+             * @example
+             * &lt;pre&gt;
+             * iConsole.mp.simple.registerSessionStartedCallback(myGame.mpSessionStartedHandler);
+             * iConsole.mp.simple.registerExitMultiplayerCallback(myGame.exitMPHandler);
+             * iConsole.mp.startMultiplayer();
+             * &lt;/pre&gt;
+             * @method startMultiplayer
+             */
+            startMultiplayer: function() {
+                return iConsole.XDM.sendMPSimpleStartMultiplayer();
+            },
+
+            /**
+             * This function should be called periodically by the game, when you are in a multiplayer gaming session,
+             * to update the third party with the user&#x27;s current score.
+             * @param score - the numeric score of the user
+             * @example
+             * &lt;pre&gt;
+             * myGame.updateScore = function(score) {
+             *     myGame.ui.refreshScore(score);
+             *     myGame.ui.animateProgressInLevel(score);
+             *     if (myGame.mpInProgress) {
+             *         iConsole.mp.simple.reportScore(score);
+             *     }
+             * }
+             * &lt;/pre&gt;
+             * @method reportScore
+             */
             reportScore: function(score) {
                 return iConsole.XDM.sendMPSimpleReportScore({score: score});
             },
+
+            /**
+             * This function should be called when the user has voluntarily exited out of the current game (i.e. give
+             * up). The game should expect to receive a callback on either the session started or exiting out of
+             * multiplayer at some point after this call, when the user decides to either start a new game, or leave
+             * the multiplayer experience altogether.
+             * @example
+             * &lt;pre&gt;
+             * myGame.abortLevel = function() {
+             *     myGame.ui.showSadAnimation();
+             *     if (myGame.mpInProgress) {
+             *         myGame.mpInProgress = false;
+             *         iConsole.mp.simple.abortSession();
+             *     }
+             * }
+             * &lt;/pre&gt;
+             * @method abortSession
+             */
             abortSession: function() {
                 return iConsole.XDM.sendMPSimpleAbortSession();
             },
+
+            /**
+             * This function should be called when the user has reached the end of their game session. The game should
+             * expect to receive a callback on either the session started or exiting out of multiplayer at some point
+             * after this call, when the user decides to either start a new game, or leave the multiplayer experience
+             * altogether.
+             * @param score - the numeric score of the user
+             * @example
+             * &lt;pre&gt;
+             * myGame.completeLevel = function(score) {
+             *     myGame.ui.showCongratulationsAnimation();
+             *     if (myGame.mpInProgress) {
+             *         myGame.mpInProgress = false;
+             *         iConsole.mp.simple.endSession(score);
+             *     }
+             * }
+             * &lt;/pre&gt;
+             * @method endSession
+             */
             endSession: function(score) {
                 return iConsole.XDM.sendMPSimpleEndSession({score: score});
+            },
+            /**
+             * This asynchronous call can be used to determine if you are currently in a session. It is added more as a
+             * helper function, as this is an asynchronous call, and will involve a degree of computational churn which
+             * should be avoided if possible.
+             * @return {Object} An object that contains a member function &lt;code&gt;result&lt;/code&gt; that you should call with a
+             * callback function that will be fired shortly after this call. The format of result function is
+             * &lt;pre&gt;result( callbackFunction );&lt;/pre&gt;
+             * Where callbackFunction is a function that will be called with a single parameter, a boolean that will
+             * determine if a multiplayer session is in play or not.
+             * @example
+             * &lt;pre&gt;
+             * iConsole.mp.simple.inSession().result( function( inSession ) {
+             *    if ( inSession ) {
+             *      myGame.mpInProgress = true;
+             *    } else {
+             *      myGame.mpInProgress = false;
+             *    }
+             * } );
+             * &lt;/pre&gt;
+             * @method inSession
+             */
+            inSession: function() {
+                var request = iConsole.XDM.sendMPSimpleInSession();
+                return {
+                    result: function(callback) {
+                        request.result(function(data) {
+                            callback(data.inSession);
+                        });
+                    }
+                };
+            },
+            internal : {
+                sessionStartedCallback: null,
+                exitMultiplayerCallback: null,
+                mpSimpleTournamentStarted: function(event) {
+                    if (iConsole.mp.simple.internal.sessionStartedCallback) {
+                        iConsole.mp.simple.internal.sessionStartedCallback(event.data);
+                    }
+                },
+                mpSimpleSkillzExited: function(event) {
+                    if (iConsole.mp.simple.internal.exitMultiplayerCallback) {
+                        iConsole.mp.simple.internal.exitMultiplayerCallback(event.data);
+                    }
+                }
             }
         }
     });

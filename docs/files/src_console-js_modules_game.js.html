@@ -49,6 +49,10 @@
             
                 <li><a href="../classes/iConsole.iap.html">iConsole.iap</a></li>
             
+                <li><a href="../classes/iConsole.mp.html">iConsole.mp</a></li>
+            
+                <li><a href="../classes/iConsole.mp.simple.html">iConsole.mp.simple</a></li>
+            
                 <li><a href="../classes/iConsole.periodical.html">iConsole.periodical</a></li>
             
             </ul>
@@ -658,6 +662,22 @@
          */
         requestLocale: function(locales) {
             return iConsole.XDM.sendRequestLocale( { locales: locales } );
+        },
+        /**
+         * This function is used to indicate the game wishes to exit out of the application entirely. This is
+         * effectively a null operation for the desktop console, but on a mobile application, it will either exit the
+         * game and return to the game selection menu for the multi game application, or in the case of a single game
+         * application, will exit the application entirely. This is typically used in conjunction with the simple
+         * multiplayer mode, where the game only supports multiplayer mode, and the user clicks to exit the multiplayer
+         * experience.
+         * @method exitApplication
+         * @example
+         * &lt;pre&gt;
+         * iConsole.game.exitApplication();
+         * &lt;/pre&gt;
+         */
+        exitApplication: function() {
+            return iConsole.XDM.sendExitApplication();
         },
 
         /*

@@ -49,6 +49,10 @@
             
                 <li><a href="../classes/iConsole.iap.html">iConsole.iap</a></li>
             
+                <li><a href="../classes/iConsole.mp.html">iConsole.mp</a></li>
+            
+                <li><a href="../classes/iConsole.mp.simple.html">iConsole.mp.simple</a></li>
+            
                 <li><a href="../classes/iConsole.periodical.html">iConsole.periodical</a></li>
             
             </ul>
@@ -142,6 +146,13 @@ The console will do any necessary work, such as dismissing pre-roll advert panel
                     <h3>Methods</h3>
 
                     <ul class="index-list methods">
+                        
+                            <li class="index-item method">
+                                <a href="#method_exitApplication">exitApplication</a>
+
+                                
+                                
+                            </li>
                         
                             <li class="index-item method">
                                 <a href="#method_gameOver">gameOver</a>
@@ -287,6 +298,76 @@ The console will do any necessary work, such as dismissing pre-roll advert panel
         
             <div id="methods" class="api-class-tabpanel">
                 <h2 class="off-left">Methods</h2>
+
+                
+                    <div id="method_exitApplication" class="method item">
+    <h3 class="name"><code>exitApplication</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_console-js_modules_game.js.html#l566"><code>src&#x2F;console-js&#x2F;modules&#x2F;game.js:566</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>This function is used to indicate the game wishes to exit out of the application entirely. This is
+effectively a null operation for the desktop console, but on a mobile application, it will either exit the
+game and return to the game selection menu for the multi game application, or in the case of a single game
+application, will exit the application entirely. This is typically used in conjunction with the simple
+multiplayer mode, where the game only supports multiplayer mode, and the user clicks to exit the multiplayer
+experience.</p>
+
+    </div>
+
+    
+
+    
+
+    
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre>
+iConsole.game.exitApplication();
+</pre>
+            </div>
+        </div>
+    
+</div>
 
                 
                     <div id="method_gameOver" class="method item">
