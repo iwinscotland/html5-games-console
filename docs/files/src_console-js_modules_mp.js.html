@@ -102,7 +102,7 @@
 
     /**
      * Multiplayer
-     * ----------------
+     * -----------
      * todo later - Docs need done as we get to the point of filling out this implementation
      * @class iConsole.mp
      * @type {iConsole.mp|*|{}}
@@ -383,7 +383,7 @@
          *     iConsole.mp.userLeftRoom().success(mySuccessFunction).failure(myFailureFunction);
          * &lt;/pre&gt;
          */
-        userLeftRoom: function( ) {
+        userLeftRoom: function() {
             return (function(){
                 var successCallback = null;
                 var failureCallback = null;
@@ -393,6 +393,123 @@
                         if (successCallback) {
                             iConsole.mp.internal.game_room_id = null;
                             successCallback();
+                        }
+                    } else if (failureCallback) {
+                        failureCallback();
+                    }
+                });
+                var returnable = {
+                    success: function(callback) {
+                        successCallback = callback;
+                        return returnable;
+                    },
+                    failure: function(callback) {
+                        failureCallback = callback;
+                        return returnable;
+                    }
+                };
+                return returnable;
+            })();
+        },
+
+        /**
+         * This function allows the game to show a button to allow the user to be added to a Room of his selection.
+         *
+         * @return {Object} An object which contains two functions, success and failure, which should each be called
+         * with the function you wish to call when the assignment succeeds or fails. These calls can be directly chained:
+         * @example
+         * &lt;pre&gt;
+         *     iConsole.mp.addUserToRoom().success(mySuccessFunction).failure(myFailureFunction);
+         * &lt;/pre&gt;
+         */
+        addUserToRoom: function(gameRoomId) {
+            return (function(){
+                var successCallback = null;
+                var failureCallback = null;
+                iConsole.XDM.sendAddUserToRoom({ user_id: iConsole.mp.internal.user_id,
+                                                 game_room_id: gameRoomId }).result(function(data) {
+                    if (data.status === &#x27;OK&#x27;) {
+                        if (successCallback) {
+                            iConsole.mp.internal.game_room_id = gameRoomId;
+                            successCallback();
+                        }
+                    } else if (failureCallback) {
+                        failureCallback();
+                    }
+                });
+                var returnable = {
+                    success: function(callback) {
+                        successCallback = callback;
+                        return returnable;
+                    },
+                    failure: function(callback) {
+                        failureCallback = callback;
+                        return returnable;
+                    }
+                };
+                return returnable;
+            })();
+        },
+
+        /**
+         * This function allows the game to get a list of all the available rooms for the current game.
+         *
+         * @return {Object} An object which contains two functions, success and failure, which should each be called
+         * with the function you wish to call when the assignment succeeds or fails. These calls can be directly chained.
+         * The success function requires a parameter where the rooms will be returned.
+         * @example
+         * &lt;pre&gt;
+         *     iConsole.mp.getAvailableRooms().success(mySuccessFunction(rooms)).failure(myFailureFunction);
+         * &lt;/pre&gt;
+         */
+        getAvailableRooms: function() {
+            return (function(){
+                var successCallback = null;
+                var failureCallback = null;
+                iConsole.XDM.sendGetAvailableRooms().result(function(data) {
+                    if (data.status !== false) {
+                        if (successCallback) {
+                            successCallback(data);
+                        }
+                    } else if (failureCallback) {
+                        failureCallback();
+                    }
+                });
+                var returnable = {
+                    success: function(callback) {
+                        successCallback = callback;
+                        return returnable;
+                    },
+                    failure: function(callback) {
+                        failureCallback = callback;
+                        return returnable;
+                    }
+                };
+                return returnable;
+            })();
+        },
+
+        /**
+         * This function allows the game to create a new empty room.
+         *
+         * @return {Object} An object which contains two functions, success and failure, which should each be called
+         * with the function you wish to call when the assignment succeeds or fails. These calls can be directly chained.
+         * The success function requires a parameter where the room created will be returned.
+         * @example
+         * &lt;pre&gt;
+         *     iConsole.mp.getAvailableRooms().success(mySuccessFunction(room)).failure(myFailureFunction);
+         *
+         *     room = { &quot;id&quot;: ​43, &quot;state&quot;: &quot;waiting&quot;, &quot;gameId&quot;: &quot;mygame&quot;, &quot;roomId&quot;: &quot;mygame-gleamingsociety&quot;, &quot;roomName&quot;: &quot;Gleaming Society&quot; }
+         * &lt;/pre&gt;
+         */
+        createRoom: function() {
+            return (function(){
+                var successCallback = null;
+                var failureCallback = null;
+                iConsole.XDM.sendCreateRoom().result(function(data) {
+                    if (data.status !== false) {
+                        if (successCallback) {
+                            successCallback(data);
                         }
                     } else if (failureCallback) {
                         failureCallback();
