@@ -113,7 +113,7 @@
             "extension_for": [],
             "file": "src/console-js/modules/mp.js",
             "line": 3,
-            "description": "Multiplayer\n-----------\ntodo later - Docs need done as we get to the point of filling out this implementation",
+            "description": "Multiplayer\n-----------\nThis API should be used for Multiplayer Games. These Games could be configured to be played head to head,\nor n players in a Lobby Room trying to finish the levels or achieve a highscore or whatever might the game\nconsider a player as a winner. Once the game has made the choice to work in Multiplayer mode, it must\nbehave differently than normal, in such that the game is not listening to a user input for when the game\nshould start, or what type of level to show the user, but instead listen to callbacks from this API as to\nwhen a level should be started.\n\nDuring the progress of a level, the game should regularly report the user's current state (this could be\nevery n seconds, or whenever the score is increased). This is such that it is easier to determine if full\nplay has come in to effect.\n\nThe typical flow would be to:\n1. Register the get state callback <code>iConsole.mp.registerGetState(myStateHandler);</code>, to ensure\nthat your game is notified of when the MP experience has determined the users are about to:\n  * To wait for more players\n  * Start playing\n  * Finish the game (all players should finish)\n  * Wait for a decision to play again\nThe data provided from the Multiplayer server will be in the following format:\n<pre>\n{\n  game_room_id: \"...\",              //internal id of no use to you as a game developer\n  server_time: ...,                   //milliseconds since unix epoch\n  users: [                            //users who are part of this room\n    {\n       id: \"...\",                     //unique id to identify the user\n       nickname: \"...\",               //the nickname of a logged in user or Player#\n       avatar_url: \"...\",             //the avatar url of a logged in user\n       state: { score: 34 },          //state is whatever you pass up\n       type: \"real\",                  //type can be real, guest, voyeur\n       lobby_state: \"waiting\"         //lobby states can be waiting, playing, finished, deciding\n    },\n    { ... },\n    { ... }\n  ]\n}\n</pre>\nExample of the myStateHandler function is:\n<pre>\nmyStateHandler = function (data) {\n\tvar users = data.users;\n\tvar numTotalUsers = users.length;\n\tvar numUsersWaiting = iConsole.mp.getWaitingUsers(users).length;\n\tvar numUsersPlaying = iConsole.mp.getPlayingUsers(users).length;\n\tif (numTotalUsers === 0) {\n\t\t//all users gone - should never really be the case...\n\t\t//game should be in a 'waiting' state\n\t}\n\telse if (myGame.currentState === 'waiting') {\n\t\tif ((numUsersPlaying + numUsersWaiting) < myGame.requiresNumPlayers) {\n\t\t\t//waiting for more users to either join or decide to play again\n\t\t\t//could also echo out numUsersDeciding here\n\t\t\tconsole.log('Waiting for ' + (myGame.requiresNumPlayers - numUsersWaiting) + ' other players to join (or agree to play again)');\n\t\t} else {\n\t\t\t//have enough users we can start now\n\t\t\tconsole.log(\"LOBBY STATUS PLAYING\");\n\t\t\tiConsole.mp.updateUsersLobbyState(iConsole.mp.LOBBY_STATE_PLAYING);\n\t\t\tiConsole.mp.gameStarted({});\n\t\t\tconsole.log('We have enough users to start playing');\n\t\t\t// start the game and set the state to 'playing'\n\t\t}\n\t} else if (myGame.currentState === 'playing') {\n\t\tvar otherPlayers = iConsole.mp.getOtherPlayers(data.users);\n\t\t// do whatever updates you want to scoreboard or progress of other players on the screen\n\t\t// check for end of the game for the current user and if finished set the state to 'finished'\n\t} else if (myGame.currentState === 'finished') {\n\t    // check for the end of the game for all players and set the state to 'over'\n\t\t// update again the progress of other players if the all players game not finished\n\t} else if (myGame.currentState === 'over') {\n\t\t// Wait for all other users to become deciding or waiting to enable a replay of the game\n\t\t// if playing again, should set the state back to 'waiting'\n\n\t}\n}\n</pre>\n\n2. Get the available Rooms for the game. The success function requires a parameter where the rooms will be returned as an Array object.\nRooms object example:\n<pre>\n[{\n     roomName: \"Creepy Federation\",                       //the name of the room\n     gameId: \"example-multiplayer-game\",                  //the game id\n     state: \"game_started\",                               //state of the current room (game_started, waiting, game_finished, locked)\n     roomId: \"example-multiplayer-game-creepyfederation\", //the unique room id that can be used to assign the user to a room\n     usersInRoom\": 2                                      //the number of users currently in the room\n },\n {\n     roomName: \"Fabulous Meeting Place\",\n     gameId: \"example-multiplayer-game\",\n     state: \"waiting\",\n     roomId: \"example-multiplayer-game-fabulousmeetingplace\",\n     usersInRoom: ​0\n }]\n</pre>\nCode example:\n<pre>\nvar myPopulateAvailableRoomsFunction = function(rooms) {\n   $.each(rooms, function (index, room) {\n       // do whatever with room\n   }\n};\niConsole.mp.getAvailableRooms().success(myPopulateAvailableRoomsFunction).failure(failureFunction);\n</pre>\n\n3. Assign the user to a Room.\n<pre>\nvar successFunction = function () {\n    // on success do something\n};\nvar failureFunction = function () {\n    // on failure display message and display menu to try again\n};\n// roomId is taken from the list of rooms when using getAvailableRooms\niConsole.mp.addUserToRoom(roomId).success(successFunction).failure(failureFunction);\n</pre>\nYou can also use the method to automatically assign a user to any room.\ni.e.\n<pre>\nvar successFunction = function () {\n    // on success do something\n};\nvar failureFunction = function () {\n    // on failure display message and display menu to try again\n};\niConsole.mp.autoAssignUserToRoom().success(successFunction).failure(failureFunction);\n</pre>\n\n4. A user can also leave a room using the method <code>iConsole.mp.userLeftRoom().success(successFunction);</code>\nWe can use also this function inside the onbeforeunload event but it's not guaranteed that the user will be removed since\nit's an asynchronous call to the server. Though, in the end, the user will be considered dead after n seconds.\n\nNote: Where a function returns a success and failure function, the success callback will be called when the function\ncompletes (and these calls are Asynchronous). The failure callback will be called if there has been any error in\ntrying to achieve this call, typically will be a failure in communications to the multiplayer server.\n\nPlease see also the Example Multiplayer Game for examples on how to use this API.",
             "type": "{iConsole.mp|*|{}}"
         },
         "iConsole.mp.simple": {
@@ -125,7 +125,7 @@
             "plugin_for": [],
             "extension_for": [],
             "file": "src/console-js/modules/mp.js",
-            "line": 564,
+            "line": 771,
             "description": "Simple Multiplayer Mode\n---------------\n\nWithin our mobile application, we have the potential to integrate with an asynchronous Multiplayer experience\ncurrently partnering with Skillz. This multiplayer experience works such that you can initiate the\nMultiplayer experience, which loads up the third party UI, allowing the user to join an asynchronous\ngaming tournament (which could be head to head, or n players, or play as many times in a given time frame to\nattempt to get the highest score). Once the game has made the choice to work in Multiplayer mode, it must\nbehave differently than normal, in such that the game is not listening to a user input for when the game\nshould start, or what type of level to show the user, but instead listen to callbacks from this API as to\nwhen a level should be started.\n\nDuring the progress of a level, the game should regularly report the user's current score (this could be\nevery n seconds, or whenever the score is increased). This is such that it is easier to determine if foul\nplay has come in to effect. Remember that users can and will be playing for REAL MONEY as well as virtual\ncurrency.\n\nThe typical flow would be to:\n* register the session started callback, to ensure that your game is notified of\nwhen the MP experience has determined the user is about to start a tournament\n* register the exit multiplayer callback, to ensure that the game is aware of what mode it should be working\nin\n* Either bind a button to the startMultiplayer (i.e. a Start Multiplayer Mode button on the UI), or if the\ngame is going to launch straight in to Multiplayer mode, to call startMultiplayer when it is fully configured\nand ready to start listening to the callbacks for the tournament session started.\n* When the callback to the session started has occurred, you should read the attributes passed in the object\nto callback function, to determine any configuration needed to be applied. For example a tournament may be\nconfigured to disable all collectible powerups, to further increase difficulty. The game session should then\nbegin.\n* During a game session, if you are playing in a Multiplayer session, you should report regularly the players\nscore, to ensure that foul play can be detected by the third party provider.\n* Once a game has completed, you should endSession with the users score. At this point the game should be\nprepared to receive a callback on either the session started callback, or the exiting multiplayer callback\n* If the game offers the ability, if the user ends their current game, it should call abortSession to notify\nthe third party the player has forfeited their tournament.\n\nIt should be noted that on the mobile application (but not on the desktop console), the\n<code>Math.random</code> object will be overridden with a slightly slower implementation. This implementation\nwill ensure that all players in a given ongoing tournament will have the same random seed at the start of\ntheir game session. This should mean that all players see the same initial state. Your game should not\n(unless explicitly required to do so) take any other factors in to account when attempting to use a random\nnumber (i.e. don't do Math.random() * 10000 + Date.now() - oldTimeStamp). In the case of a traditional\nMatch 3 game, this should mean that two players with the same seed, should be able to play identical moves\nand see identical elements on their board at each move. Scoring should not be using any random element, but\ncan use time (to reward faster activity for example).\n\nTo verify this behavior on a desktop console, append #!mpsimpledebug to the url of the console/game url:\nhttp://s.games.iwin.com/m/console/v_217/#/m/iwin/bubble-town-quest/v_117/#!mpsimpledebug\n\n\nThis indicates to the console that it should say that the iConsole.mp.simple.isSupported should return true,\nand allow for debug calls to be made on the Javascript Console.\n\n\nWhen your game implements the iConsole.mp.simple calls, you will see the javascript console report this:\n* iConsole.game.exitApplication - \"Game has requested to exit the application - unsupported on this client\"\n* iConsole.mp.simple.startMultiplayer - an Alert box will appear on screen\n* iConsole.mp.simple.reportScore - \"Game Score reported as XXX\" where XXX is the score\n* iConsole.mp.simple.abortSession - \"User aborted game, returning control to game in 5 seconds time\"\n* iConsole.mp.simple.endSession - \"Game finished with score XXX returning control to game in 5 seconds time\" where XXX is the score\n\n\nOnce you have called iConsole.mp.simple.startMultiplayer from the debug desktop javascript console, two\nmethods are available on the window object:\n<pre>\n// Call this function from the javascript console to pretend to initiate a new Multiplayer Tournament Session\n// You can pass in an object which can contain key/value pairs, which will be exposed to the sessionStarted\n// callback function\nwindow.startMPSimpleSession( {\n    tournamentParam1 : tournamentValue1,\n    ...\n    tournamentParamN : tournamentValueN\n} );\n\n// Call this function to pretend to exit out of the multiplayer experience from the third party.\nwindow.exitMP();\n</pre>",
             "type": "{iConsole.mp.simple|*|{}}"
         },
@@ -659,22 +659,20 @@
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 36,
+            "line": 172,
             "description": "This function determines whether mutilplayer support has been enabled.\nIf you were expecting it to have been enabled check your game_details.json config w.r.t. multiplayer additions.\nFor most games this will return false.",
-            "itemtype": "method",
-            "name": "isSupported",
             "return": {
                 "description": "",
                 "type": "Boolean"
             },
+            "itemtype": "method",
+            "name": "isSupported",
             "class": "iConsole.mp"
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 47,
+            "line": 183,
             "description": "This function allows you to register a callback handler for each tick of game state. Game state is polled every n seconds.",
-            "itemtype": "method",
-            "name": "registerGetState",
             "params": [
                 {
                     "name": "callback",
@@ -685,11 +683,13 @@
             "example": [
                 "\n<pre>\n{\n  game_room_id: \"...\",                                                        //internal id of no use to you as a game developer\n  server_time: ...,                                                           //milliseconds since unix epoch\n  users: [                                                                    //users who are part of this room\n    { id: \"...\", nickname: \"...\",  avatar_url: \"...\" , state: { ... } }       //state is whatever you pass up\n    { ... }\n    { ... }\n  ]\n}\n</pre>"
             ],
+            "itemtype": "method",
+            "name": "registerGetState",
             "class": "iConsole.mp"
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 69,
+            "line": 205,
             "description": "This function should be used to initiate a user and assign him to the a Room in the multiplayer service.",
             "return": {
                 "description": "An object which contains two functions, success and failure, which should each be called\nwith the function you wish to call when the assignment succeeds or fails. These calls can be directly chained:",
@@ -698,14 +698,14 @@
             "example": [
                 "\n<pre>\n    iConsole.mp.autoAssignUserToRoom().success(mySuccessFunction).failure(myFailureFunction);\n</pre>"
             ],
+            "itemtype": "method",
+            "name": "autoAssignUserToRoom",
             "class": "iConsole.mp"
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 107,
+            "line": 244,
             "description": "This function should be used to flag that the user has started playing the game at the point where lobby activities\nhave concluded and the game client feels it has enough users to begin.",
-            "itemtype": "method",
-            "name": "gameStarted",
             "params": [
                 {
                     "name": "options",
@@ -720,14 +720,14 @@
             "example": [
                 "\n<pre>\n    iConsole.mp.gameStarted(options).success(mySuccessFunction).failure(myFailureFunction);\n</pre>"
             ],
+            "itemtype": "method",
+            "name": "gameStarted",
             "class": "iConsole.mp"
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 124,
+            "line": 261,
             "description": "This function should be used to flag that the game client has ended the game for all players.",
-            "itemtype": "method",
-            "name": "gameEnded",
             "params": [
                 {
                     "name": "options",
@@ -742,14 +742,14 @@
             "example": [
                 "\n<pre>\n    iConsole.mp.gameEnded(options).success(mySuccessFunction).failure(myFailureFunction);\n</pre>"
             ],
+            "itemtype": "method",
+            "name": "gameEnded",
             "class": "iConsole.mp"
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 140,
+            "line": 277,
             "description": "This function should be used to update the current players state - other game clients will be responsible for updating\ntheir own player's state.",
-            "itemtype": "method",
-            "name": "updateState",
             "params": [
                 {
                     "name": "state",
@@ -764,16 +764,19 @@
             "example": [
                 "\n<pre>\n    iConsole.mp.updateState({score: 45}).success(mySuccessFunction).failure(myFailureFunction);\n</pre>"
             ],
+            "itemtype": "method",
+            "name": "updateState",
             "class": "iConsole.mp"
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 158,
+            "line": 295,
             "description": "This function should be used by the game to set the players lobby state accordingly.\nFor example a user can be either 'playing'   or   'deciding'.\nMost players are 'waiting' when they join a room and remain in this state until the game determines it has enough users to start.\nAt this point each client should update their user into 'playing' state.\nThe user stays in this state until the user finishes their game, at which point they should be moved to 'finished' status.\nWhen you show the \"play again\"   or   \"leave room\" screen the user should be placed into a 'deciding' status.\nThis allows users to either play again or leave and prevents the game believing it has the correct number of users\nalready available to start the game.\nUsers in the 'finished' or 'deciding' status are still technically in the room and take up a players spot until they leave.\nOnce a user agrees to play again (or is automatically agreed to play again) they should be set to 'playing' status.",
             "params": [
                 {
-                    "name": "lobbyState,",
-                    "description": "must be either iConsole.mp.LOBBY_STATE_WAITING, iConsole.mp.LOBBY_STATE_PLAYING, iConsole.mp.LOBBY_STATE_FINISHED,\niConsole.mp.LOBBY_STATE_DECIDING"
+                    "name": "lobbyState",
+                    "description": "must be either iConsole.mp.LOBBY_STATE_WAITING, iConsole.mp.LOBBY_STATE_PLAYING, iConsole.mp.LOBBY_STATE_FINISHED,\niConsole.mp.LOBBY_STATE_DECIDING",
+                    "type": "String"
                 }
             ],
             "return": {
@@ -783,47 +786,138 @@
             "example": [
                 "\n<pre>\n    iConsole.mp.updateUsersLobbyState(iConsole.mp.LOBBY_STATE_WAITING).success(mySuccessFunction).failure(myFailureFunction);\n</pre>"
             ],
+            "itemtype": "method",
+            "name": "updateUsersLobbyState",
             "class": "iConsole.mp"
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 209,
+            "line": 349,
             "description": "This function accepts the users passed to the  getState  callback handler and returns the current player's object.\nYou should check this response for null - which signifies that the current user could not be located.",
+            "params": [
+                {
+                    "name": "allUsers",
+                    "description": "an Array containing all the users",
+                    "type": "Array"
+                },
+                {
+                    "name": "voyeurUsers",
+                    "description": "an Array containg all the voyeur users",
+                    "type": "Array"
+                }
+            ],
+            "return": {
+                "description": "An object representing the user",
+                "type": "Object"
+            },
+            "example": [
+                "\n<pre>\n    {\n       id: \"...\",                     //unique id to identify the user\n       nickname: \"...\",               //the nickname of a logged in user or Player#\n       avatar_url: \"...\",             //the avatar url of a logged in user\n       state: { score: 34 },          //state is whatever you pass up\n       type: \"real\",                  //type can be real, guest, voyeur\n       lobby_state: \"waiting\"         //lobby states can be waiting, playing, finished, deciding\n    }\n</pre>"
+            ],
+            "itemtype": "method",
+            "name": "getCurrentPlayer",
             "class": "iConsole.mp"
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 229,
+            "line": 384,
             "description": "This function accepts the users passed to the  getState  callback handler and returns the other player objects.\nYou should check this response for being empty.\nNote the current user will never appear in this list...\nAlso note that when users leave a room at any point, they will not appear in the list returned here.\nThe game clients should keep track of which players were playing and their last recorded state and compare that with the list of players still playing.",
+            "params": [
+                {
+                    "name": "allUsers",
+                    "description": "an Array containing all the users",
+                    "type": "Array"
+                }
+            ],
+            "return": {
+                "description": "An array containing user objects",
+                "type": "Array"
+            },
+            "example": [
+                "\n<pre>\n  [                            //other users who are part of this room\n    {\n       id: \"...\",                     //unique id to identify the user\n       nickname: \"...\",               //the nickname of a logged in user or Player#\n       avatar_url: \"...\",             //the avatar url of a logged in user\n       state: { score: 34 },          //state is whatever you pass up\n       type: \"real\",                  //type can be real, guest, voyeur\n       lobby_state: \"waiting\"         //lobby states can be waiting, playing, finished, deciding\n    },\n    { ... },\n    { ... }\n  ]\n</pre>"
+            ],
+            "itemtype": "method",
+            "name": "getOtherPlayers",
             "class": "iConsole.mp"
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 247,
+            "line": 421,
             "description": "This function accepts the users passed to the  getState  callback handler and returns the users waiting.",
+            "params": [
+                {
+                    "name": "allUsers",
+                    "description": "an Array containing all the users",
+                    "type": "Array"
+                }
+            ],
+            "return": {
+                "description": "An array containing user objects",
+                "type": "Array"
+            },
+            "itemtype": "method",
+            "name": "getWaitingUsers",
             "class": "iConsole.mp"
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 254,
+            "line": 432,
             "description": "This function accepts the users passed to the  getState  callback handler and returns the users playing.",
+            "params": [
+                {
+                    "name": "allUsers",
+                    "description": "an Array containing all the users",
+                    "type": "Array"
+                }
+            ],
+            "return": {
+                "description": "An array containing user objects",
+                "type": "Array"
+            },
+            "itemtype": "method",
+            "name": "getPlayingUsers",
             "class": "iConsole.mp"
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 261,
+            "line": 443,
             "description": "This function accepts the users passed to the  getState  callback handler and returns the users finished playing.",
+            "params": [
+                {
+                    "name": "allUsers",
+                    "description": "an Array containing all the users",
+                    "type": "Array"
+                }
+            ],
+            "return": {
+                "description": "An array containing user objects",
+                "type": "Array"
+            },
+            "itemtype": "method",
+            "name": "getFinishedUsers",
             "class": "iConsole.mp"
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 268,
+            "line": 454,
             "description": "This function accepts the users passed to the  getState  callback handler and returns the users deciding,\ni.e. still in the room but not yet agreed to play again.",
+            "params": [
+                {
+                    "name": "allUsers",
+                    "description": "an Array containing all the users",
+                    "type": "Array"
+                }
+            ],
+            "return": {
+                "description": "An array containing user objects",
+                "type": "Array"
+            },
+            "itemtype": "method",
+            "name": "getDecidingUsers",
             "class": "iConsole.mp"
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 276,
+            "line": 466,
             "description": "This function allows the game to show a button to allow the user to leave the game at any point in time.\nWhen called it will remove the user from the game.",
             "return": {
                 "description": "An object which contains two functions, success and failure, which should each be called\nwith the function you wish to call when the assignment succeeds or fails. These calls can be directly chained:",
@@ -832,24 +926,35 @@
             "example": [
                 "\n<pre>\n    iConsole.mp.userLeftRoom().success(mySuccessFunction).failure(myFailureFunction);\n</pre>"
             ],
+            "itemtype": "method",
+            "name": "userLeftRoom",
             "class": "iConsole.mp"
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 315,
+            "line": 509,
             "description": "This function allows the game to show a button to allow the user to be added to a Room of his selection.",
+            "params": [
+                {
+                    "name": "gameRoomId",
+                    "description": "the id of the room where the user is going to be added in",
+                    "type": "String"
+                }
+            ],
             "return": {
                 "description": "An object which contains two functions, success and failure, which should each be called\nwith the function you wish to call when the assignment succeeds or fails. These calls can be directly chained:",
                 "type": "Object"
             },
             "example": [
-                "\n<pre>\n    iConsole.mp.addUserToRoom().success(mySuccessFunction).failure(myFailureFunction);\n</pre>"
+                "\n<pre>\n    iConsole.mp.addUserToRoom(gameRoomId).success(mySuccessFunction).failure(myFailureFunction);\n</pre>"
             ],
+            "itemtype": "method",
+            "name": "addUserToRoom",
             "class": "iConsole.mp"
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 354,
+            "line": 553,
             "description": "This function allows the game to get a list of all the available rooms for the current game.",
             "return": {
                 "description": "An object which contains two functions, success and failure, which should each be called\nwith the function you wish to call when the assignment succeeds or fails. These calls can be directly chained.\nThe success function requires a parameter where the rooms will be returned.",
@@ -858,24 +963,28 @@
             "example": [
                 "\n<pre>\n    iConsole.mp.getAvailableRooms().success(mySuccessFunction(rooms)).failure(myFailureFunction);\n</pre>"
             ],
+            "itemtype": "method",
+            "name": "getAvailableRooms",
             "class": "iConsole.mp"
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 392,
+            "line": 593,
             "description": "This function allows the game to create a new empty room.",
             "return": {
                 "description": "An object which contains two functions, success and failure, which should each be called\nwith the function you wish to call when the assignment succeeds or fails. These calls can be directly chained.\nThe success function requires a parameter where the room created will be returned.",
                 "type": "Object"
             },
             "example": [
-                "\n<pre>\n    iConsole.mp.getAvailableRooms().success(mySuccessFunction(room)).failure(myFailureFunction);\n\n    room = { \"id\": ​43, \"state\": \"waiting\", \"gameId\": \"mygame\", \"roomId\": \"mygame-gleamingsociety\", \"roomName\": \"Gleaming Society\" }\n</pre>"
+                "\n<pre>\n    iConsole.mp.createRoom().success(mySuccessFunction(room)).failure(myFailureFunction);\n\n    room = { \"id\": ​43, \"state\": \"waiting\", \"gameId\": \"mygame\", \"roomId\": \"mygame-gleamingsociety\", \"roomName\": \"Gleaming Society\" }\n</pre>"
             ],
+            "itemtype": "method",
+            "name": "createRoom",
             "class": "iConsole.mp"
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 646,
+            "line": 853,
             "description": "This asynchronous call should be made to feature flip your game into which mode it should operate in.",
             "return": {
                 "description": "An object that contains a member function <code>result</code> that you should call with a\ncallback function that will be fired shortly after this call. The format of result function is\n<pre>result( callbackFunction );</pre>\nWhere callbackFunction is a function that will be called with a single parameter, a boolean that will\ndetermine if Simple Multiplayer is supported or not.",
@@ -890,7 +999,7 @@
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 679,
+            "line": 886,
             "description": "Register a single callback function that should be called whenever the Multiplayer experience launches a\nnew Tournament session, and requires the game to configure itself accordingly, and then start playing the\ngame.",
             "params": [
                 {
@@ -908,7 +1017,7 @@
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 740,
+            "line": 947,
             "description": "Register a single callback function that should be called whenever the Multiplayer experience exits. This\nis typically done by a user action declaring through the third party, that they no longer wish to play\nthe current game in Multiplayer mode. If your game supports both modes of operation, you should return to\neither a single player mode, or a menu allowing the user to choose the type of play they want to do",
             "params": [
                 {
@@ -927,7 +1036,7 @@
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 767,
+            "line": 974,
             "description": "This function will launch the Multiplayer Experience, and launch the UI from the third party, which\nhandles virtual currency, tournament matching, user identity and launching etc. It should only be called\nonce you have registered your callbacks for session starting and exiting multiplayer mode. An example of\nwhen you would call this would either be as the result of a user clicking on a \"Play Multiplayer\" button,\nor as part of the game launching process when the game doesn't support Single Player.",
             "example": [
                 "\n<pre>\nmyGame.buttons.multiPlayerMode.onClick = function() {\n   iConsole.mp.simple.startMultiplayer();\n};\n</pre>",
@@ -939,7 +1048,7 @@
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 791,
+            "line": 998,
             "description": "This function should be called periodically by the game, when you are in a multiplayer gaming session,\nto update the third party with the user's current score.",
             "params": [
                 {
@@ -956,7 +1065,7 @@
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 811,
+            "line": 1018,
             "description": "This function should be called when the user has voluntarily exited out of the current game (i.e. give\nup). The game should expect to receive a callback on either the session started or exiting out of\nmultiplayer at some point after this call, when the user decides to either start a new game, or leave\nthe multiplayer experience altogether.",
             "example": [
                 "\n<pre>\nmyGame.abortLevel = function() {\n    myGame.ui.showSadAnimation();\n    if (myGame.mpInProgress) {\n        myGame.mpInProgress = false;\n        iConsole.mp.simple.abortSession();\n    }\n}\n</pre>"
@@ -967,7 +1076,7 @@
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 832,
+            "line": 1039,
             "description": "This function should be called when the user has reached the end of their game session. The game should\nexpect to receive a callback on either the session started or exiting out of multiplayer at some point\nafter this call, when the user decides to either start a new game, or leave the multiplayer experience\naltogether.",
             "params": [
                 {
@@ -984,7 +1093,7 @@
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 853,
+            "line": 1060,
             "description": "This asynchronous call can be used to determine if you are currently in a session. It is added more as a\nhelper function, as this is an asynchronous call, and will involve a degree of computational churn which\nshould be avoided if possible.",
             "return": {
                 "description": "An object that contains a member function <code>result</code> that you should call with a\ncallback function that will be fired shortly after this call. The format of result function is\n<pre>result( callbackFunction );</pre>\nWhere callbackFunction is a function that will be called with a single parameter, a boolean that will\ndetermine if a multiplayer session is in play or not.",
@@ -1066,54 +1175,6 @@
         {
             "message": "Missing item type\nIf your game supports mid game adverts, and you are applying these calls across multiple classes (i.e. each\nlevel is contained in a different class), then you should unregister any callbacks that you have made.\nOtherwise, the callbacks will be fired against all registered listeners and this may result in undesired\nbehaviour or complete crashes.",
             "line": " src/console-js/modules/ads.js:151"
-        },
-        {
-            "message": "Missing item type\nThis function should be used to initiate a user and assign him to the a Room in the multiplayer service.",
-            "line": " src/console-js/modules/mp.js:69"
-        },
-        {
-            "message": "Missing item type\nThis function should be used by the game to set the players lobby state accordingly.\nFor example a user can be either 'playing'   or   'deciding'.\nMost players are 'waiting' when they join a room and remain in this state until the game determines it has enough users to start.\nAt this point each client should update their user into 'playing' state.\nThe user stays in this state until the user finishes their game, at which point they should be moved to 'finished' status.\nWhen you show the \"play again\"   or   \"leave room\" screen the user should be placed into a 'deciding' status.\nThis allows users to either play again or leave and prevents the game believing it has the correct number of users\nalready available to start the game.\nUsers in the 'finished' or 'deciding' status are still technically in the room and take up a players spot until they leave.\nOnce a user agrees to play again (or is automatically agreed to play again) they should be set to 'playing' status.",
-            "line": " src/console-js/modules/mp.js:158"
-        },
-        {
-            "message": "Missing item type\nThis function accepts the users passed to the  getState  callback handler and returns the current player's object.\nYou should check this response for null - which signifies that the current user could not be located.",
-            "line": " src/console-js/modules/mp.js:209"
-        },
-        {
-            "message": "Missing item type\nThis function accepts the users passed to the  getState  callback handler and returns the other player objects.\nYou should check this response for being empty.\nNote the current user will never appear in this list...\nAlso note that when users leave a room at any point, they will not appear in the list returned here.\nThe game clients should keep track of which players were playing and their last recorded state and compare that with the list of players still playing.",
-            "line": " src/console-js/modules/mp.js:229"
-        },
-        {
-            "message": "Missing item type\nThis function accepts the users passed to the  getState  callback handler and returns the users waiting.",
-            "line": " src/console-js/modules/mp.js:247"
-        },
-        {
-            "message": "Missing item type\nThis function accepts the users passed to the  getState  callback handler and returns the users playing.",
-            "line": " src/console-js/modules/mp.js:254"
-        },
-        {
-            "message": "Missing item type\nThis function accepts the users passed to the  getState  callback handler and returns the users finished playing.",
-            "line": " src/console-js/modules/mp.js:261"
-        },
-        {
-            "message": "Missing item type\nThis function accepts the users passed to the  getState  callback handler and returns the users deciding,\ni.e. still in the room but not yet agreed to play again.",
-            "line": " src/console-js/modules/mp.js:268"
-        },
-        {
-            "message": "Missing item type\nThis function allows the game to show a button to allow the user to leave the game at any point in time.\nWhen called it will remove the user from the game.",
-            "line": " src/console-js/modules/mp.js:276"
-        },
-        {
-            "message": "Missing item type\nThis function allows the game to show a button to allow the user to be added to a Room of his selection.",
-            "line": " src/console-js/modules/mp.js:315"
-        },
-        {
-            "message": "Missing item type\nThis function allows the game to get a list of all the available rooms for the current game.",
-            "line": " src/console-js/modules/mp.js:354"
-        },
-        {
-            "message": "Missing item type\nThis function allows the game to create a new empty room.",
-            "line": " src/console-js/modules/mp.js:392"
         }
     ]
 }

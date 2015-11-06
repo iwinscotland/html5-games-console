@@ -98,12 +98,148 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
-(function(iConsole, Class, Module){
+(function (iConsole, Class, Module) {
 
     /**
      * Multiplayer
      * -----------
-     * todo later - Docs need done as we get to the point of filling out this implementation
+     * This API should be used for Multiplayer Games. These Games could be configured to be played head to head,
+     * or n players in a Lobby Room trying to finish the levels or achieve a highscore or whatever might the game
+     * consider a player as a winner. Once the game has made the choice to work in Multiplayer mode, it must
+     * behave differently than normal, in such that the game is not listening to a user input for when the game
+     * should start, or what type of level to show the user, but instead listen to callbacks from this API as to
+     * when a level should be started.
+     *
+     * During the progress of a level, the game should regularly report the user&#x27;s current state (this could be
+     * every n seconds, or whenever the score is increased). This is such that it is easier to determine if full
+     * play has come in to effect.
+     *
+     * The typical flow would be to:
+     * 1. Register the get state callback &lt;code&gt;iConsole.mp.registerGetState(myStateHandler);&lt;/code&gt;, to ensure
+     * that your game is notified of when the MP experience has determined the users are about to:
+     *   * To wait for more players
+     *   * Start playing
+     *   * Finish the game (all players should finish)
+     *   * Wait for a decision to play again
+     * The data provided from the Multiplayer server will be in the following format:
+     * &lt;pre&gt;
+     * {
+     *   game_room_id: &quot;...&quot;,              //internal id of no use to you as a game developer
+     *   server_time: ...,                   //milliseconds since unix epoch
+     *   users: [                            //users who are part of this room
+     *     {
+     *        id: &quot;...&quot;,                     //unique id to identify the user
+     *        nickname: &quot;...&quot;,               //the nickname of a logged in user or Player#
+     *        avatar_url: &quot;...&quot;,             //the avatar url of a logged in user
+     *        state: { score: 34 },          //state is whatever you pass up
+     *        type: &quot;real&quot;,                  //type can be real, guest, voyeur
+     *        lobby_state: &quot;waiting&quot;         //lobby states can be waiting, playing, finished, deciding
+     *     },
+     *     { ... },
+     *     { ... }
+     *   ]
+     * }
+     * &lt;/pre&gt;
+     * Example of the myStateHandler function is:
+     * &lt;pre&gt;
+     * myStateHandler = function (data) {
+     * 	var users = data.users;
+     *	var numTotalUsers = users.length;
+     *	var numUsersWaiting = iConsole.mp.getWaitingUsers(users).length;
+     *	var numUsersPlaying = iConsole.mp.getPlayingUsers(users).length;
+     *	if (numTotalUsers === 0) {
+     *		//all users gone - should never really be the case...
+     *		//game should be in a &#x27;waiting&#x27; state
+     *	}
+     *	else if (myGame.currentState === &#x27;waiting&#x27;) {
+     *		if ((numUsersPlaying + numUsersWaiting) &lt; myGame.requiresNumPlayers) {
+     *			//waiting for more users to either join or decide to play again
+     *			//could also echo out numUsersDeciding here
+     *			console.log(&#x27;Waiting for &#x27; + (myGame.requiresNumPlayers - numUsersWaiting) + &#x27; other players to join (or agree to play again)&#x27;);
+     *		} else {
+     *			//have enough users we can start now
+     *			console.log(&quot;LOBBY STATUS PLAYING&quot;);
+     *			iConsole.mp.updateUsersLobbyState(iConsole.mp.LOBBY_STATE_PLAYING);
+     *			iConsole.mp.gameStarted({});
+     *			console.log(&#x27;We have enough users to start playing&#x27;);
+     *			// start the game and set the state to &#x27;playing&#x27;
+     *		}
+     *	} else if (myGame.currentState === &#x27;playing&#x27;) {
+     *		var otherPlayers = iConsole.mp.getOtherPlayers(data.users);
+     *		// do whatever updates you want to scoreboard or progress of other players on the screen
+     *		// check for end of the game for the current user and if finished set the state to &#x27;finished&#x27;
+     *	} else if (myGame.currentState === &#x27;finished&#x27;) {
+     *	    // check for the end of the game for all players and set the state to &#x27;over&#x27;
+     *		// update again the progress of other players if the all players game not finished
+     *	} else if (myGame.currentState === &#x27;over&#x27;) {
+     *		// Wait for all other users to become deciding or waiting to enable a replay of the game
+     *		// if playing again, should set the state back to &#x27;waiting&#x27;
+     *
+     *	}
+     * }
+     * &lt;/pre&gt;
+     *
+     * 2. Get the available Rooms for the game. The success function requires a parameter where the rooms will be returned as an Array object.
+     * Rooms object example:
+     * &lt;pre&gt;
+     * [{
+     *      roomName: &quot;Creepy Federation&quot;,                       //the name of the room
+     *      gameId: &quot;example-multiplayer-game&quot;,                  //the game id
+     *      state: &quot;game_started&quot;,                               //state of the current room (game_started, waiting, game_finished, locked)
+     *      roomId: &quot;example-multiplayer-game-creepyfederation&quot;, //the unique room id that can be used to assign the user to a room
+     *      usersInRoom&quot;: 2                                      //the number of users currently in the room
+     *  },
+     *  {
+     *      roomName: &quot;Fabulous Meeting Place&quot;,
+     *      gameId: &quot;example-multiplayer-game&quot;,
+     *      state: &quot;waiting&quot;,
+     *      roomId: &quot;example-multiplayer-game-fabulousmeetingplace&quot;,
+     *      usersInRoom: ​0
+     *  }]
+     * &lt;/pre&gt;
+     * Code example:
+     * &lt;pre&gt;
+     * var myPopulateAvailableRoomsFunction = function(rooms) {
+     *    $.each(rooms, function (index, room) {
+     *        // do whatever with room
+     *    }
+     * };
+     * iConsole.mp.getAvailableRooms().success(myPopulateAvailableRoomsFunction).failure(failureFunction);
+     * &lt;/pre&gt;
+     *
+     * 3. Assign the user to a Room.
+     * &lt;pre&gt;
+     * var successFunction = function () {
+     *     // on success do something
+     * };
+     * var failureFunction = function () {
+	 *     // on failure display message and display menu to try again
+     * };
+     * // roomId is taken from the list of rooms when using getAvailableRooms
+     * iConsole.mp.addUserToRoom(roomId).success(successFunction).failure(failureFunction);
+     * &lt;/pre&gt;
+     * You can also use the method to automatically assign a user to any room.
+     * i.e.
+     * &lt;pre&gt;
+     * var successFunction = function () {
+     *     // on success do something
+     * };
+     * var failureFunction = function () {
+	 *     // on failure display message and display menu to try again
+     * };
+     * iConsole.mp.autoAssignUserToRoom().success(successFunction).failure(failureFunction);
+     * &lt;/pre&gt;
+     *
+     * 4. A user can also leave a room using the method &lt;code&gt;iConsole.mp.userLeftRoom().success(successFunction);&lt;/code&gt;
+     * We can use also this function inside the onbeforeunload event but it&#x27;s not guaranteed that the user will be removed since
+     * it&#x27;s an asynchronous call to the server. Though, in the end, the user will be considered dead after n seconds.
+     *
+     * Note: Where a function returns a success and failure function, the success callback will be called when the function
+     * completes (and these calls are Asynchronous). The failure callback will be called if there has been any error in
+     * trying to achieve this call, typically will be a failure in communications to the multiplayer server.
+     *
+     * Please see also the Example Multiplayer Game for examples on how to use this API.
+     *
      * @class iConsole.mp
      * @type {iConsole.mp|*|{}}
      */
@@ -123,11 +259,11 @@
         LOBBY_ROOM_STATE_GAME_WAITING: &quot;waiting&quot;,
 
 
-        initModule:function($super, data){
+        initModule: function ($super, data) {
             $super(data);
         },
 
-        init:function($super, data){
+        init: function ($super, data) {
             $super(data);
             iConsole.game.onEvent(&#x27;mpSimpleTournamentStarted&#x27;, iConsole.mp.simple.internal.mpSimpleTournamentStarted);
             iConsole.game.onEvent(&#x27;mpSimpleSkillzExited&#x27;, iConsole.mp.simple.internal.mpSimpleSkillzExited);
@@ -137,16 +273,15 @@
          * This function determines whether mutilplayer support has been enabled.
          * If you were expecting it to have been enabled check your game_details.json config w.r.t. multiplayer additions.
          * For most games this will return false.
-         * @method isSupported
          * @return {boolean}
+         * @method isSupported
          */
-        isSupported: function() {
+        isSupported: function () {
             return iConsole.mp.internal.supported;
         },
 
         /**
          * This function allows you to register a callback handler for each tick of game state. Game state is polled every n seconds.
-         * @method registerGetState
          * @param callback {Function} The callback function you want to be called back on. The callback will receive a populated object as follows
          * @example
          * &lt;pre&gt;
@@ -160,8 +295,9 @@
          *   ]
          * }
          * &lt;/pre&gt;
+         * @method registerGetState
          */
-        registerGetState: function(callback) {
+        registerGetState: function (callback) {
             iConsole.mp.internal.getStateCallback = callback;
         },
 
@@ -174,12 +310,13 @@
          * &lt;pre&gt;
          *     iConsole.mp.autoAssignUserToRoom().success(mySuccessFunction).failure(myFailureFunction);
          * &lt;/pre&gt;
+         * @method autoAssignUserToRoom
          */
-        autoAssignUserToRoom: function() {
-            return (function(){
+        autoAssignUserToRoom: function () {
+            return (function () {
                 var successCallback = null;
                 var failureCallback = null;
-                iConsole.XDM.sendAutoAssignUserToRoom({user_id: iConsole.mp.internal.user_id}).result(function(data) {
+                iConsole.XDM.sendAutoAssignUserToRoom({user_id: iConsole.mp.internal.user_id}).result(function (data) {
                     if (data.status === &#x27;OK&#x27;) {
                         iConsole.mp.internal.game_room_id = data.room_id;
                         if (successCallback) {
@@ -190,11 +327,11 @@
                     }
                 });
                 var returnable = {
-                    success: function(callback) {
+                    success: function (callback) {
                         successCallback = callback;
                         return returnable;
                     },
-                    failure: function(callback) {
+                    failure: function (callback) {
                         failureCallback = callback;
                         return returnable;
                     }
@@ -207,7 +344,6 @@
         /**
          * This function should be used to flag that the user has started playing the game at the point where lobby activities
          * have concluded and the game client feels it has enough users to begin.
-         * @method gameStarted
          * @param options {Object} The method accepts an options object which may be expanded later with behaviours for how
          * additional users join the game once it has started.
          * @return {Object} An object which contains two functions, success and failure, which should each be called
@@ -216,6 +352,7 @@
          * &lt;pre&gt;
          *     iConsole.mp.gameStarted(options).success(mySuccessFunction).failure(myFailureFunction);
          * &lt;/pre&gt;
+         * @method gameStarted
          */
         gameStarted: function (options) {
             return iConsole.mp.internal.updateLobbyRoomState(iConsole.mp.LOBBY_ROOM_STATE_GAME_STARTED);
@@ -223,7 +360,6 @@
 
         /**
          * This function should be used to flag that the game client has ended the game for all players.
-         * @method gameEnded
          * @param options {Object} The method accepts an options object which may be expanded later with behaviours that
          * affect what happens to the user at game end.
          * @return {Object} An object which contains two functions, success and failure, which should each be called
@@ -232,15 +368,15 @@
          * &lt;pre&gt;
          *     iConsole.mp.gameEnded(options).success(mySuccessFunction).failure(myFailureFunction);
          * &lt;/pre&gt;
+         * @method gameEnded
          */
-        gameEnded: function(options) {
+        gameEnded: function (options) {
             return iConsole.mp.internal.updateLobbyRoomState(iConsole.mp.LOBBY_ROOM_STATE_GAME_ENDED);
         },
 
         /**
          * This function should be used to update the current players state - other game clients will be responsible for updating
          * their own player&#x27;s state.
-         * @method updateState
          * @param state {Object} A small state object representing all the data about the user that other game clients need in order
          * to display the status of that user, examples include board state in jewel quest, number of questions answered correctly
          * in a quiz game and so on.
@@ -250,9 +386,10 @@
          * &lt;pre&gt;
          *     iConsole.mp.updateState({score: 45}).success(mySuccessFunction).failure(myFailureFunction);
          * &lt;/pre&gt;
+         * @method updateState
          */
-        updateState: function(state) {
-            return iConsole.mp.internal.pushStateToServer( state );
+        updateState: function (state) {
+            return iConsole.mp.internal.pushStateToServer(state);
         },
 
         /**
@@ -266,7 +403,7 @@
          * already available to start the game.
          * Users in the &#x27;finished&#x27; or &#x27;deciding&#x27; status are still technically in the room and take up a players spot until they leave.
          * Once a user agrees to play again (or is automatically agreed to play again) they should be set to &#x27;playing&#x27; status.
-         * @param lobbyState, must be either iConsole.mp.LOBBY_STATE_WAITING, iConsole.mp.LOBBY_STATE_PLAYING, iConsole.mp.LOBBY_STATE_FINISHED,
+         * @param lobbyState {String} must be either iConsole.mp.LOBBY_STATE_WAITING, iConsole.mp.LOBBY_STATE_PLAYING, iConsole.mp.LOBBY_STATE_FINISHED,
          * iConsole.mp.LOBBY_STATE_DECIDING
          * @return {Object} An object which contains two functions, success and failure, which should each be called
          * with the function you wish to call when the assignment succeeds or fails. These calls can be directly chained:
@@ -274,15 +411,18 @@
          * &lt;pre&gt;
          *     iConsole.mp.updateUsersLobbyState(iConsole.mp.LOBBY_STATE_WAITING).success(mySuccessFunction).failure(myFailureFunction);
          * &lt;/pre&gt;
+         * @method updateUsersLobbyState
          */
-        updateUsersLobbyState: function(lobbyState) {
+        updateUsersLobbyState: function (lobbyState) {
             if (iConsole.mp.internal.game_room_id !== null &amp;&amp; iConsole.mp.internal.game_room_id !== undefined) {
-                return (function(){
+                return (function () {
                     var successCallback = null;
                     var failureCallback = null;
-                    iConsole.XDM.sendUpdateUsersLobbyState({ user_id: iConsole.mp.internal.user_id,
+                    iConsole.XDM.sendUpdateUsersLobbyState({
+                        user_id: iConsole.mp.internal.user_id,
                         game_room_id: iConsole.mp.internal.game_room_id,
-                        lobby_state: lobbyState }).result(function(data) {
+                        lobby_state: lobbyState
+                    }).result(function (data) {
                         if (data.status === &#x27;OK&#x27;) {
                             if (successCallback) {
                                 successCallback();
@@ -292,11 +432,11 @@
                         }
                     });
                     var returnable = {
-                        success: function(callback) {
+                        success: function (callback) {
                             successCallback = callback;
                             return returnable;
                         },
-                        failure: function(callback) {
+                        failure: function (callback) {
                             failureCallback = callback;
                             return returnable;
                         }
@@ -307,19 +447,34 @@
         },
 
         /**
-        * This function accepts the users passed to the  getState  callback handler and returns the current player&#x27;s object.
-        * You should check this response for null - which signifies that the current user could not be located.
-        */
-        getCurrentPlayer: function (allUsers, voyeur_users) {
+         * This function accepts the users passed to the  getState  callback handler and returns the current player&#x27;s object.
+         * You should check this response for null - which signifies that the current user could not be located.
+         * @param allUsers {Array} an Array containing all the users
+         * @param voyeurUsers {Array} an Array containg all the voyeur users
+         * @return {Object} An object representing the user
+         * @example
+         * &lt;pre&gt;
+         *     {
+         *        id: &quot;...&quot;,                     //unique id to identify the user
+         *        nickname: &quot;...&quot;,               //the nickname of a logged in user or Player#
+         *        avatar_url: &quot;...&quot;,             //the avatar url of a logged in user
+         *        state: { score: 34 },          //state is whatever you pass up
+         *        type: &quot;real&quot;,                  //type can be real, guest, voyeur
+         *        lobby_state: &quot;waiting&quot;         //lobby states can be waiting, playing, finished, deciding
+         *     }
+         * &lt;/pre&gt;
+         * @method getCurrentPlayer
+         */
+        getCurrentPlayer: function (allUsers, voyeurUsers) {
             for (var x = 0; x &lt; allUsers.length; x++) {
                 if (allUsers[x].id === iConsole.mp.internal.user_id) {
                     return allUsers[x];
                 }
             }
 
-            for (var y = 0; y &lt; voyeur_users.length; y++) {
-                if (voyeur_users[y].id === iConsole.mp.internal.user_id) {
-                    return voyeur_users[y];
+            for (var y = 0; y &lt; voyeurUsers.length; y++) {
+                if (voyeurUsers[y].id === iConsole.mp.internal.user_id) {
+                    return voyeurUsers[y];
                 }
             }
 
@@ -327,12 +482,31 @@
         },
 
         /**
-        * This function accepts the users passed to the  getState  callback handler and returns the other player objects.
-        * You should check this response for being empty.
-        * Note the current user will never appear in this list...
-        * Also note that when users leave a room at any point, they will not appear in the list returned here.
-        * The game clients should keep track of which players were playing and their last recorded state and compare that with the list of players still playing.
-        */
+         * This function accepts the users passed to the  getState  callback handler and returns the other player objects.
+         * You should check this response for being empty.
+         * Note the current user will never appear in this list...
+         * Also note that when users leave a room at any point, they will not appear in the list returned here.
+         * The game clients should keep track of which players were playing and their last recorded state and compare that with the list of players still playing.
+         * @param allUsers {Array} an Array containing all the users
+         *
+         * @return {Array} An array containing user objects
+         * @example
+         * &lt;pre&gt;
+         *   [                            //other users who are part of this room
+         *     {
+         *        id: &quot;...&quot;,                     //unique id to identify the user
+         *        nickname: &quot;...&quot;,               //the nickname of a logged in user or Player#
+         *        avatar_url: &quot;...&quot;,             //the avatar url of a logged in user
+         *        state: { score: 34 },          //state is whatever you pass up
+         *        type: &quot;real&quot;,                  //type can be real, guest, voyeur
+         *        lobby_state: &quot;waiting&quot;         //lobby states can be waiting, playing, finished, deciding
+         *     },
+         *     { ... },
+         *     { ... }
+         *   ]
+         * &lt;/pre&gt;
+         * @method getOtherPlayers
+         */
         getOtherPlayers: function (allUsers) {
             var otherUsers = [];
             for (var x = 0; x &lt; allUsers.length; x++) {
@@ -346,6 +520,10 @@
 
         /**
          * This function accepts the users passed to the  getState  callback handler and returns the users waiting.
+         * @param allUsers {Array} an Array containing all the users
+         * @return {Array} An array containing user objects
+         *
+         * @method getWaitingUsers
          */
         getWaitingUsers: function (allUsers) {
             return iConsole.mp.internal.getUsersWithLobbyState(allUsers, iConsole.mp.LOBBY_STATE_WAITING);
@@ -353,6 +531,10 @@
 
         /**
          * This function accepts the users passed to the  getState  callback handler and returns the users playing.
+         * @param allUsers {Array} an Array containing all the users
+         * @return {Array} An array containing user objects
+         *
+         * @method getPlayingUsers
          */
         getPlayingUsers: function (allUsers) {
             return iConsole.mp.internal.getUsersWithLobbyState(allUsers, iConsole.mp.LOBBY_STATE_PLAYING);
@@ -360,6 +542,10 @@
 
         /**
          * This function accepts the users passed to the  getState  callback handler and returns the users finished playing.
+         * @param allUsers {Array} an Array containing all the users
+         * @return {Array} An array containing user objects
+         *
+         * @method getFinishedUsers
          */
         getFinishedUsers: function (allUsers) {
             return iConsole.mp.internal.getUsersWithLobbyState(allUsers, iConsole.mp.LOBBY_STATE_FINISHED);
@@ -368,6 +554,10 @@
         /**
          * This function accepts the users passed to the  getState  callback handler and returns the users deciding,
          * i.e. still in the room but not yet agreed to play again.
+         * @param allUsers {Array} an Array containing all the users
+         * @return {Array} An array containing user objects
+         *
+         * @method getDecidingUsers
          */
         getDecidingUsers: function (allUsers) {
             return iConsole.mp.internal.getUsersWithLobbyState(allUsers, iConsole.mp.LOBBY_STATE_DECIDING);
@@ -382,13 +572,17 @@
          * &lt;pre&gt;
          *     iConsole.mp.userLeftRoom().success(mySuccessFunction).failure(myFailureFunction);
          * &lt;/pre&gt;
+         *
+         * @method userLeftRoom
          */
-        userLeftRoom: function() {
-            return (function(){
+        userLeftRoom: function () {
+            return (function () {
                 var successCallback = null;
                 var failureCallback = null;
-                iConsole.XDM.sendRemoveUserFromRoom({ user_id: iConsole.mp.internal.user_id,
-                                                      game_room_id: iConsole.mp.internal.game_room_id }).result(function(data) {
+                iConsole.XDM.sendRemoveUserFromRoom({
+                    user_id: iConsole.mp.internal.user_id,
+                    game_room_id: iConsole.mp.internal.game_room_id
+                }).result(function (data) {
                     if (data.status === &#x27;OK&#x27;) {
                         if (successCallback) {
                             iConsole.mp.internal.game_room_id = null;
@@ -399,11 +593,11 @@
                     }
                 });
                 var returnable = {
-                    success: function(callback) {
+                    success: function (callback) {
                         successCallback = callback;
                         return returnable;
                     },
-                    failure: function(callback) {
+                    failure: function (callback) {
                         failureCallback = callback;
                         return returnable;
                     }
@@ -415,19 +609,24 @@
         /**
          * This function allows the game to show a button to allow the user to be added to a Room of his selection.
          *
+         * @param gameRoomId {String} the id of the room where the user is going to be added in
          * @return {Object} An object which contains two functions, success and failure, which should each be called
          * with the function you wish to call when the assignment succeeds or fails. These calls can be directly chained:
          * @example
          * &lt;pre&gt;
-         *     iConsole.mp.addUserToRoom().success(mySuccessFunction).failure(myFailureFunction);
+         *     iConsole.mp.addUserToRoom(gameRoomId).success(mySuccessFunction).failure(myFailureFunction);
          * &lt;/pre&gt;
+         *
+         * @method addUserToRoom
          */
-        addUserToRoom: function(gameRoomId) {
-            return (function(){
+        addUserToRoom: function (gameRoomId) {
+            return (function () {
                 var successCallback = null;
                 var failureCallback = null;
-                iConsole.XDM.sendAddUserToRoom({ user_id: iConsole.mp.internal.user_id,
-                                                 game_room_id: gameRoomId }).result(function(data) {
+                iConsole.XDM.sendAddUserToRoom({
+                    user_id: iConsole.mp.internal.user_id,
+                    game_room_id: gameRoomId
+                }).result(function (data) {
                     if (data.status === &#x27;OK&#x27;) {
                         if (successCallback) {
                             iConsole.mp.internal.game_room_id = gameRoomId;
@@ -438,11 +637,11 @@
                     }
                 });
                 var returnable = {
-                    success: function(callback) {
+                    success: function (callback) {
                         successCallback = callback;
                         return returnable;
                     },
-                    failure: function(callback) {
+                    failure: function (callback) {
                         failureCallback = callback;
                         return returnable;
                     }
@@ -461,12 +660,14 @@
          * &lt;pre&gt;
          *     iConsole.mp.getAvailableRooms().success(mySuccessFunction(rooms)).failure(myFailureFunction);
          * &lt;/pre&gt;
+         *
+         * @method getAvailableRooms
          */
-        getAvailableRooms: function() {
-            return (function(){
+        getAvailableRooms: function () {
+            return (function () {
                 var successCallback = null;
                 var failureCallback = null;
-                iConsole.XDM.sendGetAvailableRooms().result(function(data) {
+                iConsole.XDM.sendGetAvailableRooms().result(function (data) {
                     if (data.status !== false) {
                         if (successCallback) {
                             successCallback(data);
@@ -476,11 +677,11 @@
                     }
                 });
                 var returnable = {
-                    success: function(callback) {
+                    success: function (callback) {
                         successCallback = callback;
                         return returnable;
                     },
-                    failure: function(callback) {
+                    failure: function (callback) {
                         failureCallback = callback;
                         return returnable;
                     }
@@ -497,16 +698,18 @@
          * The success function requires a parameter where the room created will be returned.
          * @example
          * &lt;pre&gt;
-         *     iConsole.mp.getAvailableRooms().success(mySuccessFunction(room)).failure(myFailureFunction);
+         *     iConsole.mp.createRoom().success(mySuccessFunction(room)).failure(myFailureFunction);
          *
          *     room = { &quot;id&quot;: ​43, &quot;state&quot;: &quot;waiting&quot;, &quot;gameId&quot;: &quot;mygame&quot;, &quot;roomId&quot;: &quot;mygame-gleamingsociety&quot;, &quot;roomName&quot;: &quot;Gleaming Society&quot; }
          * &lt;/pre&gt;
+         *
+         * @method createRoom
          */
-        createRoom: function() {
-            return (function(){
+        createRoom: function () {
+            return (function () {
                 var successCallback = null;
                 var failureCallback = null;
-                iConsole.XDM.sendCreateRoom().result(function(data) {
+                iConsole.XDM.sendCreateRoom().result(function (data) {
                     if (data.status !== false) {
                         if (successCallback) {
                             successCallback(data);
@@ -516,11 +719,11 @@
                     }
                 });
                 var returnable = {
-                    success: function(callback) {
+                    success: function (callback) {
                         successCallback = callback;
                         return returnable;
                     },
-                    failure: function(callback) {
+                    failure: function (callback) {
                         failureCallback = callback;
                         return returnable;
                     }
@@ -540,22 +743,24 @@
             user_id: guid(),
             game_room_id: null,
 
-            initializeMP: function(data) {
+            initializeMP: function (data) {
                 iConsole.mp.internal.supported = true;
-                if ( iConsole.mp.internal.supported )
-                {
+                if (iConsole.mp.internal.supported) {
                     iConsole.mp.internal.startPollingServerForState();
                     iConsole.mp.internal.startPollingUserAlive();
                     iConsole.mp.internal.pollForServerStateDelay = data.state_poll_every_n_seconds * 1000;
                 }
             },
 
-            updateLobbyRoomState: function(state) {
+            updateLobbyRoomState: function (state) {
                 if (iConsole.mp.internal.game_room_id !== null &amp;&amp; iConsole.mp.internal.game_room_id !== undefined) {
-                    return (function(){
+                    return (function () {
                         var successCallback = null;
                         var failureCallback = null;
-                        iConsole.XDM.sendUpdateLobbyRoomState({game_room_id: iConsole.mp.internal.game_room_id, room_state: state}).result(function(data) {
+                        iConsole.XDM.sendUpdateLobbyRoomState({
+                            game_room_id: iConsole.mp.internal.game_room_id,
+                            room_state: state
+                        }).result(function (data) {
                             if (data.status === &#x27;OK&#x27;) {
                                 if (successCallback) {
                                     successCallback();
@@ -565,11 +770,11 @@
                             }
                         });
                         var returnable = {
-                            success: function(callback) {
+                            success: function (callback) {
                                 successCallback = callback;
                                 return returnable;
                             },
-                            failure: function(callback) {
+                            failure: function (callback) {
                                 failureCallback = callback;
                                 return returnable;
                             }
@@ -579,15 +784,17 @@
                 }
             },
 
-            pushStateToServer: function(state) {
+            pushStateToServer: function (state) {
                 if (iConsole.mp.internal.game_room_id !== null &amp;&amp; iConsole.mp.internal.game_room_id !== undefined) {
                     iConsole.mp.internal.userAliveTimer = (new Date()).getTime();
-                    return (function(){
+                    return (function () {
                         var successCallback = null;
                         var failureCallback = null;
-                        iConsole.XDM.sendPushStateToServer({ user_id: iConsole.mp.internal.user_id,
+                        iConsole.XDM.sendPushStateToServer({
+                            user_id: iConsole.mp.internal.user_id,
                             game_room_id: iConsole.mp.internal.game_room_id,
-                            user_state: state }).result(function(data) {
+                            user_state: state
+                        }).result(function (data) {
                             if (data.status === &#x27;OK&#x27;) {
                                 if (successCallback) {
                                     successCallback();
@@ -597,11 +804,11 @@
                             }
                         });
                         var returnable = {
-                            success: function(callback) {
+                            success: function (callback) {
                                 successCallback = callback;
                                 return returnable;
                             },
-                            failure: function(callback) {
+                            failure: function (callback) {
                                 failureCallback = callback;
                                 return returnable;
                             }
@@ -611,25 +818,25 @@
                 }
             },
 
-            postUserAlive: function() {
+            postUserAlive: function () {
                 var now = (new Date().getTime());
                 if ((now - iConsole.mp.internal.pollForUserAliveDelay) &gt; iConsole.mp.internal.userAliveTimer) {
                     iConsole.mp.internal.pushStateToServer(null);
                 }
             },
 
-            startPollingServerForState: function() {
+            startPollingServerForState: function () {
                 iConsole.mp.internal.pollForServerStateInterval = setInterval(iConsole.mp.internal.pollForServerState, iConsole.mp.internal.pollForServerStateDelay);
             },
 
-            startPollingUserAlive: function() {
+            startPollingUserAlive: function () {
                 iConsole.mp.internal.pollForServerStateInterval = setInterval(iConsole.mp.internal.postUserAlive, iConsole.mp.internal.pollForUserAliveDelay);
             },
 
-            pollForServerState: function() {
+            pollForServerState: function () {
                 if (iConsole.mp.internal.game_room_id !== null &amp;&amp; iConsole.mp.internal.game_room_id !== undefined) {
-                    iConsole.XDM.sendPollForServerState({ game_room_id: iConsole.mp.internal.game_room_id })
-                        .result(function(data) {
+                    iConsole.XDM.sendPollForServerState({game_room_id: iConsole.mp.internal.game_room_id})
+                        .result(function (data) {
                             if (data !== null) {
                                 var json = data;
                                 if (json.status !== false) {
@@ -762,11 +969,11 @@
              * &lt;/pre&gt;
              * @method isSupported
              */
-            isSupported: function() {
+            isSupported: function () {
                 var request = iConsole.XDM.sendMPSimpleIsSupported();
                 return {
-                    result: function(callback) {
-                        request.result(function(data) {
+                    result: function (callback) {
+                        request.result(function (data) {
                             if (JSON.stringify(data) === &#x27;{}&#x27;) {
                                 callback(false);
                             } else {
@@ -834,7 +1041,7 @@
              * &lt;/pre&gt;
              * @method registerSessionStartedCallback
              */
-            registerSessionStartedCallback: function(callback) {
+            registerSessionStartedCallback: function (callback) {
                 iConsole.mp.simple.internal.sessionStartedCallback = callback;
             },
             /**
@@ -860,7 +1067,7 @@
              * &lt;/pre&gt;
              * @method registerExitMultiplayerCallback
              */
-            registerExitMultiplayerCallback: function(callback) {
+            registerExitMultiplayerCallback: function (callback) {
                 iConsole.mp.simple.internal.exitMultiplayerCallback = callback;
             },
 
@@ -884,7 +1091,7 @@
              * &lt;/pre&gt;
              * @method startMultiplayer
              */
-            startMultiplayer: function() {
+            startMultiplayer: function () {
                 return iConsole.XDM.sendMPSimpleStartMultiplayer();
             },
 
@@ -904,7 +1111,7 @@
              * &lt;/pre&gt;
              * @method reportScore
              */
-            reportScore: function(score) {
+            reportScore: function (score) {
                 return iConsole.XDM.sendMPSimpleReportScore({score: score});
             },
 
@@ -925,7 +1132,7 @@
              * &lt;/pre&gt;
              * @method abortSession
              */
-            abortSession: function() {
+            abortSession: function () {
                 return iConsole.XDM.sendMPSimpleAbortSession();
             },
 
@@ -947,7 +1154,7 @@
              * &lt;/pre&gt;
              * @method endSession
              */
-            endSession: function(score) {
+            endSession: function (score) {
                 return iConsole.XDM.sendMPSimpleEndSession({score: score});
             },
             /**
@@ -971,25 +1178,25 @@
              * &lt;/pre&gt;
              * @method inSession
              */
-            inSession: function() {
+            inSession: function () {
                 var request = iConsole.XDM.sendMPSimpleInSession();
                 return {
-                    result: function(callback) {
-                        request.result(function(data) {
+                    result: function (callback) {
+                        request.result(function (data) {
                             callback(data.inSession);
                         });
                     }
                 };
             },
-            internal : {
+            internal: {
                 sessionStartedCallback: null,
                 exitMultiplayerCallback: null,
-                mpSimpleTournamentStarted: function(event) {
+                mpSimpleTournamentStarted: function (event) {
                     if (iConsole.mp.simple.internal.sessionStartedCallback) {
                         iConsole.mp.simple.internal.sessionStartedCallback(event.data);
                     }
                 },
-                mpSimpleSkillzExited: function(event) {
+                mpSimpleSkillzExited: function (event) {
                     if (iConsole.mp.simple.internal.exitMultiplayerCallback) {
                         iConsole.mp.simple.internal.exitMultiplayerCallback(event.data);
                     }

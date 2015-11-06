@@ -115,7 +115,144 @@
 
 <div class="box intro">
     <h2 id="multiplayer">Multiplayer</h2>
-<p>todo later - Docs need done as we get to the point of filling out this implementation</p>
+<p>This API should be used for Multiplayer Games. These Games could be configured to be played head to head,
+or n players in a Lobby Room trying to finish the levels or achieve a highscore or whatever might the game
+consider a player as a winner. Once the game has made the choice to work in Multiplayer mode, it must
+behave differently than normal, in such that the game is not listening to a user input for when the game
+should start, or what type of level to show the user, but instead listen to callbacks from this API as to
+when a level should be started.</p>
+<p>During the progress of a level, the game should regularly report the user&#39;s current state (this could be
+every n seconds, or whenever the score is increased). This is such that it is easier to determine if full
+play has come in to effect.</p>
+<p>The typical flow would be to:</p>
+<ol>
+<li><p>Register the get state callback <code>iConsole.mp.registerGetState(myStateHandler);</code>, to ensure
+that your game is notified of when the MP experience has determined the users are about to:</p>
+<ul>
+<li>To wait for more players</li>
+<li>Start playing</li>
+<li>Finish the game (all players should finish)</li>
+<li><p>Wait for a decision to play again
+The data provided from the Multiplayer server will be in the following format:</p>
+<pre>
+{
+game_room_id: "...",              //internal id of no use to you as a game developer
+server_time: ...,                   //milliseconds since unix epoch
+users: [                            //users who are part of this room
+{
+  id: "...",                     //unique id to identify the user
+  nickname: "...",               //the nickname of a logged in user or Player#
+  avatar_url: "...",             //the avatar url of a logged in user
+  state: { score: 34 },          //state is whatever you pass up
+  type: "real",                  //type can be real, guest, voyeur
+  lobby_state: "waiting"         //lobby states can be waiting, playing, finished, deciding
+},
+{ ... },
+{ ... }
+]
+}
+</pre>
+Example of the myStateHandler function is:
+<pre>
+myStateHandler = function (data) {
+var users = data.users;
+var numTotalUsers = users.length;
+var numUsersWaiting = iConsole.mp.getWaitingUsers(users).length;
+var numUsersPlaying = iConsole.mp.getPlayingUsers(users).length;
+if (numTotalUsers === 0) {
+   //all users gone - should never really be the case...
+   //game should be in a 'waiting' state
+}
+else if (myGame.currentState === 'waiting') {
+   if ((numUsersPlaying + numUsersWaiting) < myGame.requiresNumPlayers) {
+       //waiting for more users to either join or decide to play again
+       //could also echo out numUsersDeciding here
+       console.log('Waiting for ' + (myGame.requiresNumPlayers - numUsersWaiting) + ' other players to join (or agree to play again)');
+   } else {
+       //have enough users we can start now
+       console.log("LOBBY STATUS PLAYING");
+       iConsole.mp.updateUsersLobbyState(iConsole.mp.LOBBY_STATE_PLAYING);
+       iConsole.mp.gameStarted({});
+       console.log('We have enough users to start playing');
+       // start the game and set the state to 'playing'
+   }
+} else if (myGame.currentState === 'playing') {
+   var otherPlayers = iConsole.mp.getOtherPlayers(data.users);
+   // do whatever updates you want to scoreboard or progress of other players on the screen
+   // check for end of the game for the current user and if finished set the state to 'finished'
+} else if (myGame.currentState === 'finished') {
+   // check for the end of the game for all players and set the state to 'over'
+   // update again the progress of other players if the all players game not finished
+} else if (myGame.currentState === 'over') {
+   // Wait for all other users to become deciding or waiting to enable a replay of the game
+   // if playing again, should set the state back to 'waiting'
+
+}
+}
+</pre>
+</li>
+</ul>
+</li>
+<li><p>Get the available Rooms for the game. The success function requires a parameter where the rooms will be returned as an Array object.
+Rooms object example:</p>
+<pre>
+[{
+  roomName: "Creepy Federation",                       //the name of the room
+  gameId: "example-multiplayer-game",                  //the game id
+  state: "game_started",                               //state of the current room (game_started, waiting, game_finished, locked)
+  roomId: "example-multiplayer-game-creepyfederation", //the unique room id that can be used to assign the user to a room
+  usersInRoom": 2                                      //the number of users currently in the room
+},
+{
+  roomName: "Fabulous Meeting Place",
+  gameId: "example-multiplayer-game",
+  state: "waiting",
+  roomId: "example-multiplayer-game-fabulousmeetingplace",
+  usersInRoom: ​0
+}]
+</pre>
+Code example:
+<pre>
+var myPopulateAvailableRoomsFunction = function(rooms) {
+$.each(rooms, function (index, room) {
+    // do whatever with room
+}
+};
+iConsole.mp.getAvailableRooms().success(myPopulateAvailableRoomsFunction).failure(failureFunction);
+</pre>
+</li>
+<li><p>Assign the user to a Room.</p>
+<pre>
+var successFunction = function () {
+ // on success do something
+};
+var failureFunction = function () {
+ // on failure display message and display menu to try again
+};
+// roomId is taken from the list of rooms when using getAvailableRooms
+iConsole.mp.addUserToRoom(roomId).success(successFunction).failure(failureFunction);
+</pre>
+You can also use the method to automatically assign a user to any room.
+i.e.
+<pre>
+var successFunction = function () {
+ // on success do something
+};
+var failureFunction = function () {
+ // on failure display message and display menu to try again
+};
+iConsole.mp.autoAssignUserToRoom().success(successFunction).failure(failureFunction);
+</pre>
+</li>
+<li><p>A user can also leave a room using the method <code>iConsole.mp.userLeftRoom().success(successFunction);</code>
+We can use also this function inside the onbeforeunload event but it&#39;s not guaranteed that the user will be removed since
+it&#39;s an asynchronous call to the server. Though, in the end, the user will be considered dead after n seconds.</p>
+</li>
+</ol>
+<p>Note: Where a function returns a success and failure function, the success callback will be called when the function
+completes (and these calls are Asynchronous). The failure callback will be called if there has been any error in
+trying to achieve this call, typically will be a failure in communications to the multiplayer server.</p>
+<p>Please see also the Example Multiplayer Game for examples on how to use this API.</p>
 
 </div>
 
@@ -144,6 +281,27 @@
                     <ul class="index-list methods">
                         
                             <li class="index-item method">
+                                <a href="#method_addUserToRoom">addUserToRoom</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_autoAssignUserToRoom">autoAssignUserToRoom</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_createRoom">createRoom</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
                                 <a href="#method_gameEnded">gameEnded</a>
 
                                 
@@ -152,6 +310,55 @@
                         
                             <li class="index-item method">
                                 <a href="#method_gameStarted">gameStarted</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_getAvailableRooms">getAvailableRooms</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_getCurrentPlayer">getCurrentPlayer</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_getDecidingUsers">getDecidingUsers</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_getFinishedUsers">getFinishedUsers</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_getOtherPlayers">getOtherPlayers</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_getPlayingUsers">getPlayingUsers</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_getWaitingUsers">getWaitingUsers</a>
 
                                 
                                 
@@ -178,6 +385,20 @@
                                 
                             </li>
                         
+                            <li class="index-item method">
+                                <a href="#method_updateUsersLobbyState">updateUsersLobbyState</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_userLeftRoom">userLeftRoom</a>
+
+                                
+                                
+                            </li>
+                        
                     </ul>
                 </div>
             
@@ -192,6 +413,295 @@
         
             <div id="methods" class="api-class-tabpanel">
                 <h2 class="off-left">Methods</h2>
+
+                
+                    <div id="method_addUserToRoom" class="method item">
+    <h3 class="name"><code>addUserToRoom</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>gameRoomId</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Object</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_console-js_modules_mp.js.html#l509"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:509</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>This function allows the game to show a button to allow the user to be added to a Room of his selection.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">gameRoomId</code>
+                        <span class="type">String</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>the id of the room where the user is going to be added in</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Object</span>:
+                    
+                    <p>An object which contains two functions, success and failure, which should each be called
+with the function you wish to call when the assignment succeeds or fails. These calls can be directly chained:</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre>
+    iConsole.mp.addUserToRoom(gameRoomId).success(mySuccessFunction).failure(myFailureFunction);
+</pre>
+            </div>
+        </div>
+    
+</div>
+
+                
+                    <div id="method_autoAssignUserToRoom" class="method item">
+    <h3 class="name"><code>autoAssignUserToRoom</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Object</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_console-js_modules_mp.js.html#l205"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:205</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>This function should be used to initiate a user and assign him to the a Room in the multiplayer service.</p>
+
+    </div>
+
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Object</span>:
+                    
+                    <p>An object which contains two functions, success and failure, which should each be called
+with the function you wish to call when the assignment succeeds or fails. These calls can be directly chained:</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre>
+    iConsole.mp.autoAssignUserToRoom().success(mySuccessFunction).failure(myFailureFunction);
+</pre>
+            </div>
+        </div>
+    
+</div>
+
+                
+                    <div id="method_createRoom" class="method item">
+    <h3 class="name"><code>createRoom</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Object</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_console-js_modules_mp.js.html#l593"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:593</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>This function allows the game to create a new empty room.</p>
+
+    </div>
+
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Object</span>:
+                    
+                    <p>An object which contains two functions, success and failure, which should each be called
+with the function you wish to call when the assignment succeeds or fails. These calls can be directly chained.
+The success function requires a parameter where the room created will be returned.</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre>
+    iConsole.mp.createRoom().success(mySuccessFunction(room)).failure(myFailureFunction);
+
+    room = { "id": ​43, "state": "waiting", "gameId": "mygame", "roomId": "mygame-gleamingsociety", "roomName": "Gleaming Society" }
+</pre>
+            </div>
+        </div>
+    
+</div>
 
                 
                     <div id="method_gameEnded" class="method item">
@@ -240,7 +750,7 @@
             
         
         
-        <a href="../files/src_console-js_modules_mp.js.html#l124"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:124</code></a>
+        <a href="../files/src_console-js_modules_mp.js.html#l261"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:261</code></a>
         
         </p>
 
@@ -359,7 +869,7 @@ with the function you wish to call when the assignment succeeds or fails. These 
             
         
         
-        <a href="../files/src_console-js_modules_mp.js.html#l107"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:107</code></a>
+        <a href="../files/src_console-js_modules_mp.js.html#l244"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:244</code></a>
         
         </p>
 
@@ -433,6 +943,799 @@ with the function you wish to call when the assignment succeeds or fails. These 
 </div>
 
                 
+                    <div id="method_getAvailableRooms" class="method item">
+    <h3 class="name"><code>getAvailableRooms</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Object</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_console-js_modules_mp.js.html#l553"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:553</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>This function allows the game to get a list of all the available rooms for the current game.</p>
+
+    </div>
+
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Object</span>:
+                    
+                    <p>An object which contains two functions, success and failure, which should each be called
+with the function you wish to call when the assignment succeeds or fails. These calls can be directly chained.
+The success function requires a parameter where the rooms will be returned.</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre>
+    iConsole.mp.getAvailableRooms().success(mySuccessFunction(rooms)).failure(myFailureFunction);
+</pre>
+            </div>
+        </div>
+    
+</div>
+
+                
+                    <div id="method_getCurrentPlayer" class="method item">
+    <h3 class="name"><code>getCurrentPlayer</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>allUsers</code>
+                    
+                </li>
+            
+                <li class="arg">
+                    
+                        <code>voyeurUsers</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Object</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_console-js_modules_mp.js.html#l349"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:349</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>This function accepts the users passed to the  getState  callback handler and returns the current player&#39;s object.
+You should check this response for null - which signifies that the current user could not be located.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">allUsers</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>an Array containing all the users</p>
+
+                    </div>
+
+                    
+                </li>
+            
+                <li class="param">
+                    
+                        <code class="param-name">voyeurUsers</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>an Array containg all the voyeur users</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Object</span>:
+                    
+                    <p>An object representing the user</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre>
+    {
+       id: "...",                     //unique id to identify the user
+       nickname: "...",               //the nickname of a logged in user or Player#
+       avatar_url: "...",             //the avatar url of a logged in user
+       state: { score: 34 },          //state is whatever you pass up
+       type: "real",                  //type can be real, guest, voyeur
+       lobby_state: "waiting"         //lobby states can be waiting, playing, finished, deciding
+    }
+</pre>
+            </div>
+        </div>
+    
+</div>
+
+                
+                    <div id="method_getDecidingUsers" class="method item">
+    <h3 class="name"><code>getDecidingUsers</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>allUsers</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Array</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_console-js_modules_mp.js.html#l454"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:454</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>This function accepts the users passed to the  getState  callback handler and returns the users deciding,
+i.e. still in the room but not yet agreed to play again.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">allUsers</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>an Array containing all the users</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Array</span>:
+                    
+                    <p>An array containing user objects</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_getFinishedUsers" class="method item">
+    <h3 class="name"><code>getFinishedUsers</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>allUsers</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Array</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_console-js_modules_mp.js.html#l443"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:443</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>This function accepts the users passed to the  getState  callback handler and returns the users finished playing.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">allUsers</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>an Array containing all the users</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Array</span>:
+                    
+                    <p>An array containing user objects</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_getOtherPlayers" class="method item">
+    <h3 class="name"><code>getOtherPlayers</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>allUsers</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Array</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_console-js_modules_mp.js.html#l384"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:384</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>This function accepts the users passed to the  getState  callback handler and returns the other player objects.
+You should check this response for being empty.
+Note the current user will never appear in this list...
+Also note that when users leave a room at any point, they will not appear in the list returned here.
+The game clients should keep track of which players were playing and their last recorded state and compare that with the list of players still playing.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">allUsers</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>an Array containing all the users</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Array</span>:
+                    
+                    <p>An array containing user objects</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre>
+  [                            //other users who are part of this room
+    {
+       id: "...",                     //unique id to identify the user
+       nickname: "...",               //the nickname of a logged in user or Player#
+       avatar_url: "...",             //the avatar url of a logged in user
+       state: { score: 34 },          //state is whatever you pass up
+       type: "real",                  //type can be real, guest, voyeur
+       lobby_state: "waiting"         //lobby states can be waiting, playing, finished, deciding
+    },
+    { ... },
+    { ... }
+  ]
+</pre>
+            </div>
+        </div>
+    
+</div>
+
+                
+                    <div id="method_getPlayingUsers" class="method item">
+    <h3 class="name"><code>getPlayingUsers</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>allUsers</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Array</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_console-js_modules_mp.js.html#l432"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:432</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>This function accepts the users passed to the  getState  callback handler and returns the users playing.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">allUsers</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>an Array containing all the users</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Array</span>:
+                    
+                    <p>An array containing user objects</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
+                    <div id="method_getWaitingUsers" class="method item">
+    <h3 class="name"><code>getWaitingUsers</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>allUsers</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Array</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_console-js_modules_mp.js.html#l421"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:421</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>This function accepts the users passed to the  getState  callback handler and returns the users waiting.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">allUsers</code>
+                        <span class="type">Array</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>an Array containing all the users</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Array</span>:
+                    
+                    <p>An array containing user objects</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+</div>
+
+                
                     <div id="method_isSupported" class="method item">
     <h3 class="name"><code>isSupported</code></h3>
 
@@ -469,7 +1772,7 @@ with the function you wish to call when the assignment succeeds or fails. These 
             
         
         
-        <a href="../files/src_console-js_modules_mp.js.html#l36"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:36</code></a>
+        <a href="../files/src_console-js_modules_mp.js.html#l172"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:172</code></a>
         
         </p>
 
@@ -548,7 +1851,7 @@ For most games this will return false.</p>
             
         
         
-        <a href="../files/src_console-js_modules_mp.js.html#l47"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:47</code></a>
+        <a href="../files/src_console-js_modules_mp.js.html#l183"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:183</code></a>
         
         </p>
 
@@ -659,7 +1962,7 @@ For most games this will return false.</p>
             
         
         
-        <a href="../files/src_console-js_modules_mp.js.html#l140"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:140</code></a>
+        <a href="../files/src_console-js_modules_mp.js.html#l277"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:277</code></a>
         
         </p>
 
@@ -727,6 +2030,219 @@ with the function you wish to call when the assignment succeeds or fails. These 
             <div class="example-content">
                 <pre>
     iConsole.mp.updateState({score: 45}).success(mySuccessFunction).failure(myFailureFunction);
+</pre>
+            </div>
+        </div>
+    
+</div>
+
+                
+                    <div id="method_updateUsersLobbyState" class="method item">
+    <h3 class="name"><code>updateUsersLobbyState</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>lobbyState</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Object</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_console-js_modules_mp.js.html#l295"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:295</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>This function should be used by the game to set the players lobby state accordingly.
+For example a user can be either &#39;playing&#39;   or   &#39;deciding&#39;.
+Most players are &#39;waiting&#39; when they join a room and remain in this state until the game determines it has enough users to start.
+At this point each client should update their user into &#39;playing&#39; state.
+The user stays in this state until the user finishes their game, at which point they should be moved to &#39;finished&#39; status.
+When you show the &quot;play again&quot;   or   &quot;leave room&quot; screen the user should be placed into a &#39;deciding&#39; status.
+This allows users to either play again or leave and prevents the game believing it has the correct number of users
+already available to start the game.
+Users in the &#39;finished&#39; or &#39;deciding&#39; status are still technically in the room and take up a players spot until they leave.
+Once a user agrees to play again (or is automatically agreed to play again) they should be set to &#39;playing&#39; status.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">lobbyState</code>
+                        <span class="type">String</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>must be either iConsole.mp.LOBBY_STATE_WAITING, iConsole.mp.LOBBY_STATE_PLAYING, iConsole.mp.LOBBY_STATE_FINISHED,
+iConsole.mp.LOBBY_STATE_DECIDING</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Object</span>:
+                    
+                    <p>An object which contains two functions, success and failure, which should each be called
+with the function you wish to call when the assignment succeeds or fails. These calls can be directly chained:</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre>
+    iConsole.mp.updateUsersLobbyState(iConsole.mp.LOBBY_STATE_WAITING).success(mySuccessFunction).failure(myFailureFunction);
+</pre>
+            </div>
+        </div>
+    
+</div>
+
+                
+                    <div id="method_userLeftRoom" class="method item">
+    <h3 class="name"><code>userLeftRoom</code></h3>
+
+    
+        <span class="paren">()</span>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Object</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_console-js_modules_mp.js.html#l466"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:466</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>This function allows the game to show a button to allow the user to leave the game at any point in time.
+When called it will remove the user from the game.</p>
+
+    </div>
+
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Object</span>:
+                    
+                    <p>An object which contains two functions, success and failure, which should each be called
+with the function you wish to call when the assignment succeeds or fails. These calls can be directly chained:</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre>
+    iConsole.mp.userLeftRoom().success(mySuccessFunction).failure(myFailureFunction);
 </pre>
             </div>
         </div>
