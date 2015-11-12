@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>iConsole.ads</title>
+    <title>iConsole.social.facebook</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -98,7 +98,7 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>iConsole.ads Class</h1>
+                        <h1>iConsole.social.facebook Class</h1>
 <div class="box meta">
     
 
@@ -106,7 +106,7 @@
 
     
         <div class="foundat">
-            Defined in: <a href="../files/src_console-js_modules_ads.js.html#l2"><code>src&#x2F;console-js&#x2F;modules&#x2F;ads.js:2</code></a>
+            Defined in: <a href="../files/src_console-js_modules_social.js.html#l16"><code>src&#x2F;console-js&#x2F;modules&#x2F;social.js:16</code></a>
         </div>
     
 
@@ -118,18 +118,7 @@
 
 
 <div class="box intro">
-    <h2 id="adverts">Adverts</h2>
-<p>Adverts are controlled by the game_details.json file located in the root of game.</p>
-<p>TODO documentation w.r.t. game_details.json configuration</p>
-<h2 id="types">Types</h2>
-<ul>
-<li>&#39;none&#39; No adverts</li>
-<li>&#39;interstitial&#39; Always show ads</li>
-<li>&#39;levelStarted&#39; dependant on &#39;level&#39; numbers defined in the section </li>
-<li>&#39;max_time&#39; displays when &#39;maxseconds&#39; has expired between calls.</li>
-<li>&#39;every_attempt&#39; displays at everyattempt from &#39;start&#39; count then ever &#39;between&#39; count</li>
-</ul>
-
+    
 </div>
 
 
@@ -157,7 +146,14 @@
                     <ul class="index-list methods">
                         
                             <li class="index-item method">
-                                <a href="#method_show">show</a>
+                                <a href="#method_requestLogin">requestLogin</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
+                                <a href="#method_requestShare">requestShare</a>
 
                                 
                                 
@@ -179,26 +175,16 @@
                 <h2 class="off-left">Methods</h2>
 
                 
-                    <div id="method_show" class="method item">
-    <h3 class="name"><code>show</code></h3>
+                    <div id="method_requestLogin" class="method item">
+    <h3 class="name"><code>requestLogin</code></h3>
 
     
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-            
-                <li class="arg">
-                    
-                        <code>data</code>
-                    
-                </li>
-            
-            </ul><span class="paren">)</span>
-        </div>
+        <span class="paren">()</span>
     
 
     
         <span class="returns-inline">
-            <span class="type">Object</span>
+            <span class="type"></span>
         </span>
     
 
@@ -225,7 +211,7 @@
             
         
         
-        <a href="../files/src_console-js_modules_ads.js.html#l29"><code>src&#x2F;console-js&#x2F;modules&#x2F;ads.js:29</code></a>
+        <a href="../files/src_console-js_modules_social.js.html#l21"><code>src&#x2F;console-js&#x2F;modules&#x2F;social.js:21</code></a>
         
         </p>
 
@@ -236,18 +222,119 @@
     </div>
 
     <div class="description">
-        <p>In order to flag an advert to potentially be shown, you call this function with appropriate data blocks as
-defined below. You should pause your game play and mute any sound/music whilst the advert is displayed.
-You will be notified via the <code>result</code> callback once the console has completed its advert display process.
-At this point you should un mute and un pause your game.
-<br>
-If you declare your data type to be <code>interstitial</code>, then the advert (currently) will be triggered
-always. If you declare your data type to be <code>levelStarted</code>, then the advert may or may not fire
-based upon the behaviour defined in the <code>game_details.json</code> file. If the advert isn&#39;t fired, the
-<code>result</code> is fired immediately. In this case, any code appearing on lines after this call will be
-called after the <code>result</code> callback is fired, whereas if the advert is fired, any code appearing on
-lines after this call will be called before the <code>result</code> is fired. Therefore, you should consider
-pausing all game execution prior to this call, and leave this as the last call to make.</p>
+        <p>This method should be called to explicitly request a login to facebook. The result function that is
+returned will be called with a value of either the user ID of who logged in, or null if the user isn&#39;t
+logged in. If the user is already logged in, they won&#39;t be presented with a login dialog.
+NOTE
+In the desktop console, this will request a login, but the callback will no later than 15 seconds after
+calling, as there is no way through our current integration to determine exactly if / when a user has
+signed in through this call.</p>
+
+    </div>
+
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type"></span>:
+                    
+                    <p>An object that contains a member function <code>result</code> that you should call with a
+callback function that will be fired when facebook has responded. The format of result function is</p>
+<ul>
+<li><pre>result( callbackFunction );</pre> Where callbackFunction is a function that will be called with a</li>
+<li>single parameter, the user&#39;s facebook ID or null if not logged in</li>
+</ul>
+
+                
+            </div>
+        </div>
+    
+
+    
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre>
+iConsole.social.facebook.requestLogin().result( function( userID ) {
+    if ( userID ) {
+        myGame.recordSignedIn( userID );
+    } else {
+        myGame.restartLevel();
+    }
+});
+</pre>
+            </div>
+        </div>
+    
+</div>
+
+                
+                    <div id="method_requestShare" class="method item">
+    <h3 class="name"><code>requestShare</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>data</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type"></span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_console-js_modules_social.js.html#l55"><code>src&#x2F;console-js&#x2F;modules&#x2F;social.js:55</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>Request a share dialog is opened to share the current game/application. Games running in the normal
+console should not (currently) make this call, as the URL that will be shared will not allow the game to
+launch. However, games running in exclusive mode in a dedicated app should make this call.</p>
 
     </div>
 
@@ -266,21 +353,8 @@ pausing all game execution prior to this call, and leave this as the last call t
                     
 
                     <div class="param-description">
-                        <p>An object which contains either</p>
-<p><pre>
-{
-   type: &#39;interstitial&#39;
-}
-</pre>
-to fire interstitial adverts all the time, or:</p>
-<p><pre>
-{
-   type: &#39;levelStarted&#39;,
-   level: num
-}
-</pre>
-where <code>num</code> is the level number as an integer that the user is about to start playing. In this
-instance the advert display behaviour is guided by the <code>game_details.json</code> file.</p>
+                        <p>An object which must contain a key pair for &#39;message&#39;, the message you want to share with
+users who are playing</p>
 
                     </div>
 
@@ -298,13 +372,11 @@ instance the advert display behaviour is guided by the <code>game_details.json</
             <div class="returns-description">
                 
                     
-                        <span class="type">Object</span>:
+                        <span class="type"></span>:
                     
                     <p>An object that contains a member function <code>result</code> that you should call with a
-callback function that will be fired when the advert is dismissed. The format of result function is</p>
-<p><pre>result( callbackFunction );</pre>
-Where callbackFunction is a function that will be called with a single parameter, an object that currently is
-empty, when the advert has dismissed.</p>
+callback function that will be fired when facebook has responded. This callback function will be called
+with a single parameter, which will be an object with a success value of either true or false.</p>
 
                 
             </div>
@@ -317,12 +389,13 @@ empty, when the advert has dismissed.</p>
 
             <div class="example-content">
                 <pre>
-iConsole.ads.show( {
-   type: 'levelStarted',
-   level: 3
-} ).result( function( resultData ) {
-   myGame.startGameTimer();
-} );
+iConsole.social.facebook.requestShare( { message : 'Come play our awesome game' } ).result( function( data ) {
+    if (data.success) {
+        myGame.thankUserForSharing();
+    } else {
+        myGame.restartLevel();
+    }
+});
 </pre>
             </div>
         </div>

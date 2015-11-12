@@ -55,6 +55,10 @@
             
                 <li><a href="../classes/iConsole.periodical.html">iConsole.periodical</a></li>
             
+                <li><a href="../classes/iConsole.social.html">iConsole.social</a></li>
+            
+                <li><a href="../classes/iConsole.social.facebook.html">iConsole.social.facebook</a></li>
+            
             </ul>
 
             <ul id="api-modules" class="apis modules">
@@ -732,13 +736,18 @@
             })();
         },
 
+        getGameSessionRandomSeed: function (max) {
+            return Math.round(iConsole.mp.internal.preparePseudoRandom().next(1, max));
+        },
+
         internal: {
             supported: false,
             getStateCallback: null,
             pollForServerStateInterval: null,
             pollForServerStateDelay: 3000,
-            pollForUserAliveDelay: 300000,
+            pollForUserAliveDelay: 20000,
             userAliveTimer: (new Date()).getTime(),
+            gameSessionStartedAt: 0,
 
             user_id: guid(),
             game_room_id: null,
@@ -752,6 +761,21 @@
                 }
             },
 
+            preparePseudoRandom: function() {
+                var seed = iConsole.mp.internal.gameSessionStartedAt;
+                var constant = Math.pow(2, 13)+1;
+                var prime = 1987;
+                var maximum = 100000000; //maximum number needed for calculation the float precision of the numbers (10^n where n is number of digits after dot)
+
+                return {
+                    next : function(min, max) {
+                        seed *= constant;
+                        seed += prime;
+                        return min &amp;&amp; max ? min+seed%maximum/maximum*(max-min) : seed%maximum/maximum;
+                    }
+                };
+            },
+
             updateLobbyRoomState: function (state) {
                 if (iConsole.mp.internal.game_room_id !== null &amp;&amp; iConsole.mp.internal.game_room_id !== undefined) {
                     return (function () {
@@ -763,6 +787,7 @@
                         }).result(function (data) {
                             if (data.status === &#x27;OK&#x27;) {
                                 if (successCallback) {
+                                    iConsole.mp.internal.gameSessionStartedAt = data.game_session_started_at;
                                     successCallback();
                                 }
                             } else if (failureCallback) {
