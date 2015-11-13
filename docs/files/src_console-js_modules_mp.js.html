@@ -736,6 +736,29 @@
             })();
         },
 
+        /**
+         * This function allows the game to get a random seed number during a game session (from game_started to game_ended)
+         * In order to get consistently the same seed number for all the players in the same game room for each game session,
+         * it should be used only after the game has started and during the game playing state. i.e It should be used on a
+         * success callback of the gameStarted() function and only then it can be guaranteed the same seed number for all the users
+         * &lt;pre&gt;iConsole.mp.gameStarted({}).success(mySuccessFunction)&lt;/pre&gt;
+         *
+         * See the example on how to properly use this function.
+         *
+         * @param max {int} the maximum number of the random seed required
+         * @return {int} A random integer between 1 and max
+         * @example
+         * &lt;pre&gt;
+         * iConsole.mp.gameStarted({}).success( function() {
+         *       ...
+         *       testHarness.game.currentSeed = iConsole.mp.getGameSessionRandomSeed(10000);  // Get the random seed from 1 to 10000 and store it
+         *       ...
+         *       startTheGame();
+         * });
+         * &lt;/pre&gt;
+         *
+         * @method createRoom
+         */
         getGameSessionRandomSeed: function (max) {
             return Math.round(iConsole.mp.internal.preparePseudoRandom().next(1, max));
         },

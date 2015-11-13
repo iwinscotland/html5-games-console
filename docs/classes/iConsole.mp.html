@@ -306,6 +306,13 @@ trying to achieve this call, typically will be a failure in communications to th
                             </li>
                         
                             <li class="index-item method">
+                                <a href="#method_createRoom">createRoom</a>
+
+                                
+                                
+                            </li>
+                        
+                            <li class="index-item method">
                                 <a href="#method_gameEnded">gameEnded</a>
 
                                 
@@ -614,6 +621,134 @@ with the function you wish to call when the assignment succeeds or fails. These 
             <div class="example-content">
                 <pre>
     iConsole.mp.autoAssignUserToRoom().success(mySuccessFunction).failure(myFailureFunction);
+</pre>
+            </div>
+        </div>
+    
+</div>
+
+                
+                    <div id="method_createRoom" class="method item">
+    <h3 class="name"><code>createRoom</code></h3>
+
+    
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+            
+                <li class="arg">
+                    
+                        <code>max</code>
+                    
+                </li>
+            
+            </ul><span class="paren">)</span>
+        </div>
+    
+
+    
+        <span class="returns-inline">
+            <span class="type">Int</span>
+        </span>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    <div class="meta">
+        
+            
+                
+                <p>
+                
+                Defined in
+                
+            
+        
+        
+        <a href="../files/src_console-js_modules_mp.js.html#l635"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:635</code></a>
+        
+        </p>
+
+
+        
+
+        
+    </div>
+
+    <div class="description">
+        <p>This function allows the game to get a random seed number during a game session (from game_started to game_ended)
+In order to get consistently the same seed number for all the players in the same game room for each game session,
+it should be used only after the game has started and during the game playing state. i.e It should be used on a
+success callback of the gameStarted() function and only then it can be guaranteed the same seed number for all the users</p>
+<pre>iConsole.mp.gameStarted({}).success(mySuccessFunction)</pre>
+
+<p>See the example on how to properly use this function.</p>
+
+    </div>
+
+    
+        <div class="params">
+            <h4>Parameters:</h4>
+
+            <ul class="params-list">
+            
+                <li class="param">
+                    
+                        <code class="param-name">max</code>
+                        <span class="type">Int</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                        <p>the maximum number of the random seed required</p>
+
+                    </div>
+
+                    
+                </li>
+            
+            </ul>
+        </div>
+    
+
+    
+        <div class="returns">
+            <h4>Returns:</h4>
+
+            <div class="returns-description">
+                
+                    
+                        <span class="type">Int</span>:
+                    
+                    <p>A random integer between 1 and max</p>
+
+                
+            </div>
+        </div>
+    
+
+    
+        <div class="example">
+            <h4>Example:</h4>
+
+            <div class="example-content">
+                <pre>
+iConsole.mp.gameStarted({}).success( function() {
+      ...
+      testHarness.game.currentSeed = iConsole.mp.getGameSessionRandomSeed(10000);  // Get the random seed from 1 to 10000 and store it
+      ...
+      startTheGame();
+});
 </pre>
             </div>
         </div>

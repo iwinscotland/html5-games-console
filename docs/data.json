@@ -135,7 +135,7 @@
             "plugin_for": [],
             "extension_for": [],
             "file": "src/console-js/modules/mp.js",
-            "line": 792,
+            "line": 815,
             "description": "Simple Multiplayer Mode\n---------------\n\nWithin our mobile application, we have the potential to integrate with an asynchronous Multiplayer experience\ncurrently partnering with Skillz. This multiplayer experience works such that you can initiate the\nMultiplayer experience, which loads up the third party UI, allowing the user to join an asynchronous\ngaming tournament (which could be head to head, or n players, or play as many times in a given time frame to\nattempt to get the highest score). Once the game has made the choice to work in Multiplayer mode, it must\nbehave differently than normal, in such that the game is not listening to a user input for when the game\nshould start, or what type of level to show the user, but instead listen to callbacks from this API as to\nwhen a level should be started.\n\nDuring the progress of a level, the game should regularly report the user's current score (this could be\nevery n seconds, or whenever the score is increased). This is such that it is easier to determine if foul\nplay has come in to effect. Remember that users can and will be playing for REAL MONEY as well as virtual\ncurrency.\n\nThe typical flow would be to:\n* register the session started callback, to ensure that your game is notified of\nwhen the MP experience has determined the user is about to start a tournament\n* register the exit multiplayer callback, to ensure that the game is aware of what mode it should be working\nin\n* Either bind a button to the startMultiplayer (i.e. a Start Multiplayer Mode button on the UI), or if the\ngame is going to launch straight in to Multiplayer mode, to call startMultiplayer when it is fully configured\nand ready to start listening to the callbacks for the tournament session started.\n* When the callback to the session started has occurred, you should read the attributes passed in the object\nto callback function, to determine any configuration needed to be applied. For example a tournament may be\nconfigured to disable all collectible powerups, to further increase difficulty. The game session should then\nbegin.\n* During a game session, if you are playing in a Multiplayer session, you should report regularly the players\nscore, to ensure that foul play can be detected by the third party provider.\n* Once a game has completed, you should endSession with the users score. At this point the game should be\nprepared to receive a callback on either the session started callback, or the exiting multiplayer callback\n* If the game offers the ability, if the user ends their current game, it should call abortSession to notify\nthe third party the player has forfeited their tournament.\n\nIt should be noted that on the mobile application (but not on the desktop console), the\n<code>Math.random</code> object will be overridden with a slightly slower implementation. This implementation\nwill ensure that all players in a given ongoing tournament will have the same random seed at the start of\ntheir game session. This should mean that all players see the same initial state. Your game should not\n(unless explicitly required to do so) take any other factors in to account when attempting to use a random\nnumber (i.e. don't do Math.random() * 10000 + Date.now() - oldTimeStamp). In the case of a traditional\nMatch 3 game, this should mean that two players with the same seed, should be able to play identical moves\nand see identical elements on their board at each move. Scoring should not be using any random element, but\ncan use time (to reward faster activity for example).\n\nTo verify this behavior on a desktop console, append #!mpsimpledebug to the url of the console/game url:\nhttp://s.games.iwin.com/m/console/v_217/#/m/iwin/bubble-town-quest/v_117/#!mpsimpledebug\n\n\nThis indicates to the console that it should say that the iConsole.mp.simple.isSupported should return true,\nand allow for debug calls to be made on the Javascript Console.\n\n\nWhen your game implements the iConsole.mp.simple calls, you will see the javascript console report this:\n* iConsole.game.exitApplication - \"Game has requested to exit the application - unsupported on this client\"\n* iConsole.mp.simple.startMultiplayer - an Alert box will appear on screen\n* iConsole.mp.simple.reportScore - \"Game Score reported as XXX\" where XXX is the score\n* iConsole.mp.simple.abortSession - \"User aborted game, returning control to game in 5 seconds time\"\n* iConsole.mp.simple.endSession - \"Game finished with score XXX returning control to game in 5 seconds time\" where XXX is the score\n\n\nOnce you have called iConsole.mp.simple.startMultiplayer from the debug desktop javascript console, two\nmethods are available on the window object:\n<pre>\n// Call this function from the javascript console to pretend to initiate a new Multiplayer Tournament Session\n// You can pass in an object which can contain key/value pairs, which will be exposed to the sessionStarted\n// callback function\nwindow.startMPSimpleSession( {\n    tournamentParam1 : tournamentValue1,\n    ...\n    tournamentParamN : tournamentValueN\n} );\n\n// Call this function to pretend to exit out of the multiplayer experience from the third party.\nwindow.exitMP();\n</pre>",
             "type": "{iConsole.mp.simple|*|{}}"
         },
@@ -1018,7 +1018,29 @@
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 874,
+            "line": 635,
+            "description": "This function allows the game to get a random seed number during a game session (from game_started to game_ended)\nIn order to get consistently the same seed number for all the players in the same game room for each game session,\nit should be used only after the game has started and during the game playing state. i.e It should be used on a\nsuccess callback of the gameStarted() function and only then it can be guaranteed the same seed number for all the users\n<pre>iConsole.mp.gameStarted({}).success(mySuccessFunction)</pre>\n\nSee the example on how to properly use this function.",
+            "params": [
+                {
+                    "name": "max",
+                    "description": "the maximum number of the random seed required",
+                    "type": "Int"
+                }
+            ],
+            "return": {
+                "description": "A random integer between 1 and max",
+                "type": "Int"
+            },
+            "example": [
+                "\n<pre>\niConsole.mp.gameStarted({}).success( function() {\n      ...\n      testHarness.game.currentSeed = iConsole.mp.getGameSessionRandomSeed(10000);  // Get the random seed from 1 to 10000 and store it\n      ...\n      startTheGame();\n});\n</pre>"
+            ],
+            "itemtype": "method",
+            "name": "createRoom",
+            "class": "iConsole.mp"
+        },
+        {
+            "file": "src/console-js/modules/mp.js",
+            "line": 897,
             "description": "This asynchronous call should be made to feature flip your game into which mode it should operate in.",
             "return": {
                 "description": "An object that contains a member function <code>result</code> that you should call with a\ncallback function that will be fired shortly after this call. The format of result function is\n<pre>result( callbackFunction );</pre>\nWhere callbackFunction is a function that will be called with a single parameter, a boolean that will\ndetermine if Simple Multiplayer is supported or not.",
@@ -1033,7 +1055,7 @@
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 907,
+            "line": 930,
             "description": "Register a single callback function that should be called whenever the Multiplayer experience launches a\nnew Tournament session, and requires the game to configure itself accordingly, and then start playing the\ngame.",
             "params": [
                 {
@@ -1051,7 +1073,7 @@
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 968,
+            "line": 991,
             "description": "Register a single callback function that should be called whenever the Multiplayer experience exits. This\nis typically done by a user action declaring through the third party, that they no longer wish to play\nthe current game in Multiplayer mode. If your game supports both modes of operation, you should return to\neither a single player mode, or a menu allowing the user to choose the type of play they want to do",
             "params": [
                 {
@@ -1070,7 +1092,7 @@
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 995,
+            "line": 1018,
             "description": "This function will launch the Multiplayer Experience, and launch the UI from the third party, which\nhandles virtual currency, tournament matching, user identity and launching etc. It should only be called\nonce you have registered your callbacks for session starting and exiting multiplayer mode. An example of\nwhen you would call this would either be as the result of a user clicking on a \"Play Multiplayer\" button,\nor as part of the game launching process when the game doesn't support Single Player.",
             "example": [
                 "\n<pre>\nmyGame.buttons.multiPlayerMode.onClick = function() {\n   iConsole.mp.simple.startMultiplayer();\n};\n</pre>",
@@ -1082,7 +1104,7 @@
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 1019,
+            "line": 1042,
             "description": "This function should be called periodically by the game, when you are in a multiplayer gaming session,\nto update the third party with the user's current score.",
             "params": [
                 {
@@ -1099,7 +1121,7 @@
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 1039,
+            "line": 1062,
             "description": "This function should be called when the user has voluntarily exited out of the current game (i.e. give\nup). The game should expect to receive a callback on either the session started or exiting out of\nmultiplayer at some point after this call, when the user decides to either start a new game, or leave\nthe multiplayer experience altogether.",
             "example": [
                 "\n<pre>\nmyGame.abortLevel = function() {\n    myGame.ui.showSadAnimation();\n    if (myGame.mpInProgress) {\n        myGame.mpInProgress = false;\n        iConsole.mp.simple.abortSession();\n    }\n}\n</pre>"
@@ -1110,7 +1132,7 @@
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 1060,
+            "line": 1083,
             "description": "This function should be called when the user has reached the end of their game session. The game should\nexpect to receive a callback on either the session started or exiting out of multiplayer at some point\nafter this call, when the user decides to either start a new game, or leave the multiplayer experience\naltogether.",
             "params": [
                 {
@@ -1127,7 +1149,7 @@
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 1081,
+            "line": 1104,
             "description": "This asynchronous call can be used to determine if you are currently in a session. It is added more as a\nhelper function, as this is an asynchronous call, and will involve a degree of computational churn which\nshould be avoided if possible.",
             "return": {
                 "description": "An object that contains a member function <code>result</code> that you should call with a\ncallback function that will be fired shortly after this call. The format of result function is\n<pre>result( callbackFunction );</pre>\nWhere callbackFunction is a function that will be called with a single parameter, a boolean that will\ndetermine if a multiplayer session is in play or not.",
