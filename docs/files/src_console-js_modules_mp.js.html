@@ -629,7 +629,53 @@
                 var failureCallback = null;
                 iConsole.XDM.sendAddUserToRoom({
                     user_id: iConsole.mp.internal.user_id,
-                    game_room_id: gameRoomId
+                    game_room_id: gameRoomId,
+                    user_type: iConsole.mp.USER_TYPE_REAL
+                }).result(function (data) {
+                    if (data.status === &#x27;OK&#x27;) {
+                        if (successCallback) {
+                            iConsole.mp.internal.game_room_id = gameRoomId;
+                            successCallback();
+                        }
+                    } else if (failureCallback) {
+                        failureCallback();
+                    }
+                });
+                var returnable = {
+                    success: function (callback) {
+                        successCallback = callback;
+                        return returnable;
+                    },
+                    failure: function (callback) {
+                        failureCallback = callback;
+                        return returnable;
+                    }
+                };
+                return returnable;
+            })();
+        },
+
+        /**
+         * This function allows the game to show a button to allow a voyeur user to be added to a Room of his selection.
+         *
+         * @param gameRoomId {String} the id of the room where the user is going to be added in
+         * @return {Object} An object which contains two functions, success and failure, which should each be called
+         * with the function you wish to call when the assignment succeeds or fails. These calls can be directly chained:
+         * @example
+         * &lt;pre&gt;
+         *     iConsole.mp.addVoyeurUserToRoom(gameRoomId).success(mySuccessFunction).failure(myFailureFunction);
+         * &lt;/pre&gt;
+         *
+         * @method addUserToRoom
+         */
+        addVoyeurUserToRoom: function (gameRoomId) {
+            return (function () {
+                var successCallback = null;
+                var failureCallback = null;
+                iConsole.XDM.sendAddUserToRoom({
+                    user_id: iConsole.mp.internal.user_id,
+                    game_room_id: gameRoomId,
+                    user_type: iConsole.mp.USER_TYPE_VOYEUR
                 }).result(function (data) {
                     if (data.status === &#x27;OK&#x27;) {
                         if (successCallback) {
