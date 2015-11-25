@@ -479,7 +479,7 @@ trying to achieve this call, typically will be a failure in communications to th
             
         
         
-        <a href="../files/src_console-js_modules_mp.js.html#l509"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:509</code></a>
+        <a href="../files/src_console-js_modules_mp.js.html#l523"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:523</code></a>
         
         </p>
 
@@ -491,6 +491,11 @@ trying to achieve this call, typically will be a failure in communications to th
 
     <div class="description">
         <p>This function allows the game to show a button to allow the user to be added to a Room of his selection.</p>
+<p>In case of failure, the failure callback returns the errorCodes:
+-2: General Server Error
+-1: General Network or Server Error
+ 1: The gameRoomId specified was not found (it might have been removed if empty for a while)
+ 2: The Room was full when tried to add the user</p>
 
     </div>
 
@@ -543,6 +548,17 @@ with the function you wish to call when the assignment succeeds or fails. These 
 
             <div class="example-content">
                 <pre>
+    var mySuccessFunction = function () {
+        // User is added to the Room and the state of the game can change to waiting
+    }
+    var myFailureFunction = function(errorCode) {
+        // Failed to add the user the room. The Game should handle the error using
+        // the following errorCodes
+        // -2: General Server Error
+        // -1: General Network or Server Error
+        //  1: The gameRoomId specified was not found (it might have been removed if empty for a while)
+        //  2: The Room was full when tried to add the user
+    }
     iConsole.mp.addUserToRoom(gameRoomId).success(mySuccessFunction).failure(myFailureFunction);
 </pre>
             </div>
@@ -597,7 +613,7 @@ with the function you wish to call when the assignment succeeds or fails. These 
             
         
         
-        <a href="../files/src_console-js_modules_mp.js.html#l554"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:554</code></a>
+        <a href="../files/src_console-js_modules_mp.js.html#l593"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:593</code></a>
         
         </p>
 
@@ -705,7 +721,7 @@ with the function you wish to call when the assignment succeeds or fails. These 
             
         
         
-        <a href="../files/src_console-js_modules_mp.js.html#l205"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:205</code></a>
+        <a href="../files/src_console-js_modules_mp.js.html#l219"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:219</code></a>
         
         </p>
 
@@ -799,7 +815,7 @@ with the function you wish to call when the assignment succeeds or fails. These 
             
         
         
-        <a href="../files/src_console-js_modules_mp.js.html#l681"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:681</code></a>
+        <a href="../files/src_console-js_modules_mp.js.html#l720"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:720</code></a>
         
         </p>
 
@@ -917,7 +933,7 @@ iConsole.mp.gameStarted({}).success( function() {
             
         
         
-        <a href="../files/src_console-js_modules_mp.js.html#l639"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:639</code></a>
+        <a href="../files/src_console-js_modules_mp.js.html#l678"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:678</code></a>
         
         </p>
 
@@ -1014,7 +1030,7 @@ The success function requires a parameter where the room created will be returne
             
         
         
-        <a href="../files/src_console-js_modules_mp.js.html#l261"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:261</code></a>
+        <a href="../files/src_console-js_modules_mp.js.html#l275"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:275</code></a>
         
         </p>
 
@@ -1133,7 +1149,7 @@ with the function you wish to call when the assignment succeeds or fails. These 
             
         
         
-        <a href="../files/src_console-js_modules_mp.js.html#l244"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:244</code></a>
+        <a href="../files/src_console-js_modules_mp.js.html#l258"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:258</code></a>
         
         </p>
 
@@ -1243,7 +1259,7 @@ with the function you wish to call when the assignment succeeds or fails. These 
             
         
         
-        <a href="../files/src_console-js_modules_mp.js.html#l599"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:599</code></a>
+        <a href="../files/src_console-js_modules_mp.js.html#l638"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:638</code></a>
         
         </p>
 
@@ -1344,7 +1360,7 @@ The success function requires a parameter where the rooms will be returned.</p>
             
         
         
-        <a href="../files/src_console-js_modules_mp.js.html#l349"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:349</code></a>
+        <a href="../files/src_console-js_modules_mp.js.html#l363"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:363</code></a>
         
         </p>
 
@@ -1485,7 +1501,7 @@ You should check this response for null - which signifies that the current user 
             
         
         
-        <a href="../files/src_console-js_modules_mp.js.html#l454"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:454</code></a>
+        <a href="../files/src_console-js_modules_mp.js.html#l468"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:468</code></a>
         
         </p>
 
@@ -1593,7 +1609,7 @@ i.e. still in the room but not yet agreed to play again.</p>
             
         
         
-        <a href="../files/src_console-js_modules_mp.js.html#l443"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:443</code></a>
+        <a href="../files/src_console-js_modules_mp.js.html#l457"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:457</code></a>
         
         </p>
 
@@ -1700,7 +1716,7 @@ i.e. still in the room but not yet agreed to play again.</p>
             
         
         
-        <a href="../files/src_console-js_modules_mp.js.html#l384"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:384</code></a>
+        <a href="../files/src_console-js_modules_mp.js.html#l398"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:398</code></a>
         
         </p>
 
@@ -1832,7 +1848,7 @@ The game clients should keep track of which players were playing and their last 
             
         
         
-        <a href="../files/src_console-js_modules_mp.js.html#l432"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:432</code></a>
+        <a href="../files/src_console-js_modules_mp.js.html#l446"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:446</code></a>
         
         </p>
 
@@ -1939,7 +1955,7 @@ The game clients should keep track of which players were playing and their last 
             
         
         
-        <a href="../files/src_console-js_modules_mp.js.html#l421"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:421</code></a>
+        <a href="../files/src_console-js_modules_mp.js.html#l435"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:435</code></a>
         
         </p>
 
@@ -2086,6 +2102,12 @@ For most games this will return false.</p>
                     
                 </li>
             
+                <li class="arg">
+                    
+                        <code>failureCallback</code>
+                    
+                </li>
+            
             </ul><span class="paren">)</span>
         </div>
     
@@ -2126,7 +2148,9 @@ For most games this will return false.</p>
     </div>
 
     <div class="description">
-        <p>This function allows you to register a callback handler for each tick of game state. Game state is polled every n seconds.</p>
+        <p>This function allows you to register a callback handler for each tick of game state. Game state is polled every n seconds.
+A failureCallback can be defined as well which will return the errorCode. Only one errorCode at the moment which is
+-1: General error</p>
 
     </div>
 
@@ -2152,6 +2176,21 @@ For most games this will return false.</p>
                     
                 </li>
             
+                <li class="param">
+                    
+                        <code class="param-name">failureCallback</code>
+                        <span class="type">Function</span>
+                    
+
+                    
+
+                    <div class="param-description">
+                         
+                    </div>
+
+                    
+                </li>
+            
             </ul>
         </div>
     
@@ -2163,7 +2202,15 @@ For most games this will return false.</p>
             <h4>Example:</h4>
 
             <div class="example-content">
-                <pre>
+                <p>var callback = function (data) {
+    var users = data.users;
+    // See Example Multiplayer Game for more information about this callback
+}</p>
+<p>var failureCallback = function (errorCode) {
+    // Some proper behavior would be to add a counter and see if we have more than N consecutive failures then
+    // the game should handle it appropriately.
+}</p>
+<pre>
 {
   game_room_id: "...",                                                        //internal id of no use to you as a game developer
   server_time: ...,                                                           //milliseconds since unix epoch
@@ -2226,7 +2273,7 @@ For most games this will return false.</p>
             
         
         
-        <a href="../files/src_console-js_modules_mp.js.html#l277"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:277</code></a>
+        <a href="../files/src_console-js_modules_mp.js.html#l291"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:291</code></a>
         
         </p>
 
@@ -2347,7 +2394,7 @@ with the function you wish to call when the assignment succeeds or fails. These 
             
         
         
-        <a href="../files/src_console-js_modules_mp.js.html#l295"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:295</code></a>
+        <a href="../files/src_console-js_modules_mp.js.html#l309"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:309</code></a>
         
         </p>
 
@@ -2465,7 +2512,7 @@ with the function you wish to call when the assignment succeeds or fails. These 
             
         
         
-        <a href="../files/src_console-js_modules_mp.js.html#l466"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:466</code></a>
+        <a href="../files/src_console-js_modules_mp.js.html#l480"><code>src&#x2F;console-js&#x2F;modules&#x2F;mp.js:480</code></a>
         
         </p>
 

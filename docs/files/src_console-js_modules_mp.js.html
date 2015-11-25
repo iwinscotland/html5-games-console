@@ -286,8 +286,21 @@
 
         /**
          * This function allows you to register a callback handler for each tick of game state. Game state is polled every n seconds.
+         * A failureCallback can be defined as well which will return the errorCode. Only one errorCode at the moment which is
+         * -1: General error
+         *
          * @param callback {Function} The callback function you want to be called back on. The callback will receive a populated object as follows
+         * @param failureCallback {Function}
          * @example
+         * var callback = function (data) {
+         *     var users = data.users;
+         *     // See Example Multiplayer Game for more information about this callback
+         * }
+         *
+         * var failureCallback = function (errorCode) {
+         *     // Some proper behavior would be to add a counter and see if we have more than N consecutive failures then
+         *     // the game should handle it appropriately.
+         * }
          * &lt;pre&gt;
          * {
          *   game_room_id: &quot;...&quot;,                                                        //internal id of no use to you as a game developer
@@ -301,8 +314,9 @@
          * &lt;/pre&gt;
          * @method registerGetState
          */
-        registerGetState: function (callback) {
+        registerGetState: function (callback, failureCallback) {
             iConsole.mp.internal.getStateCallback = callback;
+            iConsole.mp.internal.getStateFailureCallback = failureCallback;
         },
 
 
@@ -613,11 +627,28 @@
         /**
          * This function allows the game to show a button to allow the user to be added to a Room of his selection.
          *
+         * In case of failure, the failure callback returns the errorCodes:
+         * -2: General Server Error
+         * -1: General Network or Server Error
+         *  1: The gameRoomId specified was not found (it might have been removed if empty for a while)
+         *  2: The Room was full when tried to add the user
+         *
          * @param gameRoomId {String} the id of the room where the user is going to be added in
          * @return {Object} An object which contains two functions, success and failure, which should each be called
          * with the function you wish to call when the assignment succeeds or fails. These calls can be directly chained:
          * @example
          * &lt;pre&gt;
+         *     var mySuccessFunction = function () {
+         *         // User is added to the Room and the state of the game can change to waiting
+         *     }
+         *     var myFailureFunction = function(errorCode) {
+         *         // Failed to add the user the room. The Game should handle the error using
+         *         // the following errorCodes
+         *         // -2: General Server Error
+         *         // -1: General Network or Server Error
+         *         //  1: The gameRoomId specified was not found (it might have been removed if empty for a while)
+         *         //  2: The Room was full when tried to add the user
+         *     }
          *     iConsole.mp.addUserToRoom(gameRoomId).success(mySuccessFunction).failure(myFailureFunction);
          * &lt;/pre&gt;
          *
@@ -638,7 +669,15 @@
                             successCallback();
                         }
                     } else if (failureCallback) {
-                        failureCallback();
+                        var errorCode = -1;
+                        if (data.status === &#x27;ROOM_NOT_FOUND&#x27;) {
+                            errorCode = 1;
+                        } else if (data.status === &#x27;FULL&#x27;) {
+                            errorCode = 2;
+                        } else if (data.status === &#x27;FAIL&#x27;) {
+                            errorCode = -2;
+                        }
+                        failureCallback(errorCode);
                     }
                 });
                 var returnable = {
@@ -812,6 +851,7 @@
         internal: {
             supported: false,
             getStateCallback: null,
+            getStateFailureCallback: null,
             pollForServerStateInterval: null,
             pollForServerStateDelay: 3000,
             pollForUserAliveDelay: 20000,
@@ -935,6 +975,9 @@
                                 var json = data;
                                 if (json.status !== false) {
                                     iConsole.mp.internal.performCallback(iConsole.mp.internal.getStateCallback, json);
+                                } else {
+                                    var errorCode = -1;
+                                    iConsole.mp.internal.performCallback(iConsole.mp.internal.getStateFailureCallback, errorCode);
                                 }
                             }
                         });

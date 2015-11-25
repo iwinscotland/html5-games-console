@@ -135,7 +135,7 @@
             "plugin_for": [],
             "extension_for": [],
             "file": "src/console-js/modules/mp.js",
-            "line": 861,
+            "line": 904,
             "description": "Simple Multiplayer Mode\n---------------\n\nWithin our mobile application, we have the potential to integrate with an asynchronous Multiplayer experience\ncurrently partnering with Skillz. This multiplayer experience works such that you can initiate the\nMultiplayer experience, which loads up the third party UI, allowing the user to join an asynchronous\ngaming tournament (which could be head to head, or n players, or play as many times in a given time frame to\nattempt to get the highest score). Once the game has made the choice to work in Multiplayer mode, it must\nbehave differently than normal, in such that the game is not listening to a user input for when the game\nshould start, or what type of level to show the user, but instead listen to callbacks from this API as to\nwhen a level should be started.\n\nDuring the progress of a level, the game should regularly report the user's current score (this could be\nevery n seconds, or whenever the score is increased). This is such that it is easier to determine if foul\nplay has come in to effect. Remember that users can and will be playing for REAL MONEY as well as virtual\ncurrency.\n\nThe typical flow would be to:\n* register the session started callback, to ensure that your game is notified of\nwhen the MP experience has determined the user is about to start a tournament\n* register the exit multiplayer callback, to ensure that the game is aware of what mode it should be working\nin\n* Either bind a button to the startMultiplayer (i.e. a Start Multiplayer Mode button on the UI), or if the\ngame is going to launch straight in to Multiplayer mode, to call startMultiplayer when it is fully configured\nand ready to start listening to the callbacks for the tournament session started.\n* When the callback to the session started has occurred, you should read the attributes passed in the object\nto callback function, to determine any configuration needed to be applied. For example a tournament may be\nconfigured to disable all collectible powerups, to further increase difficulty. The game session should then\nbegin.\n* During a game session, if you are playing in a Multiplayer session, you should report regularly the players\nscore, to ensure that foul play can be detected by the third party provider.\n* Once a game has completed, you should endSession with the users score. At this point the game should be\nprepared to receive a callback on either the session started callback, or the exiting multiplayer callback\n* If the game offers the ability, if the user ends their current game, it should call abortSession to notify\nthe third party the player has forfeited their tournament.\n\nIt should be noted that on the mobile application (but not on the desktop console), the\n<code>Math.random</code> object will be overridden with a slightly slower implementation. This implementation\nwill ensure that all players in a given ongoing tournament will have the same random seed at the start of\ntheir game session. This should mean that all players see the same initial state. Your game should not\n(unless explicitly required to do so) take any other factors in to account when attempting to use a random\nnumber (i.e. don't do Math.random() * 10000 + Date.now() - oldTimeStamp). In the case of a traditional\nMatch 3 game, this should mean that two players with the same seed, should be able to play identical moves\nand see identical elements on their board at each move. Scoring should not be using any random element, but\ncan use time (to reward faster activity for example).\n\nTo verify this behavior on a desktop console, append #!mpsimpledebug to the url of the console/game url:\nhttp://s.games.iwin.com/m/console/v_217/#/m/iwin/bubble-town-quest/v_117/#!mpsimpledebug\n\n\nThis indicates to the console that it should say that the iConsole.mp.simple.isSupported should return true,\nand allow for debug calls to be made on the Javascript Console.\n\n\nWhen your game implements the iConsole.mp.simple calls, you will see the javascript console report this:\n* iConsole.game.exitApplication - \"Game has requested to exit the application - unsupported on this client\"\n* iConsole.mp.simple.startMultiplayer - an Alert box will appear on screen\n* iConsole.mp.simple.reportScore - \"Game Score reported as XXX\" where XXX is the score\n* iConsole.mp.simple.abortSession - \"User aborted game, returning control to game in 5 seconds time\"\n* iConsole.mp.simple.endSession - \"Game finished with score XXX returning control to game in 5 seconds time\" where XXX is the score\n\n\nOnce you have called iConsole.mp.simple.startMultiplayer from the debug desktop javascript console, two\nmethods are available on the window object:\n<pre>\n// Call this function from the javascript console to pretend to initiate a new Multiplayer Tournament Session\n// You can pass in an object which can contain key/value pairs, which will be exposed to the sessionStarted\n// callback function\nwindow.startMPSimpleSession( {\n    tournamentParam1 : tournamentValue1,\n    ...\n    tournamentParamN : tournamentValueN\n} );\n\n// Call this function to pretend to exit out of the multiplayer experience from the third party.\nwindow.exitMP();\n</pre>",
             "type": "{iConsole.mp.simple|*|{}}"
         },
@@ -706,16 +706,21 @@
         {
             "file": "src/console-js/modules/mp.js",
             "line": 183,
-            "description": "This function allows you to register a callback handler for each tick of game state. Game state is polled every n seconds.",
+            "description": "This function allows you to register a callback handler for each tick of game state. Game state is polled every n seconds.\nA failureCallback can be defined as well which will return the errorCode. Only one errorCode at the moment which is\n-1: General error",
             "params": [
                 {
                     "name": "callback",
                     "description": "The callback function you want to be called back on. The callback will receive a populated object as follows",
                     "type": "Function"
+                },
+                {
+                    "name": "failureCallback",
+                    "description": "",
+                    "type": "Function"
                 }
             ],
             "example": [
-                "\n<pre>\n{\n  game_room_id: \"...\",                                                        //internal id of no use to you as a game developer\n  server_time: ...,                                                           //milliseconds since unix epoch\n  users: [                                                                    //users who are part of this room\n    { id: \"...\", nickname: \"...\",  avatar_url: \"...\" , state: { ... } }       //state is whatever you pass up\n    { ... }\n    { ... }\n  ]\n}\n</pre>"
+                "\nvar callback = function (data) {\n    var users = data.users;\n    // See Example Multiplayer Game for more information about this callback\n}\n\nvar failureCallback = function (errorCode) {\n    // Some proper behavior would be to add a counter and see if we have more than N consecutive failures then\n    // the game should handle it appropriately.\n}\n<pre>\n{\n  game_room_id: \"...\",                                                        //internal id of no use to you as a game developer\n  server_time: ...,                                                           //milliseconds since unix epoch\n  users: [                                                                    //users who are part of this room\n    { id: \"...\", nickname: \"...\",  avatar_url: \"...\" , state: { ... } }       //state is whatever you pass up\n    { ... }\n    { ... }\n  ]\n}\n</pre>"
             ],
             "itemtype": "method",
             "name": "registerGetState",
@@ -723,7 +728,7 @@
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 205,
+            "line": 219,
             "description": "This function should be used to initiate a user and assign him to the a Room in the multiplayer service.",
             "return": {
                 "description": "An object which contains two functions, success and failure, which should each be called\nwith the function you wish to call when the assignment succeeds or fails. These calls can be directly chained:",
@@ -738,7 +743,7 @@
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 244,
+            "line": 258,
             "description": "This function should be used to flag that the user has started playing the game at the point where lobby activities\nhave concluded and the game client feels it has enough users to begin.",
             "params": [
                 {
@@ -760,7 +765,7 @@
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 261,
+            "line": 275,
             "description": "This function should be used to flag that the game client has ended the game for all players.",
             "params": [
                 {
@@ -782,7 +787,7 @@
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 277,
+            "line": 291,
             "description": "This function should be used to update the current players state - other game clients will be responsible for updating\ntheir own player's state.",
             "params": [
                 {
@@ -804,7 +809,7 @@
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 295,
+            "line": 309,
             "description": "This function should be used by the game to set the players lobby state accordingly.\nFor example a user can be either 'playing'   or   'deciding'.\nMost players are 'waiting' when they join a room and remain in this state until the game determines it has enough users to start.\nAt this point each client should update their user into 'playing' state.\nThe user stays in this state until the user finishes their game, at which point they should be moved to 'finished' status.\nWhen you show the \"play again\"   or   \"leave room\" screen the user should be placed into a 'deciding' status.\nThis allows users to either play again or leave and prevents the game believing it has the correct number of users\nalready available to start the game.\nUsers in the 'finished' or 'deciding' status are still technically in the room and take up a players spot until they leave.\nOnce a user agrees to play again (or is automatically agreed to play again) they should be set to 'playing' status.",
             "params": [
                 {
@@ -826,7 +831,7 @@
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 349,
+            "line": 363,
             "description": "This function accepts the users passed to the  getState  callback handler and returns the current player's object.\nYou should check this response for null - which signifies that the current user could not be located.",
             "params": [
                 {
@@ -853,7 +858,7 @@
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 384,
+            "line": 398,
             "description": "This function accepts the users passed to the  getState  callback handler and returns the other player objects.\nYou should check this response for being empty.\nNote the current user will never appear in this list...\nAlso note that when users leave a room at any point, they will not appear in the list returned here.\nThe game clients should keep track of which players were playing and their last recorded state and compare that with the list of players still playing.",
             "params": [
                 {
@@ -875,7 +880,7 @@
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 421,
+            "line": 435,
             "description": "This function accepts the users passed to the  getState  callback handler and returns the users waiting.",
             "params": [
                 {
@@ -894,7 +899,7 @@
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 432,
+            "line": 446,
             "description": "This function accepts the users passed to the  getState  callback handler and returns the users playing.",
             "params": [
                 {
@@ -913,7 +918,7 @@
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 443,
+            "line": 457,
             "description": "This function accepts the users passed to the  getState  callback handler and returns the users finished playing.",
             "params": [
                 {
@@ -932,7 +937,7 @@
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 454,
+            "line": 468,
             "description": "This function accepts the users passed to the  getState  callback handler and returns the users deciding,\ni.e. still in the room but not yet agreed to play again.",
             "params": [
                 {
@@ -951,7 +956,7 @@
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 466,
+            "line": 480,
             "description": "This function allows the game to show a button to allow the user to leave the game at any point in time.\nWhen called it will remove the user from the game.",
             "return": {
                 "description": "An object which contains two functions, success and failure, which should each be called\nwith the function you wish to call when the assignment succeeds or fails. These calls can be directly chained:",
@@ -966,8 +971,8 @@
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 509,
-            "description": "This function allows the game to show a button to allow the user to be added to a Room of his selection.",
+            "line": 523,
+            "description": "This function allows the game to show a button to allow the user to be added to a Room of his selection.\n\nIn case of failure, the failure callback returns the errorCodes:\n-2: General Server Error\n-1: General Network or Server Error\n 1: The gameRoomId specified was not found (it might have been removed if empty for a while)\n 2: The Room was full when tried to add the user",
             "params": [
                 {
                     "name": "gameRoomId",
@@ -980,7 +985,7 @@
                 "type": "Object"
             },
             "example": [
-                "\n<pre>\n    iConsole.mp.addUserToRoom(gameRoomId).success(mySuccessFunction).failure(myFailureFunction);\n</pre>"
+                "\n<pre>\n    var mySuccessFunction = function () {\n        // User is added to the Room and the state of the game can change to waiting\n    }\n    var myFailureFunction = function(errorCode) {\n        // Failed to add the user the room. The Game should handle the error using\n        // the following errorCodes\n        // -2: General Server Error\n        // -1: General Network or Server Error\n        //  1: The gameRoomId specified was not found (it might have been removed if empty for a while)\n        //  2: The Room was full when tried to add the user\n    }\n    iConsole.mp.addUserToRoom(gameRoomId).success(mySuccessFunction).failure(myFailureFunction);\n</pre>"
             ],
             "itemtype": "method",
             "name": "addUserToRoom",
@@ -988,7 +993,7 @@
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 554,
+            "line": 593,
             "description": "This function allows the game to show a button to allow a voyeur user to be added to a Room of his selection.",
             "params": [
                 {
@@ -1010,7 +1015,7 @@
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 599,
+            "line": 638,
             "description": "This function allows the game to get a list of all the available rooms for the current game.",
             "return": {
                 "description": "An object which contains two functions, success and failure, which should each be called\nwith the function you wish to call when the assignment succeeds or fails. These calls can be directly chained.\nThe success function requires a parameter where the rooms will be returned.",
@@ -1025,7 +1030,7 @@
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 639,
+            "line": 678,
             "description": "This function allows the game to create a new empty room.",
             "return": {
                 "description": "An object which contains two functions, success and failure, which should each be called\nwith the function you wish to call when the assignment succeeds or fails. These calls can be directly chained.\nThe success function requires a parameter where the room created will be returned.",
@@ -1040,7 +1045,7 @@
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 681,
+            "line": 720,
             "description": "This function allows the game to get a random seed number during a game session (from game_started to game_ended)\nIn order to get consistently the same seed number for all the players in the same game room for each game session,\nit should be used only after the game has started and during the game playing state. i.e It should be used on a\nsuccess callback of the gameStarted() function and only then it can be guaranteed the same seed number for all the users\n<pre>iConsole.mp.gameStarted({}).success(mySuccessFunction)</pre>\n\nSee the example on how to properly use this function.",
             "params": [
                 {
@@ -1062,7 +1067,7 @@
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 943,
+            "line": 986,
             "description": "This asynchronous call should be made to feature flip your game into which mode it should operate in.",
             "return": {
                 "description": "An object that contains a member function <code>result</code> that you should call with a\ncallback function that will be fired shortly after this call. The format of result function is\n<pre>result( callbackFunction );</pre>\nWhere callbackFunction is a function that will be called with a single parameter, a boolean that will\ndetermine if Simple Multiplayer is supported or not.",
@@ -1077,7 +1082,7 @@
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 976,
+            "line": 1019,
             "description": "Register a single callback function that should be called whenever the Multiplayer experience launches a\nnew Tournament session, and requires the game to configure itself accordingly, and then start playing the\ngame.",
             "params": [
                 {
@@ -1095,7 +1100,7 @@
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 1037,
+            "line": 1080,
             "description": "Register a single callback function that should be called whenever the Multiplayer experience exits. This\nis typically done by a user action declaring through the third party, that they no longer wish to play\nthe current game in Multiplayer mode. If your game supports both modes of operation, you should return to\neither a single player mode, or a menu allowing the user to choose the type of play they want to do",
             "params": [
                 {
@@ -1114,7 +1119,7 @@
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 1064,
+            "line": 1107,
             "description": "This function will launch the Multiplayer Experience, and launch the UI from the third party, which\nhandles virtual currency, tournament matching, user identity and launching etc. It should only be called\nonce you have registered your callbacks for session starting and exiting multiplayer mode. An example of\nwhen you would call this would either be as the result of a user clicking on a \"Play Multiplayer\" button,\nor as part of the game launching process when the game doesn't support Single Player.",
             "example": [
                 "\n<pre>\nmyGame.buttons.multiPlayerMode.onClick = function() {\n   iConsole.mp.simple.startMultiplayer();\n};\n</pre>",
@@ -1126,7 +1131,7 @@
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 1088,
+            "line": 1131,
             "description": "This function should be called periodically by the game, when you are in a multiplayer gaming session,\nto update the third party with the user's current score.",
             "params": [
                 {
@@ -1143,7 +1148,7 @@
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 1108,
+            "line": 1151,
             "description": "This function should be called when the user has voluntarily exited out of the current game (i.e. give\nup). The game should expect to receive a callback on either the session started or exiting out of\nmultiplayer at some point after this call, when the user decides to either start a new game, or leave\nthe multiplayer experience altogether.",
             "example": [
                 "\n<pre>\nmyGame.abortLevel = function() {\n    myGame.ui.showSadAnimation();\n    if (myGame.mpInProgress) {\n        myGame.mpInProgress = false;\n        iConsole.mp.simple.abortSession();\n    }\n}\n</pre>"
@@ -1154,7 +1159,7 @@
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 1129,
+            "line": 1172,
             "description": "This function should be called when the user has reached the end of their game session. The game should\nexpect to receive a callback on either the session started or exiting out of multiplayer at some point\nafter this call, when the user decides to either start a new game, or leave the multiplayer experience\naltogether.",
             "params": [
                 {
@@ -1171,7 +1176,7 @@
         },
         {
             "file": "src/console-js/modules/mp.js",
-            "line": 1150,
+            "line": 1193,
             "description": "This asynchronous call can be used to determine if you are currently in a session. It is added more as a\nhelper function, as this is an asynchronous call, and will involve a degree of computational churn which\nshould be avoided if possible.",
             "return": {
                 "description": "An object that contains a member function <code>result</code> that you should call with a\ncallback function that will be fired shortly after this call. The format of result function is\n<pre>result( callbackFunction );</pre>\nWhere callbackFunction is a function that will be called with a single parameter, a boolean that will\ndetermine if a multiplayer session is in play or not.",
