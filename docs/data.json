@@ -290,7 +290,7 @@
                 "type": "Object"
             },
             "example": [
-                "\n<pre>\niConsole.game.ready({\n   soundOnOff: true,\n   pauseable: true,\n   supportedLanguages:\n}).result( function( resultData ) {\n   myGame.setConsoleType(resultData.console.type);\n   mygame.setConsoleProvider(resultData.console.provider);\n   myGame.showHomeScreenMenu(resultData.user);\n   \n} );\n</pre>"
+                "\n<pre>\niConsole.game.ready({\n   soundOnOff: true,\n   pauseable: true,\n   supportedLanguages:[]\n   pushNotification: true\n}).result( function( resultData ) {\n   myGame.setConsoleType(resultData.console.type);\n   mygame.setConsoleProvider(resultData.console.provider);\n   myGame.showHomeScreenMenu(resultData.user);\n   \n} );\n</pre>"
             ],
             "itemtype": "method",
             "name": "ready",
@@ -298,7 +298,7 @@
         },
         {
             "file": "src/console-js/modules/game.js",
-            "line": 97,
+            "line": 98,
             "description": "While the game is loading all of it's assets, you should call this frequently to notify the user (via the\npre-game advert progress bar) of the game's loading progress. Typically games will pre-load the image /\naudio assets needed for the menu and first level of the game. Games may also use this time to pre-compile any\ndata blocks that may require a degree of time to complete",
             "params": [
                 {
@@ -319,7 +319,7 @@
         },
         {
             "file": "src/console-js/modules/game.js",
-            "line": 124,
+            "line": 125,
             "description": "Once the game has finished loading all of it's assets you should call this method to notify the console that\nyou have completed loading of all game assets and pre-compilation. This is in addition to making an\n<code>iConsole.game.loadProgress( { progress: 1, file: '' } );</code> call. This call to\n<code>iConsole.game.loaded</code> indicates to the console that it should allow the user to dismiss the\npre-game advert (once the minimum advert time has passed), or if the maximum advert time has passed to\nimmediately dismiss the pre-game advert. This call will ultimately result in the callback function in\n<code>iConsole.game.ready</code> to be called.",
             "params": [
                 {
@@ -342,7 +342,7 @@
         },
         {
             "file": "src/console-js/modules/game.js",
-            "line": 169,
+            "line": 170,
             "description": "This call should be made prior to starting a level, to obtain any data that the game has previously stored\nfor the level about to be played. This is useful to allow a user to continue game progress where they left\noff. Examples of this can include fetching the data of a previous level (to indicate what items a user has\nin their in-game inventory). This is an asynchronous call, as the data may need to be fetched from a back-end\nserver, thus the data is passed into a callback function that you must supply to the result function in the\nreturned object.\nYou should also make a call to <code>iConsole.ads.show</code> with the type set to <code>levelStarted</code>\nas well, and wait for both callbacks to complete before continuing on with the game. Suggested order would\nbe to call <code>iConsole.ads.show</code> first, and then call <code>iConsole.game.getLevelData</code> to\nensure that the user is presented with something that is the game just waiting, and only proceed once both\nof these functions have triggered their callback functions.",
             "params": [
                 {
@@ -364,7 +364,7 @@
         },
         {
             "file": "src/console-js/modules/game.js",
-            "line": 207,
+            "line": 208,
             "description": "This call should be made to store progress of a level (typically at the end of a level) via a 2k data string.\nThis is useful to allow a user to continue game progress where they left off or to restart previously failed\nlevels. Whilst this may result in a back-end call, this call can be made and no callback function required to\nhandle the result.",
             "params": [
                 {
@@ -386,7 +386,7 @@
         },
         {
             "file": "src/console-js/modules/game.js",
-            "line": 236,
+            "line": 237,
             "description": "This call can be made prior to starting a level or prior to starting a game, to obtain any data that the game\nhas previously stored for the entire game session and any previous information (such as my best score if the\ngame wishes to display that inside its UI). This is useful to allow a user to continue game progress where\nthey left off, for example by storing the current user level. This is an asynchronous call, as the data may\nneed to be fetched from a back-end server, thus the data is passed into a callback function that you must\nsupply to the result function in the returned object.",
             "params": [
                 {
@@ -408,7 +408,7 @@
         },
         {
             "file": "src/console-js/modules/game.js",
-            "line": 263,
+            "line": 264,
             "description": "This call should be made to store progress in a game session (typically at the end of a level) via a 2k data\nstring. This is useful to allow a user to continue game progress where they left off or to restart previously\nfailed levels. Whilst this may result in a back-end call, this call can be made and no callback function\nrequired to handle the result.",
             "params": [
                 {
@@ -430,7 +430,7 @@
         },
         {
             "file": "src/console-js/modules/game.js",
-            "line": 290,
+            "line": 291,
             "description": "This call should be made whenever the game wishes to post a high score for the global leaderboards for the\nuser. In the future, the console may cause a dialog to appear to congratulate the user on their achievement\nand so the game should pause execution until the callback function that should be supplied to the\n<code>result</code> member function of the returned object has been called. Currently, this will be called\nimmediately.",
             "params": [
                 {
@@ -452,7 +452,7 @@
         },
         {
             "file": "src/console-js/modules/game.js",
-            "line": 322,
+            "line": 323,
             "description": "This function should be called when the user has reached the end of a natural gaming session (i.e. they've\nrun out of lives and can not continue). Game play should not be allowed to continue until the result callback\nfunction has been called.",
             "itemtype": "method",
             "name": "gameOver",
@@ -467,7 +467,7 @@
         },
         {
             "file": "src/console-js/modules/game.js",
-            "line": 339,
+            "line": 340,
             "itemtype": "method",
             "name": "levelStarted",
             "deprecated": true,
@@ -485,7 +485,7 @@
         },
         {
             "file": "src/console-js/modules/game.js",
-            "line": 378,
+            "line": 379,
             "itemtype": "method",
             "name": "levelFinished",
             "deprecated": true,
@@ -503,7 +503,7 @@
         },
         {
             "file": "src/console-js/modules/game.js",
-            "line": 393,
+            "line": 394,
             "description": "The user may generate keydown events when they are typing either in the game or in the console. Where the\nuser is typing into their chat window, keydown events are going to be triggered that games will erroneously\ncatch and handle. Therefore, instead of registering keydown handlers inside the game, you should add a\nhandler to the iConsole instead, which will bubble the keydown events except for when the user is typing into\nfields that shouldn't trigger game interaction, such as the chat window.\nThe currently supported event types are:\n* keydown - When a key is pressed down\n* signedIn - When a user signs in to the console (used to reload the user data from the console and restart the game)\n* signedOut - When a user signs out of the console (used to reload the user data and restart the game)\n* tiltYaxis - When a user tilts their amazon fire phone around the Y axis (used to dismiss menus in game)\n* soundOff - When the console requests to mute all sounds (the game should store the settings of the user overrides, so that if the sound is already muted, a call to soundOn should revert to the user settings)\n* soundOn - When the console requests to unmute all sounds (and where a game supports muting of sound effects and music separately, this should return the sound to the previous settings)\n* pause - When the console requests to pause the game, this should bring up the ingame pause menu (unless the game is not in a pause-able state)\n* resume - When the console requests to resume paused game play, this should unpause any paused game play (unless the game is not in a paused state)\n* restart - Only called if the console has received an iConsole.game.gameOver() call, and signifies that the console wants to do the same effect as the user clicking \"Replay\". However, if the user has already manually done this, then this should do nothing.\n* setlocale - If you support locales, you should consider adding support to iConsole.game.onEvent, with the setlocale event. If the user changes their locale during gaming session (the user may wish to change their supported language, this event will fire, and you should cater for updating the UI accordingly.\nSee iConsole.game.offEvent",
             "itemtype": "method",
             "name": "onEvent",
@@ -526,7 +526,7 @@
         },
         {
             "file": "src/console-js/modules/game.js",
-            "line": 445,
+            "line": 446,
             "description": "The user may generate keydown events when they are typing either in the game or in the console. Where the\nuser is typing into their chat window, keydown events are going to be triggered that games will erroneously\ncatch and handle. Therefore, instead of registering keydown handlers inside the game, you should add a\nhandler to the iConsole instead, which will bubble the keydown events except for when the user is typing into\nfields that shouldn't trigger game interaction, such as the chat window. This call will be used to\nde-register the keydown handler.\nSee iConsole.game.onEvent",
             "itemtype": "method",
             "name": "offEvent",
@@ -549,7 +549,7 @@
         },
         {
             "file": "src/console-js/modules/game.js",
-            "line": 482,
+            "line": 483,
             "description": "This function returns the width of the game inside the console, as window.innerWidth will not work initially\nwhen the game is first loaded as the game's window is hidden from display. This function is especially\nuseful when trying to determine what resolution of graphics the game should load.",
             "itemtype": "method",
             "name": "getWidth",
@@ -561,7 +561,7 @@
         },
         {
             "file": "src/console-js/modules/game.js",
-            "line": 499,
+            "line": 500,
             "description": "This function returns the height of the game inside the console, as window.innerHeight will not work initially\nwhen the game is first loaded as the game's window is hidden from display. This function is especially\nuseful when trying to determine what resolution of graphics the game should load.",
             "itemtype": "method",
             "name": "getHeight",
@@ -573,7 +573,7 @@
         },
         {
             "file": "src/console-js/modules/game.js",
-            "line": 516,
+            "line": 517,
             "description": "This function is used to set the label underneath the game's image on Amazon Fire devices (currently), and\nis typically used to relay information such as what level the user is going to resume playback from.",
             "itemtype": "method",
             "name": "setHomeWidgetLabel",
@@ -591,7 +591,7 @@
         },
         {
             "file": "src/console-js/modules/game.js",
-            "line": 527,
+            "line": 528,
             "description": "This function is used to explicitly to hide the console window (the chat and highscore window).",
             "itemtype": "method",
             "name": "hideConsoleWindow",
@@ -603,7 +603,7 @@
         },
         {
             "file": "src/console-js/modules/game.js",
-            "line": 536,
+            "line": 537,
             "description": "This function is used to make a request to the console to allow it to inform the game which locale the user\nis expecting to use. The console will make the best guess from the locales you have provided which works best.\nThe locales should be given in LANGUAGE_COUNTRY format, i.e. en-US (case insensitive), and if the users\nlanguage matches, it will use that locale, falling back to the first language provided that supports the users\nlanguage (i.e. if the user has fr-CA as their locale, but you only offer fr-FR and fr-MZ, then it will return\nfr-FR), and where it cannot find a suitable language, attempts to use en-US if provided, and if that fails\nattempts to use, en, and if that fails it uses the first locale you have provided.\nIf you support locales, you should consider adding support to iConsole.game.onEvent, with the setlocale event.\nIf the user changes their locale during gaming session (the user may wish to change their supported language,\nthis event will fire, and you should cater for updating the UI accordingly.",
             "params": [
                 {
@@ -624,7 +624,7 @@
         },
         {
             "file": "src/console-js/modules/game.js",
-            "line": 566,
+            "line": 567,
             "description": "This function is used to indicate the game wishes to exit out of the application entirely. This is\neffectively a null operation for the desktop console, but on a mobile application, it will either exit the\ngame and return to the game selection menu for the multi game application, or in the case of a single game\napplication, will exit the application entirely. This is typically used in conjunction with the simple\nmultiplayer mode, where the game only supports multiplayer mode, and the user clicks to exit the multiplayer\nexperience.",
             "itemtype": "method",
             "name": "exitApplication",
