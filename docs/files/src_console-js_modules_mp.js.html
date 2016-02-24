@@ -864,9 +864,9 @@
             initializeMP: function (data) {
                 iConsole.mp.internal.supported = true;
                 if (iConsole.mp.internal.supported) {
+                    iConsole.mp.internal.pollForServerStateDelay = data.state_poll_every_n_seconds * 1000;
                     iConsole.mp.internal.startPollingServerForState();
                     iConsole.mp.internal.startPollingUserAlive();
-                    iConsole.mp.internal.pollForServerStateDelay = data.state_poll_every_n_seconds * 1000;
                 }
             },
 
