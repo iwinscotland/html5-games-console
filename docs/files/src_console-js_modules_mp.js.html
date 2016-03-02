@@ -602,8 +602,8 @@
                     game_room_id: iConsole.mp.internal.game_room_id
                 }).result(function (data) {
                     if (data.status === &#x27;OK&#x27;) {
+                        iConsole.mp.internal.game_room_id = null;
                         if (successCallback) {
-                            iConsole.mp.internal.game_room_id = null;
                             successCallback();
                         }
                     } else if (failureCallback) {
@@ -664,8 +664,8 @@
                     user_type: iConsole.mp.USER_TYPE_REAL
                 }).result(function (data) {
                     if (data.status === &#x27;OK&#x27;) {
+                        iConsole.mp.internal.game_room_id = gameRoomId;
                         if (successCallback) {
-                            iConsole.mp.internal.game_room_id = gameRoomId;
                             successCallback();
                         }
                     } else if (failureCallback) {
@@ -717,8 +717,8 @@
                     user_type: iConsole.mp.USER_TYPE_VOYEUR
                 }).result(function (data) {
                     if (data.status === &#x27;OK&#x27;) {
+                        iConsole.mp.internal.game_room_id = gameRoomId;
                         if (successCallback) {
-                            iConsole.mp.internal.game_room_id = gameRoomId;
                             successCallback();
                         }
                     } else if (failureCallback) {
