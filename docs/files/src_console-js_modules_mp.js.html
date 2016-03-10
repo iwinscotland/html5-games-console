@@ -897,7 +897,7 @@
                             if (data.status === &#x27;OK&#x27;) {
                                 if (successCallback) {
                                     iConsole.mp.internal.gameSessionStartedAt = data.game_session_started_at;
-                                    successCallback();
+                                    successCallback(data);
                                 }
                             } else if (failureCallback) {
                                 failureCallback();
