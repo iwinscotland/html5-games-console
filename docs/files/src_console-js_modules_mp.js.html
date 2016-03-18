@@ -854,7 +854,7 @@
             getStateFailureCallback: null,
             pollForServerStateInterval: null,
             pollForServerStateDelay: 3000,
-            pollForUserAliveDelay: 20000,
+            pollForUserAliveDelay: 5000,
             userAliveTimer: (new Date()).getTime(),
             gameSessionStartedAt: 0,
 
@@ -954,7 +954,7 @@
 
             postUserAlive: function () {
                 var now = (new Date().getTime());
-                if ((now - iConsole.mp.internal.pollForUserAliveDelay) &gt; iConsole.mp.internal.userAliveTimer) {
+                if ((now - iConsole.mp.internal.pollForUserAliveDelay) &gt;= iConsole.mp.internal.userAliveTimer) {
                     iConsole.mp.internal.pushStateToServer(null);
                 }
             },
