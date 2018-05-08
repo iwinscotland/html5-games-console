@@ -124,11 +124,6 @@ which means that as a developer, you only need to write support for In App Purch
 multiple providers and any future integrations with other IAP providers will continue to be obfuscated behind this
 single call.</p>
 <h2 id="currently-supported-platforms">Currently Supported Platforms</h2>
-<ul>
-<li>Amazon HTML5 App Store</li>
-<li>Games.com</li>
-<li>Yahoo Games Network</li>
-</ul>
 <h2 id="configuration">Configuration</h2>
 <p>You will need to update the game_details.json file, to have an &quot;iap&quot; object at the root, and this should contain a
 mapping of sku to an object which describes that sku:</p>
@@ -259,32 +254,6 @@ function purchaseFailure(sku) {
 <code>127.0.0.1 local.games.iwin.com</code>) with
 <a href="http://local.games.iwin.com/#/game/"><a href="http://local.games.iwin.com/#/game/">http://local.games.iwin.com/#/game/</a></a> where the folder after the # symbol tells
 the console where to load the game from. You can append on to this URL, the following</p>
-<ul>
-<li>&#35;!amazon to enable Amazon integration<ul>
-<li><a href="http://local.games.iwin.com/#/game/#!amazon"><a href="http://local.games.iwin.com/#/game/#!amazon">http://local.games.iwin.com/#/game/#!amazon</a></a></li>
-</ul>
-</li>
-<li>&#35;!gamescom to enable Games.com integration<ul>
-<li><a href="http://local.games.iwin.com/#/game/#!gamescom"><a href="http://local.games.iwin.com/#/game/#!gamescom">http://local.games.iwin.com/#/game/#!gamescom</a></a></li>
-</ul>
-</li>
-<li>&#35;!yahoo to enable Yahoo integration<ul>
-<li><a href="http://local.games.iwin.com/#/game/#!yahoo"><a href="http://local.games.iwin.com/#/game/#!yahoo">http://local.games.iwin.com/#/game/#!yahoo</a></a></li>
-</ul>
-</li>
-</ul>
-<h3 id="amazon">Amazon</h3>
-<p>This is the simplest integration to test, as it works out of the box, and does not require any special workarounds
-or notes. In App Purchases complete when you attempt them without costing real money.</p>
-<h3 id="games-com">Games.com</h3>
-<p>The games.com integration requires you to configure a HTML5 game in <a href="http://developer.games.com"><a href="http://developer.games.com">http://developer.games.com</a></a>
-and to insert this link (for initial testing purposes) in the externally hosted URL. Also, their In App Purchasing
-opens up a pop-up window which may be automatically blocked (which means your purchases will fail), so be aware of
-this issue. When making a purchase, you can use the magic credit card 4444444444444448 (with any other value for the
-rest of the fields).</p>
-<h3 id="yahoo">Yahoo</h3>
-<p>You will need to set up an externally hosted Canvas game in the Yahoo development. The remainder of this integration
-remains undocumented.</p>
 <h2 id="further-platform-integration">Further Platform Integration</h2>
 <p>Beyond In-App-Purchasing, these platforms also offer other services, which are supported by the Console:</p>
 <h3 id="amazon">Amazon</h3>
@@ -408,7 +377,7 @@ as which level they are on. This is available as:<pre><a href="iConsole.game.htm
             
         
         
-        <a href="../files/src_console-js_modules_iap.js.html#l257"><code>src&#x2F;console-js&#x2F;modules&#x2F;iap.js:257</code></a>
+        <a href="../files/src_console-js_modules_iap.js.html#l235"><code>src&#x2F;console-js&#x2F;modules&#x2F;iap.js:235</code></a>
         
         </p>
 
@@ -480,7 +449,7 @@ different analytics accounts</p>
             
         
         
-        <a href="../files/src_console-js_modules_iap.js.html#l246"><code>src&#x2F;console-js&#x2F;modules&#x2F;iap.js:246</code></a>
+        <a href="../files/src_console-js_modules_iap.js.html#l224"><code>src&#x2F;console-js&#x2F;modules&#x2F;iap.js:224</code></a>
         
         </p>
 
@@ -553,7 +522,7 @@ should store your analytic events accordingly.</p>
             
         
         
-        <a href="../files/src_console-js_modules_iap.js.html#l198"><code>src&#x2F;console-js&#x2F;modules&#x2F;iap.js:198</code></a>
+        <a href="../files/src_console-js_modules_iap.js.html#l176"><code>src&#x2F;console-js&#x2F;modules&#x2F;iap.js:176</code></a>
         
         </p>
 
@@ -634,7 +603,7 @@ should store your analytic events accordingly.</p>
             
         
         
-        <a href="../files/src_console-js_modules_iap.js.html#l207"><code>src&#x2F;console-js&#x2F;modules&#x2F;iap.js:207</code></a>
+        <a href="../files/src_console-js_modules_iap.js.html#l185"><code>src&#x2F;console-js&#x2F;modules&#x2F;iap.js:185</code></a>
         
         </p>
 
